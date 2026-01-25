@@ -143,6 +143,37 @@ def fetch_agendas_count(conn, start_date, end_date):
     cursor.execute(query, (start_date, end_date))
     return {row[0]: row[1] for row in cursor.fetchall()}
 
+# 2.7 Fetch Daily Stats (Stacked by Coordinator)
+def fetch_daily_stats(conn, start_date, end_date):
+    """
+    Returns list of { date: 'YYYY-MM-DD', coord: 'email', count: N }
+    """
+    cursor = conn.cursor()
+    query = """
+    SELECT 
+        DATE(r.fecha) as fecha,
+        u.email as coordinator_mail,
+        COUNT(r.id) as count
+    FROM reservas r
+    LEFT JOIN corredores c ON r.corredor_id = c.id
+    LEFT JOIN users u ON c.coordinador_id = u.id
+    WHERE r.fecha BETWEEN %s AND %s
+    GROUP BY DATE(r.fecha), u.email
+    ORDER BY fecha ASC
+    """
+    cursor.execute(query, (start_date, end_date))
+    rows = cursor.fetchall()
+    
+    # Process
+    results = []
+    for r in rows:
+        results.append({
+            "date": str(r[0]),
+            "coord": get_squad_email(r[1]),
+            "count": r[2]
+        })
+    return results
+
 def main():
     try:
         conn = get_connection()
@@ -158,6 +189,10 @@ def main():
         print("Fetching Leads & Agendas...")
         leads_map = fetch_leads_count(conn, start_date_2026, end_date_2026)
         agendas_map = fetch_agendas_count(conn, start_date_2026, end_date_2026)
+
+        # 1c. Fetch Daily Stats
+        print("Fetching Daily Stats...")
+        daily_stats = fetch_daily_stats(conn, start_date_2026, end_date_2026)
         
         today = datetime.now()
         # For testing purposes or manual run, we assume 'today' month is Jan.
@@ -252,6 +287,11 @@ def main():
         # 1. Monthly Goal (Static)
         ts_content = "import { CorredorData, HistoryData, TeamConfig } from './types';\n\n"
         ts_content += "export const MONTHLY_GOAL = 1928;\n\n"
+        
+        # 1.5 Daily Stats
+        ts_content += "export interface DailyStat { date: string; coord: string; count: number; }\n"
+        ts_content += "export const DAILY_STATS: DailyStat[] = " + json.dumps(daily_stats, indent=4) + ";\n\n"
+
 
         
         # 2. Others

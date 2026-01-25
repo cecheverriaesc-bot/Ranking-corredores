@@ -54,3 +54,9 @@ export interface DashboardStats {
     growthVolume: number;
   };
 }
+
+export interface DailyStat {
+  date: string;
+  coord: string;
+  count: number;
+}

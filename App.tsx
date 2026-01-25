@@ -24,8 +24,8 @@ import {
     ArrowRight,
     Calendar // Added Calendar
 } from 'lucide-react';
-import { CURRENT_RANKING_2026, HISTORY_2025, NAMES_WITH_AGENDA, TEAMS, MONTHLY_GOAL, OTHER_BROKERS_2026, LAST_UPDATE } from './constants';
-import { SquadStats, DiagnosticItem, DashboardStats, CorredorData } from './types';
+import { CURRENT_RANKING_2026, HISTORY_2025, NAMES_WITH_AGENDA, TEAMS, MONTHLY_GOAL, OTHER_BROKERS_2026, LAST_UPDATE, DAILY_STATS } from './constants';
+import { SquadStats, DiagnosticItem, DashboardStats, CorredorData, DailyStat } from './types';
 
 // Map string icon names to components
 const IconMap: Record<string, React.FC<any>> = {
@@ -275,10 +275,12 @@ const App: React.FC = () => {
                             </div>
                             <div className="w-px h-10 bg-[#324467]"></div>
                             <div className="text-right">
-                                <p className="text-[10px] text-slate-500 font-bold uppercase">En Meta (7+)</p>
-                                <p className="text-emerald-400 font-bold text-lg">{stats.globalQualified}</p>
+                                <span className="text-blue-100 text-sm font-medium border-l border-blue-400 pl-3 uppercase italic">Enero 2026 | Líder: Carlos Echeverría</span>
                             </div>
                         </div>
+                        <p className="text-xs uppercase font-black text-blue-200 tracking-widest mt-2 md:ml-1 bg-blue-900/50 px-2 py-1 rounded inline-block border border-blue-500/30">
+                            Última actualización: {LAST_UPDATE}
+                        </p>
                     </div>
 
                     <div className="overflow-x-auto">

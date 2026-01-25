@@ -190,6 +190,14 @@ const App: React.FC = () => {
                             </div>
                         </div>
                     </div>
+
+                    <div className="flex flex-col items-end gap-2">
+                        <span className="text-blue-100 text-sm font-medium border-l border-blue-400 pl-3 uppercase italic">Enero 2026 | Líder: Carlos Echeverría</span>
+                        <div className="bg-[#1e293b] border border-[#324467] rounded-xl px-4 py-3 shadow-lg">
+                            <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-1 text-right">Última reserva en DB</p>
+                            <p className="text-emerald-400 font-black text-lg tracking-tighter leading-none">{LAST_UPDATE}</p>
+                        </div>
+                    </div>
                 </div>
             </header>
 
@@ -275,12 +283,10 @@ const App: React.FC = () => {
                             </div>
                             <div className="w-px h-10 bg-[#324467]"></div>
                             <div className="text-right">
-                                <span className="text-blue-100 text-sm font-medium border-l border-blue-400 pl-3 uppercase italic">Enero 2026 | Líder: Carlos Echeverría</span>
+                                <p className="text-[10px] text-slate-500 font-bold uppercase">En Meta (7+)</p>
+                                <p className="text-emerald-400 font-bold text-lg">{stats.globalQualified}</p>
                             </div>
                         </div>
-                        <p className="text-xs uppercase font-black text-blue-200 tracking-widest mt-2 md:ml-1 bg-blue-900/50 px-2 py-1 rounded inline-block border border-blue-500/30">
-                            Última actualización: {LAST_UPDATE}
-                        </p>
                     </div>
 
                     <div className="overflow-x-auto">
@@ -358,7 +364,7 @@ const App: React.FC = () => {
                     <Users size={20} className="text-blue-500" />
                     Rendimiento por Squad
                 </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 pb-20">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
                     {Object.entries(stats.squadStats).map(([email, data]) => {
                         const team = TEAMS[email];
                         if (!team || (data.cur === 0 && data.totalMembers === 0 && !team.my)) return null;
@@ -391,6 +397,91 @@ const App: React.FC = () => {
                             </div>
                         );
                     })}
+                </div>
+
+                {/* Daily Evolution Chart */}
+                <h3 className="text-xl font-bold text-white uppercase tracking-widest mb-6 flex items-center gap-3">
+                    <TrendingUp size={20} className="text-indigo-500" />
+                    Evolución Diaria de Reservas
+                </h3>
+                <div className="bg-[#1e293b] p-6 rounded-3xl border border-[#324467] mb-20 overflow-x-auto shadow-xl">
+                    <div className="min-w-[800px] h-64 flex items-end gap-2 relative pl-10 pb-6">
+                        {/* Y-Axis Labels (Approximate) */}
+                        <div className="absolute left-0 top-0 bottom-6 w-8 flex flex-col justify-between text-[10px] text-slate-500 font-bold">
+                            <span>Max</span>
+                            <span>Avg</span>
+                            <span>0</span>
+                        </div>
+
+                        {/* Bars */}
+                        {(() => {
+                            // Aggregation logic
+                            const daysMap = new Map<string, Record<string, number>>(); // date -> { coord: count }
+                            const dates = Array.from({ length: 31 }, (_, i) => {
+                                const d = i + 1;
+                                return `2026-01-${d.toString().padStart(2, '0')}`;
+                            });
+
+                            DAILY_STATS.forEach(stat => {
+                                const key = stat.date;
+                                if (!daysMap.has(key)) daysMap.set(key, {});
+                                const entry = daysMap.get(key)!;
+                                entry[stat.coord] = (entry[stat.coord] || 0) + stat.count;
+                            });
+
+                            // Find Max for scaling
+                            let maxVal = 0;
+                            dates.forEach(date => {
+                                const dayData = daysMap.get(date) || {};
+                                const total = Object.values(dayData).reduce((a, b) => a + b, 0);
+                                if (total > maxVal) maxVal = total;
+                            });
+                            if (maxVal === 0) maxVal = 10; // Prevent div by zero
+
+                            return dates.map((date, index) => {
+                                const dayNum = index + 1;
+                                const dayData = daysMap.get(date) || {};
+                                const total = Object.values(dayData).reduce((a, b) => a + b, 0);
+                                const heightPct = (total / maxVal) * 100;
+
+                                return (
+                                    <div key={date} className="h-full flex-1 flex flex-col justify-end group relative">
+                                        <div className="w-full flex flex-col-reverse rounded-t-lg overflow-hidden relative" style={{ height: `${heightPct}%` }}>
+                                            {Object.entries(dayData).map(([coord, count]) => {
+                                                const team = TEAMS[coord];
+                                                if (!team) return null;
+                                                const segmentHeight = (count / total) * 100;
+                                                return (
+                                                    <div
+                                                        key={coord}
+                                                        style={{ height: `${segmentHeight}%` }}
+                                                        className={`${team.bg.replace('bg-', 'bg-').split(' ')[0].replace('-50', '-500')} w-full border-t border-black/20 relative`}
+                                                        title={`${team.name}: ${count}`}
+                                                    >
+                                                    </div>
+                                                );
+                                            })}
+                                            {/* Total Label on Hover */}
+                                            <div className="opacity-0 group-hover:opacity-100 absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[10px] font-bold px-2 py-1 rounded shadow-xl whitespace-nowrap z-10 pointer-events-none transition-opacity">
+                                                {total} Reservas
+                                                <div className="text-[8px] text-slate-400 font-normal">{date}</div>
+                                            </div>
+                                        </div>
+                                        <div className="text-[9px] text-slate-500 font-bold text-center mt-2 group-hover:text-white transition-colors">{dayNum}</div>
+                                    </div>
+                                );
+                            });
+                        })()}
+                    </div>
+                    {/* Legend */}
+                    <div className="flex flex-wrap justify-center gap-4 mt-4 border-t border-[#324467] pt-4">
+                        {Object.values(TEAMS).map(team => (
+                            <div key={team.name} className="flex items-center gap-2">
+                                <div className={`w-3 h-3 rounded-full ${team.bg.replace('bg-', 'bg-').split(' ')[0].replace('-50', '-500')}`}></div>
+                                <span className="text-[10px] text-slate-400 font-bold uppercase">{team.name}</span>
+                            </div>
+                        ))}
+                    </div>
                 </div>
 
             </main>

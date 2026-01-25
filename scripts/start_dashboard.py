@@ -7,20 +7,30 @@ import os
 from datetime import datetime
 
 # Configuration
-ETL_SCRIPT = r"scripts/etl_ranking.py"
-DASHBOARD_DIR = r"ranking-corredores-rm---dashboard"
+# Script is now in ranking-corredores-rm---dashboard/scripts/
+# We want to run etl_ranking.py (in same dir)
+# And run npm run dev in parent dir (ranking-corredores-rm---dashboard)
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__)) # scripts/
+PROJECT_ROOT = os.path.dirname(BASE_DIR) # ranking-corredores-rm---dashboard/
+
+ETL_SCRIPT = os.path.join(BASE_DIR, "etl_ranking.py")
+DASHBOARD_DIR = PROJECT_ROOT
 POLL_INTERVAL_MINUTES = 30
 
 def run_etl():
     """Runs the ETL script and prints output."""
     print(f"[{datetime.now().strftime('%H:%M:%S')}] Updating data...")
     try:
-        # Assuming current working dir is project root
+        # Run in PROJECT_ROOT context or BASE_DIR? 
+        # ETL script expects to find .env in specific place? 
+        # ETL has absolute path to .env hardcoded: c:\Users\assetplan\Desktop\Ranking Enero 2026\.env
+        # So CWD doesn't matter much for env, but matters for constants.ts output
+        # ETL writes to os.path.join(script_dir, "..", "constants.ts") -> works if script is in scripts/
+        
         result = subprocess.run([sys.executable, ETL_SCRIPT], capture_output=True, text=True)
         if result.returncode == 0:
             print(f"[{datetime.now().strftime('%H:%M:%S')}] Data updated successfully.")
-            # Optional: Print summary line if needed, or just rely on script output
-            # print(result.stdout)
         else:
             print(f"[{datetime.now().strftime('%H:%M:%S')}] Error updating data:\n{result.stderr}")
     except Exception as e:
@@ -36,8 +46,7 @@ def etl_loop():
 def start_dashboard():
     """Starts the Vite dev server."""
     print(f"[{datetime.now().strftime('%H:%M:%S')}] Starting Dashboard...")
-    # Using npm run dev. Shell=True needed on Windows for npm
-    # We use Popen so it runs in parallel
+    # npm run dev in DASHBOARD_DIR
     process = subprocess.Popen("npm run dev", shell=True, cwd=DASHBOARD_DIR)
     return process
 

@@ -1,0 +1,28 @@
+/* Base styles for the dashboard */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+body {
+    margin: 0;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #324467;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #101622;
+}

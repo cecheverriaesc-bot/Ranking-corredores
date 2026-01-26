@@ -425,6 +425,39 @@ export const DAILY_STATS: DailyStat[] = [
         "count": 2
     }
 ];
+export const DAILY_GOALS: Record<number, number> = {
+    "1": 5.1,
+    "2": 41.7,
+    "3": 61.1,
+    "4": 46.8,
+    "5": 17.3,
+    "6": 65.1,
+    "7": 71.3,
+    "8": 75.3,
+    "9": 69.2,
+    "10": 84.5,
+    "11": 43.8,
+    "12": 11.2,
+    "13": 60.1,
+    "14": 91.6,
+    "15": 82.5,
+    "16": 81.4,
+    "17": 66.2,
+    "18": 48.9,
+    "19": 14.3,
+    "20": 58.0,
+    "21": 75.3,
+    "22": 91.6,
+    "23": 61.1,
+    "24": 108.9,
+    "25": 45.8,
+    "26": 21.4,
+    "27": 63.1,
+    "28": 112.0,
+    "29": 90.6,
+    "30": 74.3,
+    "31": 88.6
+};
 
 // ============================================================================
 // OTROS CORREDORES (Institucionales / No RM / Switch) - GENERATED DYNAMICALLY
@@ -1914,331 +1947,83 @@ export const NAMES_WITH_AGENDA: string[] = [
 
 // Historical Data Jan 2025
 export const HISTORY_2025: Record<string, HistoryData> = {
-    "Maria Fernanda Meneses": {
-        "c": 1,
-        "t": 5
-    },
-    "Angel Marquez": {
-        "c": 28,
-        "t": 35
-    },
-    "Ivon Urra": {
+    "Nailet Rojo": {
         "c": 3,
-        "t": 3
-    },
-    "Morande Oficinas": {
-        "c": 3,
-        "t": 4
-    },
-    "Virginia Del Carmen Lobo Lobo": {
-        "c": 3,
-        "t": 4
-    },
-    "Jonathan Alfredo Lagos Licancura": {
-        "c": 7,
-        "t": 9
-    },
-    "Daniel Alfredo Devita Le\u00f3n": {
-        "c": 15,
-        "t": 17
-    },
-    "Ximena Leiva": {
-        "c": 5,
-        "t": 5
-    },
-    "Valeska Chavez": {
-        "c": 17,
-        "t": 21
-    },
-    "Daiana Quintero": {
-        "c": 20,
-        "t": 24
-    },
-    "Esthefani Gonzalez": {
-        "c": 17,
-        "t": 23
-    },
-    "Corredor Switch": {
-        "c": 19,
-        "t": 25
-    },
-    "Robinson Mellado Mu\u00f1oz": {
-        "c": 4,
-        "t": 8
-    },
-    "Maria Del Pilar Diaz": {
-        "c": 1,
-        "t": 1
-    },
-    "Mar\u00eda Elena Katny": {
-        "c": 2,
-        "t": 3
-    },
-    "Yolimar Aguilar": {
-        "c": 2,
-        "t": 3
-    },
-    "Cintia Cecilia Moreno Monz\u00f3n": {
-        "c": 7,
-        "t": 8
-    },
-    "Maryelis Lugo": {
-        "c": 1,
-        "t": 4
-    },
-    "Nataly Concha": {
-        "c": 10,
-        "t": 10
-    },
-    "Yasmin Garc\u00eda": {
-        "c": 5,
-        "t": 12
-    },
-    "Maritza Faundez": {
-        "c": 12,
-        "t": 15
-    },
-    "Rosangela Cirelli": {
-        "c": 42,
-        "t": 54
-    },
-    "Christian Subiabre": {
-        "c": 13,
-        "t": 20
-    },
-    "Francisca Camila Cabero Gornall": {
-        "c": 2,
-        "t": 2
-    },
-    "Jose Roche": {
-        "c": 3,
-        "t": 3
-    },
-    "Romelean Lopez": {
-        "c": 2,
-        "t": 2
-    },
-    "Arlyn Pe\u00f1a": {
-        "c": 1,
-        "t": 2
-    },
-    "Ernesto Moscoso": {
-        "c": 1,
-        "t": 1
-    },
-    "Alexander Pereira": {
-        "c": 2,
-        "t": 3
-    },
-    "Andr\u00e9s Garcia": {
-        "c": 3,
-        "t": 4
-    },
-    "Michelle Pino": {
-        "c": 1,
-        "t": 1
-    },
-    "Alejandro Rodriguez": {
-        "c": 15,
-        "t": 18
-    },
-    "Saynell Patricia Mora Zambrano": {
-        "c": 9,
-        "t": 11
-    },
-    "Mar\u00eda Cristina De La Cuadra": {
-        "c": 1,
-        "t": 3
-    },
-    "Mario Lepore": {
-        "c": 7,
-        "t": 9
-    },
-    "Valeria Carolina Navarro Mondaca": {
-        "c": 4,
-        "t": 4
-    },
-    "Johanna Hernandez": {
-        "c": 32,
-        "t": 44
-    },
-    "Felix Ferrer": {
-        "c": 18,
-        "t": 25
-    },
-    "Alejandra Romo": {
-        "c": 12,
-        "t": 15
-    },
-    "Yorcy Tovar": {
-        "c": 1,
-        "t": 1
-    },
-    "Elizabeth Valdes": {
-        "c": 18,
-        "t": 23
-    },
-    "Nelly Coromoto Zambrano": {
-        "c": 4,
-        "t": 5
-    },
-    "Ingrid Mu\u00f1oz": {
-        "c": 13,
-        "t": 17
+        "t": 6
     },
     "Geraldine Trujillo": {
         "c": 4,
         "t": 4
     },
-    "Luisana Albarez": {
-        "c": 4,
-        "t": 6
+    "Raquel Rosa Valenzuela Brizuela": {
+        "c": 1,
+        "t": 1
     },
-    "Karen Lesmes": {
-        "c": 2,
-        "t": 2
+    "Victoria D\u00edaz": {
+        "c": 8,
+        "t": 10
     },
-    "Carlos Oropeza": {
+    "Jonathan Alfredo Lagos Licancura": {
+        "c": 7,
+        "t": 9
+    },
+    "Maryelis Lugo": {
         "c": 1,
         "t": 4
     },
-    "Mayerling Soto": {
-        "c": 24,
-        "t": 30
+    "Pamela Novoa": {
+        "c": 1,
+        "t": 1
+    },
+    "Michelle Pino": {
+        "c": 1,
+        "t": 1
+    },
+    "Johanna Hernandez": {
+        "c": 32,
+        "t": 44
+    },
+    "Francisca Camila Cabero Gornall": {
+        "c": 2,
+        "t": 2
     },
     "Diego Andrade": {
         "c": 4,
         "t": 5
     },
-    "Karla Garcia": {
-        "c": 0,
-        "t": 2
-    },
-    "Marina Margarita Ceballos Rojas": {
-        "c": 3,
-        "t": 5
-    },
-    "Yanelaine Reyes": {
-        "c": 4,
-        "t": 4
-    },
-    "Andres Reyes": {
-        "c": 1,
-        "t": 3
-    },
-    "Daniela Paola Magrini": {
-        "c": 36,
-        "t": 39
-    },
-    "Patricia Gonzalez": {
-        "c": 8,
-        "t": 10
-    },
-    "Yessica Asuaje": {
-        "c": 11,
+    "Enihet Curpa": {
+        "c": 9,
         "t": 12
     },
-    "Mauricio Reyes": {
+    "Gensa Arriendos (Maria Araujo)": {
+        "c": 8,
+        "t": 11
+    },
+    "Emeric Bergstrom Ibarra": {
         "c": 2,
-        "t": 2
+        "t": 7
     },
-    "Miriam Flores": {
-        "c": 0,
-        "t": 1
+    "Jairon Dumes": {
+        "c": 16,
+        "t": 19
     },
-    "Daina Tapia": {
-        "c": 10,
-        "t": 16
+    "Jennyfer Portillo": {
+        "c": 21,
+        "t": 24
     },
-    "Maryse Arria": {
-        "c": 14,
-        "t": 23
+    "Carlos Zambrano": {
+        "c": 18,
+        "t": 22
     },
-    "Alvaro Quintero": {
-        "c": 0,
+    "Nelly Coromoto Zambrano": {
+        "c": 4,
         "t": 5
     },
     "Gabriela Quintero": {
         "c": 19,
         "t": 19
     },
-    "Sofia Bravo": {
-        "c": 4,
-        "t": 8
-    },
-    "Fabian Arenas": {
-        "c": 4,
-        "t": 4
-    },
-    "Rosa Gana": {
-        "c": 2,
-        "t": 3
-    },
-    "Pedro Riveiro": {
-        "c": 2,
-        "t": 3
-    },
-    "Ana Roman": {
-        "c": 11,
-        "t": 15
-    },
-    "Yinglis Hernandez": {
-        "c": 34,
-        "t": 39
-    },
-    "Ruben Andr\u00e9s Castro Amaza": {
-        "c": 4,
-        "t": 7
-    },
-    "Yonathan Pino": {
-        "c": 27,
-        "t": 31
-    },
-    "Johana G\u00f3mez": {
-        "c": 6,
-        "t": 7
-    },
-    "Manuel Martinez": {
-        "c": 30,
-        "t": 39
-    },
-    "Evelyn Carolina D\u00edaz Galaz": {
-        "c": 0,
-        "t": 2
-    },
-    "Carlos Zambrano": {
-        "c": 18,
-        "t": 22
-    },
-    "Andibet Quintero": {
-        "c": 14,
-        "t": 15
-    },
-    "Nailet Rojo": {
-        "c": 3,
-        "t": 6
-    },
-    "Nelly Ocando": {
-        "c": 24,
-        "t": 29
-    },
-    "Benjamin Marcano": {
-        "c": 0,
-        "t": 3
-    },
-    "Jennyfer Portillo": {
-        "c": 21,
-        "t": 24
-    },
-    "Emeric Bergstrom Ibarra": {
-        "c": 2,
-        "t": 7
-    },
-    "Laura Moizant": {
-        "c": 5,
-        "t": 7
-    },
-    "Manuel Silva": {
+    "Eugenio Arrevilla": {
         "c": 5,
         "t": 8
     },
@@ -2246,119 +2031,371 @@ export const HISTORY_2025: Record<string, HistoryData> = {
         "c": 4,
         "t": 6
     },
-    "Kareen Araya": {
-        "c": 2,
-        "t": 2
-    },
-    "Rita Valiente": {
-        "c": 2,
-        "t": 2
-    },
-    "Annhelys Cardiet": {
-        "c": 18,
-        "t": 24
-    },
-    "Yerimar Portillo": {
-        "c": 24,
-        "t": 32
-    },
-    "Joenny Moncada": {
-        "c": 17,
-        "t": 21
-    },
-    "Maria Morales": {
-        "c": 11,
-        "t": 14
-    },
-    "Plaza & Nieto (Gloria Nieto)": {
-        "c": 4,
-        "t": 5
-    },
-    "Cristian Uribe": {
-        "c": 3,
-        "t": 4
-    },
-    "Pamela Novoa": {
-        "c": 1,
-        "t": 1
-    },
-    "Guillermo Antolinez": {
+    "Andres Reyes": {
         "c": 1,
         "t": 3
     },
-    "Luis Pernalete": {
-        "c": 16,
-        "t": 17
-    },
-    "Giovanny Gutierrez": {
-        "c": 8,
-        "t": 12
-    },
-    "Erika Cepeda": {
-        "c": 15,
-        "t": 23
-    },
-    "Rosanyelys Cordova": {
-        "c": 18,
-        "t": 23
-    },
-    "Yexica Gomez": {
-        "c": 8,
-        "t": 17
-    },
-    "Diego Loy": {
-        "c": 5,
-        "t": 5
-    },
-    "Leslie Mariscal": {
-        "c": 11,
-        "t": 12
-    },
-    "Kariangel Andrea Silva": {
-        "c": 14,
-        "t": 20
-    },
-    "Lesbia Utrilla": {
-        "c": 6,
-        "t": 8
-    },
-    "Henry Colina (Rumirent)": {
-        "c": 0,
-        "t": 6
-    },
-    "Alberto Del Campo": {
-        "c": 1,
-        "t": 1
-    },
-    "Jorge A\u00f1ez": {
-        "c": 14,
-        "t": 20
-    },
-    "Gustavo Gonzalez": {
-        "c": 29,
-        "t": 34
-    },
-    "Hector Cardiet": {
-        "c": 12,
-        "t": 17
+    "Henry Rodriguez": {
+        "c": 33,
+        "t": 43
     },
     "Carlos Alvarez": {
         "c": 9,
         "t": 11
     },
+    "Dennys Morales": {
+        "c": 21,
+        "t": 27
+    },
+    "Rita Valiente": {
+        "c": 2,
+        "t": 2
+    },
+    "Rodrigo Valderrama": {
+        "c": 18,
+        "t": 20
+    },
+    "Marina Margarita Ceballos Rojas": {
+        "c": 3,
+        "t": 5
+    },
+    "Ejecutivo Assetplan": {
+        "c": 0,
+        "t": 2
+    },
+    "Fabian Arenas": {
+        "c": 4,
+        "t": 4
+    },
+    "Dutglas Delmoral": {
+        "c": 35,
+        "t": 49
+    },
+    "Annhelys Cardiet": {
+        "c": 18,
+        "t": 24
+    },
+    "Marlyn Parra": {
+        "c": 12,
+        "t": 14
+    },
     "Sinead Vasquez": {
         "c": 1,
         "t": 2
+    },
+    "Maria Fernanda Meneses": {
+        "c": 1,
+        "t": 5
+    },
+    "Saynell Patricia Mora Zambrano": {
+        "c": 9,
+        "t": 11
+    },
+    "Santiago Fuentes": {
+        "c": 16,
+        "t": 21
+    },
+    "Nelly Ocando": {
+        "c": 24,
+        "t": 29
+    },
+    "Dania Chirinos": {
+        "c": 20,
+        "t": 25
     },
     "Ana Flores": {
         "c": 0,
         "t": 1
     },
+    "Rosanyelys Cordova": {
+        "c": 18,
+        "t": 23
+    },
+    "Andibet Quintero": {
+        "c": 14,
+        "t": 15
+    },
+    "Guillermo Antolinez": {
+        "c": 1,
+        "t": 3
+    },
+    "Johana G\u00f3mez": {
+        "c": 6,
+        "t": 7
+    },
+    "Joenny Moncada": {
+        "c": 17,
+        "t": 21
+    },
+    "Daniela Paola Magrini": {
+        "c": 36,
+        "t": 39
+    },
+    "Diego Loy": {
+        "c": 5,
+        "t": 5
+    },
+    "Cintia Cecilia Moreno Monz\u00f3n": {
+        "c": 7,
+        "t": 8
+    },
+    "Ximena Leiva": {
+        "c": 5,
+        "t": 5
+    },
+    "Rosa Gana": {
+        "c": 2,
+        "t": 3
+    },
+    "Paul Perdomo": {
+        "c": 17,
+        "t": 20
+    },
+    "Daniela Pino": {
+        "c": 16,
+        "t": 21
+    },
+    "Carolina Valenzuela": {
+        "c": 0,
+        "t": 0
+    },
+    "Jose Roche": {
+        "c": 3,
+        "t": 3
+    },
+    "Yorcy Tovar": {
+        "c": 1,
+        "t": 1
+    },
+    "Yanelaine Reyes": {
+        "c": 4,
+        "t": 4
+    },
+    "Katerin Reyes": {
+        "c": 1,
+        "t": 1
+    },
+    "Patricia Gonzalez": {
+        "c": 8,
+        "t": 10
+    },
+    "Carlos Oropeza": {
+        "c": 1,
+        "t": 4
+    },
+    "Karla Garcia": {
+        "c": 0,
+        "t": 2
+    },
+    "Carla Palma": {
+        "c": 2,
+        "t": 2
+    },
+    "Benjamin Marcano": {
+        "c": 0,
+        "t": 3
+    },
+    "Corredor Switch": {
+        "c": 19,
+        "t": 25
+    },
+    "Mar\u00eda Cristina De La Cuadra": {
+        "c": 1,
+        "t": 3
+    },
+    "Jorge A\u00f1ez": {
+        "c": 14,
+        "t": 20
+    },
+    "Daina Tapia": {
+        "c": 10,
+        "t": 16
+    },
+    "Manuel Martinez": {
+        "c": 30,
+        "t": 39
+    },
+    "Camila Fuenzalida": {
+        "c": 1,
+        "t": 1
+    },
+    "Daniel Alfredo Devita Le\u00f3n": {
+        "c": 15,
+        "t": 17
+    },
+    "Maritza Faundez": {
+        "c": 12,
+        "t": 15
+    },
+    "Yonathan Pino": {
+        "c": 27,
+        "t": 31
+    },
+    "Lesbia Utrilla": {
+        "c": 6,
+        "t": 8
+    },
+    "Maria Morales": {
+        "c": 11,
+        "t": 14
+    },
+    "Kariangel Andrea Silva": {
+        "c": 14,
+        "t": 20
+    },
+    "Luisana Albarez": {
+        "c": 4,
+        "t": 6
+    },
+    "Cristian Uribe": {
+        "c": 3,
+        "t": 4
+    },
+    "Mauricio Reyes": {
+        "c": 2,
+        "t": 2
+    },
+    "Elizabeth Valdes": {
+        "c": 18,
+        "t": 23
+    },
+    "Henry Colina (Rumirent)": {
+        "c": 0,
+        "t": 6
+    },
     "Greiry Rodriguez": {
         "c": 2,
         "t": 2
     },
-    "Melida Casta\u00f1eda": {
+    "Yolimar Aguilar": {
+        "c": 2,
+        "t": 3
+    },
+    "Hector Cardiet": {
+        "c": 12,
+        "t": 17
+    },
+    "Robinson Mellado Mu\u00f1oz": {
+        "c": 4,
+        "t": 8
+    },
+    "Maryse Arria": {
+        "c": 14,
+        "t": 23
+    },
+    "Douglas Rojo": {
+        "c": 21,
+        "t": 25
+    },
+    "Yuleidy Caraballo": {
+        "c": 1,
+        "t": 1
+    },
+    "Plaza & Nieto (Gloria Nieto)": {
+        "c": 4,
+        "t": 5
+    },
+    "Alberto Del Campo": {
+        "c": 1,
+        "t": 1
+    },
+    "Carlos Gonzalez": {
+        "c": 9,
+        "t": 14
+    },
+    "Alvaro Quintero": {
+        "c": 0,
+        "t": 5
+    },
+    "Sofia Bravo": {
+        "c": 4,
+        "t": 8
+    },
+    "Angela Palomo": {
+        "c": 6,
+        "t": 9
+    },
+    "Yerimar Portillo": {
+        "c": 24,
+        "t": 32
+    },
+    "Alejandra Romo": {
+        "c": 12,
+        "t": 15
+    },
+    "Pedro Riveiro": {
+        "c": 2,
+        "t": 3
+    },
+    "Maria Del Pilar Diaz": {
+        "c": 1,
+        "t": 1
+    },
+    "Christian Subiabre": {
+        "c": 13,
+        "t": 20
+    },
+    "Ana Roman": {
+        "c": 11,
+        "t": 15
+    },
+    "Ingrid Mu\u00f1oz": {
+        "c": 13,
+        "t": 17
+    },
+    "Yulenny Bencomo": {
+        "c": 17,
+        "t": 22
+    },
+    "Leslie Mariscal": {
+        "c": 11,
+        "t": 12
+    },
+    "Francisco Gonzalez": {
+        "c": 2,
+        "t": 2
+    },
+    "Daiana Quintero": {
+        "c": 20,
+        "t": 24
+    },
+    "Valeska Chavez": {
+        "c": 17,
+        "t": 21
+    },
+    "Mayerling Soto": {
+        "c": 24,
+        "t": 30
+    },
+    "Miriam Flores": {
+        "c": 0,
+        "t": 1
+    },
+    "Felix Ferrer": {
+        "c": 18,
+        "t": 25
+    },
+    "Mario Lepore": {
+        "c": 7,
+        "t": 9
+    },
+    "Alejandro Rodriguez": {
+        "c": 15,
+        "t": 18
+    },
+    "Joselin Quintero": {
+        "c": 0,
+        "t": 2
+    },
+    "Andr\u00e9s Garcia": {
+        "c": 3,
+        "t": 4
+    },
+    "Enmanuel Guerrero": {
+        "c": 1,
+        "t": 1
+    },
+    "Marco Martinez": {
         "c": 9,
         "t": 10
     },
@@ -2366,145 +2403,141 @@ export const HISTORY_2025: Record<string, HistoryData> = {
         "c": 26,
         "t": 35
     },
-    "Raquel Rosa Valenzuela Brizuela": {
-        "c": 1,
-        "t": 1
+    "Valeria Carolina Navarro Mondaca": {
+        "c": 4,
+        "t": 4
     },
-    "Francisco Gonzalez": {
+    "Laura Moizant": {
+        "c": 5,
+        "t": 7
+    },
+    "Angel Marquez": {
+        "c": 28,
+        "t": 35
+    },
+    "Karen Lesmes": {
         "c": 2,
         "t": 2
-    },
-    "Yuleidy Caraballo": {
-        "c": 1,
-        "t": 1
-    },
-    "Angela Palomo": {
-        "c": 6,
-        "t": 9
-    },
-    "Andreina Carolina L\u00f3pez Pedrique": {
-        "c": 14,
-        "t": 19
-    },
-    "Adriana Ollarves": {
-        "c": 15,
-        "t": 22
-    },
-    "Constanza Moya": {
-        "c": 1,
-        "t": 1
     },
     "Jeanette Mendoza": {
         "c": 2,
         "t": 3
     },
-    "Enmanuel Guerrero": {
+    "Rosangela Cirelli": {
+        "c": 42,
+        "t": 54
+    },
+    "Ivon Urra": {
+        "c": 3,
+        "t": 3
+    },
+    "Arlyn Pe\u00f1a": {
         "c": 1,
-        "t": 1
+        "t": 2
     },
-    "Jairon Dumes": {
-        "c": 16,
-        "t": 19
+    "Alexander Pereira": {
+        "c": 2,
+        "t": 3
     },
-    "Daniela Pino": {
-        "c": 16,
-        "t": 21
+    "Erika Cepeda": {
+        "c": 15,
+        "t": 23
     },
-    "Yulenny Bencomo": {
-        "c": 17,
+    "Ruben Andr\u00e9s Castro Amaza": {
+        "c": 4,
+        "t": 7
+    },
+    "Adriana Ollarves": {
+        "c": 15,
         "t": 22
     },
     "Elkis Daza": {
         "c": 30,
         "t": 33
     },
-    "Paul Perdomo": {
-        "c": 17,
-        "t": 20
-    },
-    "Victoria D\u00edaz": {
-        "c": 8,
-        "t": 10
-    },
-    "Enihet Curpa": {
-        "c": 9,
-        "t": 12
-    },
-    "Marlyn Parra": {
-        "c": 12,
-        "t": 14
-    },
-    "Gensa Arriendos (Maria Araujo)": {
-        "c": 8,
-        "t": 11
-    },
-    "Eugenio Arrevilla": {
-        "c": 5,
-        "t": 8
-    },
-    "Carlos Gonzalez": {
-        "c": 9,
-        "t": 14
-    },
-    "Joselin Quintero": {
-        "c": 0,
-        "t": 2
-    },
-    "Ejecutivo Assetplan": {
-        "c": 0,
-        "t": 2
-    },
-    "Santiago Fuentes": {
-        "c": 16,
-        "t": 21
-    },
-    "Henry Rodriguez": {
-        "c": 33,
-        "t": 43
-    },
-    "Rodrigo Valderrama": {
-        "c": 18,
-        "t": 20
-    },
-    "Katerin Reyes": {
+    "Ernesto Moscoso": {
         "c": 1,
         "t": 1
     },
-    "Dennys Morales": {
-        "c": 21,
-        "t": 27
-    },
-    "Carolina Valenzuela": {
+    "Evelyn Carolina D\u00edaz Galaz": {
         "c": 0,
-        "t": 0
+        "t": 2
     },
-    "Carla Palma": {
+    "Yessica Asuaje": {
+        "c": 11,
+        "t": 12
+    },
+    "Romelean Lopez": {
         "c": 2,
         "t": 2
     },
-    "Dania Chirinos": {
-        "c": 20,
-        "t": 25
+    "Yexica Gomez": {
+        "c": 8,
+        "t": 17
     },
-    "Dutglas Delmoral": {
-        "c": 35,
-        "t": 49
+    "Mar\u00eda Elena Katny": {
+        "c": 2,
+        "t": 3
     },
-    "Douglas Rojo": {
-        "c": 21,
-        "t": 25
+    "Luis Pernalete": {
+        "c": 16,
+        "t": 17
+    },
+    "Esthefani Gonzalez": {
+        "c": 17,
+        "t": 23
+    },
+    "Constanza Moya": {
+        "c": 1,
+        "t": 1
     },
     "Karol Yusty": {
         "c": 7,
         "t": 8
     },
-    "Camila Fuenzalida": {
-        "c": 1,
-        "t": 1
+    "Gustavo Gonzalez": {
+        "c": 29,
+        "t": 34
     },
-    "Marco Martinez": {
+    "Morande Oficinas": {
+        "c": 3,
+        "t": 4
+    },
+    "Kareen Araya": {
+        "c": 2,
+        "t": 2
+    },
+    "Melida Casta\u00f1eda": {
         "c": 9,
         "t": 10
+    },
+    "Giovanny Gutierrez": {
+        "c": 8,
+        "t": 12
+    },
+    "Yasmin Garc\u00eda": {
+        "c": 5,
+        "t": 12
+    },
+    "Yinglis Hernandez": {
+        "c": 34,
+        "t": 39
+    },
+    "Andreina Carolina L\u00f3pez Pedrique": {
+        "c": 14,
+        "t": 19
+    },
+    "Virginia Del Carmen Lobo Lobo": {
+        "c": 3,
+        "t": 4
+    },
+    "Nataly Concha": {
+        "c": 10,
+        "t": 10
+    },
+    "Manuel Silva": {
+        "c": 5,
+        "t": 8
     }
 };
 

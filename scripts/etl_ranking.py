@@ -143,6 +143,37 @@ def fetch_agendas_count(conn, start_date, end_date):
     cursor.execute(query, (start_date, end_date))
     return {row[0]: row[1] for row in cursor.fetchall()}
 
+# 2.6.5 Fetch Historical Daily distribution for Goals
+def fetch_daily_goals_distribution(conn, monthly_goal_2026):
+    """
+    Calculates 2026 daily goals based on Jan 2025 weights.
+    Returns dict: { day: goal_value }
+    """
+    cursor = conn.cursor()
+    query = """
+    SELECT DAY(fecha) as dia, COUNT(id) as count
+    FROM reservas
+    WHERE fecha BETWEEN '2025-01-01 00:00:00' AND '2025-01-31 23:59:59'
+    GROUP BY DAY(fecha)
+    """
+    cursor.execute(query)
+    rows = cursor.fetchall()
+    
+    total_2025 = sum(r[1] for r in rows)
+    if total_2025 == 0: return {i: monthly_goal_2026/31 for i in range(1, 32)}
+    
+    daily_goals = {}
+    for r in rows:
+        day = r[0]
+        weight = r[1] / total_2025
+        daily_goals[day] = round(monthly_goal_2026 * weight, 1)
+        
+    # Ensure all 31 days exist
+    for i in range(1, 32):
+        if i not in daily_goals: daily_goals[i] = 0
+        
+    return daily_goals
+
 # 2.7 Fetch Daily Stats (Stacked by Coordinator)
 def fetch_daily_stats(conn, start_date, end_date):
     """
@@ -197,6 +228,7 @@ def main():
     try:
         conn = get_connection()
         
+        MONTHLY_GOAL = 1928
         start_date_2026 = '2026-01-01 00:00:00'
         end_date_2026 = '2026-01-31 23:59:59'
 
@@ -212,6 +244,10 @@ def main():
         # 1c. Fetch Daily Stats
         print("Fetching Daily Stats...")
         daily_stats = fetch_daily_stats(conn, start_date_2026, end_date_2026)
+        
+        # 1d. Fetch Daily Goals (based on 2025 distribution)
+        print("Calculating Daily Goals...")
+        daily_goals = fetch_daily_goals_distribution(conn, MONTHLY_GOAL)
         
         today = datetime.now()
         # For testing purposes or manual run, we assume 'today' month is Jan.
@@ -307,9 +343,10 @@ def main():
         ts_content = "import { CorredorData, HistoryData, TeamConfig } from './types';\n\n"
         ts_content += "export const MONTHLY_GOAL = 1928;\n\n"
         
-        # 1.5 Daily Stats
+        # 1.5 Daily Stats & Goals
         ts_content += "export interface DailyStat { date: string; coord: string; count: number; }\n"
-        ts_content += "export const DAILY_STATS: DailyStat[] = " + json.dumps(daily_stats, indent=4) + ";\n\n"
+        ts_content += "export const DAILY_STATS: DailyStat[] = " + json.dumps(daily_stats, indent=4) + ";\n"
+        ts_content += "export const DAILY_GOALS: Record<number, number> = " + json.dumps(daily_goals, indent=4) + ";\n\n"
 
 
         

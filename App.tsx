@@ -24,7 +24,7 @@ import {
     ArrowRight,
     Calendar
 } from 'lucide-react';
-import { CURRENT_RANKING_2026, HISTORY_2025, NAMES_WITH_AGENDA, TEAMS, MONTHLY_GOAL, OTHER_BROKERS_2026, LAST_UPDATE, DAILY_STATS } from './constants';
+import { CURRENT_RANKING_2026, HISTORY_2025, NAMES_WITH_AGENDA, TEAMS, MONTHLY_GOAL, OTHER_BROKERS_2026, LAST_UPDATE, DAILY_STATS, DAILY_GOALS } from './constants';
 import { SquadStats, DiagnosticItem, DashboardStats, CorredorData, DailyStat } from './types';
 
 // Map string icon names to components
@@ -384,14 +384,21 @@ const App: React.FC = () => {
                             });
                             let maxVal = 0;
                             dates.forEach(date => {
+                                const dayNum = parseInt(date.split('-')[2]);
                                 const total = Object.values(daysMap.get(date) || {}).reduce((a, b) => a + b, 0);
-                                if (total > maxVal) maxVal = total;
+                                const goal = DAILY_GOALS[dayNum] || 0;
+                                maxVal = Math.max(maxVal, total, goal);
                             });
                             if (maxVal === 0) maxVal = 10;
                             return dates.map((date, index) => {
+                                const dayNum = index + 1;
                                 const dayData = daysMap.get(date) || {};
                                 const total = Object.values(dayData).reduce((a, b) => a + b, 0);
+                                const goal = DAILY_GOALS[dayNum] || 0;
+
                                 const heightPct = (total / maxVal) * 100;
+                                const goalPosPct = (goal / maxVal) * 100;
+
                                 return (
                                     <div key={date} className="h-full flex-1 flex flex-col justify-end group relative">
                                         {/* Total Label - Permanent */}
@@ -410,16 +417,38 @@ const App: React.FC = () => {
                                                     <div key={coord} style={{ height: `${segmentHeight}%` }} className={`${segmentColor} w-full border-t border-black/10`} title={`${team.name}: ${count}`}></div>
                                                 );
                                             })}
-                                            <div className="opacity-0 group-hover:opacity-100 absolute -top-12 left-1/2 -translate-x-1/2 bg-[#101622] text-white text-[10px] font-bold px-3 py-2 rounded-xl border border-white/10 shadow-2xl z-50 pointer-events-none transition-all scale-90 group-hover:scale-100">
-                                                <p className="text-white text-xs">{total} Reservas</p>
-                                                <p className="text-slate-500 font-normal">{date}</p>
+                                            {/* Tooltip */}
+                                            <div className="opacity-0 group-hover:opacity-100 absolute -top-16 left-1/2 -translate-x-1/2 bg-[#162032] text-white text-[10px] font-bold px-3 py-2 rounded-xl border border-white/10 shadow-2xl z-50 pointer-events-none transition-all scale-90 group-hover:scale-100">
+                                                <p className="text-white text-xs">{total} / <span className="text-blue-400">{goal.toFixed(0)}</span> Meta</p>
+                                                <p className={`text-[9px] ${total >= goal ? 'text-emerald-400' : 'text-red-400'}`}>
+                                                    {total >= goal ? 'Cumplido' : `${(goal - total).toFixed(0)} bajo meta`}
+                                                </p>
+                                                <p className="text-slate-500 font-normal mt-1 border-t border-white/5 pt-1">{date}</p>
                                             </div>
                                         </div>
+                                        {/* Goal Line */}
+                                        <div
+                                            className="absolute left-0 right-0 h-px bg-white/40 border-t border-dashed border-white/20 z-10 pointer-events-none"
+                                            style={{ bottom: `calc(${goalPosPct}% + 1.5rem)` }}
+                                        ></div>
                                         <div className="text-[10px] text-slate-500 font-black text-center mt-3 group-hover:text-white transition-colors">{index + 1}</div>
                                     </div>
                                 );
                             });
                         })()}
+                    </div>
+                    {/* Legend */}
+                    <div className="flex flex-wrap justify-center gap-6 mt-4 border-t border-[#324467] pt-4">
+                        <div className="flex items-center gap-2 text-slate-400 font-bold uppercase text-[9px]">
+                            <div className="w-6 h-px bg-white/40 border-t border-dashed border-white/20"></div>
+                            <span>Meta Diaria (Histórico)</span>
+                        </div>
+                        {Object.values(TEAMS).map(team => (
+                            <div key={team.name} className="flex items-center gap-2">
+                                <div className={`w-3 h-3 rounded-full ${team.bg.replace('bg-', 'bg-').split(' ')[0].replace('-50', '-500')}`}></div>
+                                <span className="text-[10px] text-slate-400 font-bold uppercase">{team.name}</span>
+                            </div>
+                        ))}
                     </div>
                 </div>
             </main>

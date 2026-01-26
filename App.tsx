@@ -22,7 +22,7 @@ import {
     Briefcase,
     Filter,
     ArrowRight,
-    Calendar // Added Calendar
+    Calendar
 } from 'lucide-react';
 import { CURRENT_RANKING_2026, HISTORY_2025, NAMES_WITH_AGENDA, TEAMS, MONTHLY_GOAL, OTHER_BROKERS_2026, LAST_UPDATE, DAILY_STATS } from './constants';
 import { SquadStats, DiagnosticItem, DashboardStats, CorredorData, DailyStat } from './types';
@@ -68,7 +68,6 @@ const App: React.FC = () => {
         [...CURRENT_RANKING_2026, ...OTHER_BROKERS_2026].forEach(item => {
             totalActual += item.val;
             const hist = historyMap[item.name]?.c || 0;
-            // total2025Today is now calculated globally above
 
             const isExternal = OTHER_BROKERS_2026.some(e => e.name === item.name);
             const isFreelance = !isExternal;
@@ -90,25 +89,13 @@ const App: React.FC = () => {
             }
         });
 
-        // 2. Diagnostics Logic
-        // ... (Simpler diagnostics for this view)
-        const loss: DiagnosticItem[] = [];
-        const slowdown: DiagnosticItem[] = [];
-        const growth: DiagnosticItem[] = [];
-        let lossVolume = 0;
-        let slowdownVolume = 0;
-        let growthVolume = 0;
-
-        // Note: Diagnostics calculations kept minimal for performance as requested.
-        // If specific diagnostic cards are needed, restore full logic (omitted for brevity in this refactor unless requested specific cards).
-
         return {
             totalActual,
             total2025Today,
             globalQualified,
             squadStats,
             diagnostics: {
-                loss, lossVolume, slowdown, slowdownVolume, growth, growthVolume
+                loss: [], lossVolume: 0, slowdown: [], slowdownVolume: 0, growth: [], growthVolume: 0
             }
         };
     }, []);
@@ -142,7 +129,6 @@ const App: React.FC = () => {
         <div className="min-h-screen bg-[#101622] text-slate-200 font-sans pb-20 selection:bg-assetplan-accent selection:text-white">
             {/* Header */}
             <header className="relative pt-10 pb-20 px-6 overflow-hidden">
-                {/* Background Glows */}
                 <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] bg-blue-600/20 rounded-full blur-[120px] pointer-events-none"></div>
                 <div className="absolute top-[-20%] right-[-10%] w-[500px] h-[500px] bg-indigo-600/10 rounded-full blur-[120px] pointer-events-none"></div>
 
@@ -192,23 +178,23 @@ const App: React.FC = () => {
                     </div>
 
                     <div className="flex flex-col items-end gap-2">
-                        <span className="text-blue-100 text-sm font-medium border-l border-blue-400 pl-3 uppercase italic">Enero 2026 | Líder: Carlos Echeverría</span>
-                        <div className="bg-[#1e293b] border border-[#324467] rounded-xl px-4 py-3 shadow-lg">
-                            <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-1 text-right">Última reserva en DB</p>
-                            <p className="text-emerald-400 font-black text-lg tracking-tighter leading-none">{LAST_UPDATE}</p>
+                        <span className="text-blue-100 text-sm font-medium border-l border-blue-400 pl-3 uppercase italic">Líder: Carlos Echeverría</span>
+                        <div className="bg-[#1e293b] border border-emerald-500/30 rounded-2xl px-5 py-4 shadow-2xl backdrop-blur-xl">
+                            <p className="text-[9px] text-slate-500 font-bold uppercase tracking-[0.2em] mb-1 text-right">Última reserva en base de datos</p>
+                            <p className="text-emerald-400 font-black text-2xl tracking-tighter leading-none flex items-center gap-2 justify-end">
+                                <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
+                                {LAST_UPDATE}
+                            </p>
                         </div>
                     </div>
                 </div>
             </header>
 
             <main className="container mx-auto px-4 -mt-6 relative z-20">
-
                 {/* Podium Section */}
                 {!searchTerm && top3.length >= 3 && (
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16 items-end max-w-5xl mx-auto">
-                        {/* 2nd Place */}
                         <div className="order-2 md:order-1 relative group">
-                            <div className="absolute inset-0 bg-slate-400/10 blur-[40px] rounded-full -z-10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                             <div className="text-center mb-4"><span className="text-slate-400 font-bold text-xs uppercase tracking-widest">2° Lugar</span></div>
                             <div className="bg-[#1e293b] p-6 rounded-3xl border border-[#324467] text-center shadow-xl relative overflow-hidden group-hover:border-slate-400/50 transition-colors">
                                 <div className="absolute top-0 left-0 w-full h-1 bg-slate-400"></div>
@@ -218,7 +204,6 @@ const App: React.FC = () => {
                             </div>
                         </div>
 
-                        {/* 1st Place */}
                         <div className="order-1 md:order-2 scale-110 relative z-10 group">
                             <div className="absolute inset-0 bg-yellow-500/20 blur-[60px] rounded-full -z-10 opacity-50 group-hover:opacity-80 transition-opacity"></div>
                             <div className="flex justify-center mb-4"><Crown size={32} className="text-yellow-400 fill-yellow-400 animate-pulse" /></div>
@@ -230,9 +215,7 @@ const App: React.FC = () => {
                                         <Calendar size={10} /> Agenda Activa
                                     </span>
                                 )}
-                                <div className="mt-6 text-6xl font-black text-white tracking-tighter drop-shadow-[0_0_15px_rgba(250,204,21,0.3)]">
-                                    {top3[0].val}
-                                </div>
+                                <div className="mt-6 text-6xl font-black text-white tracking-tighter drop-shadow-[0_0_15px_rgba(250,204,21,0.3)]">{top3[0].val}</div>
                                 <p className="text-xs text-yellow-500 uppercase font-bold mt-2 tracking-widest">Reservas</p>
                                 <div className="mt-6 grid grid-cols-2 gap-2 border-t border-white/5 pt-4">
                                     <div>
@@ -247,9 +230,7 @@ const App: React.FC = () => {
                             </div>
                         </div>
 
-                        {/* 3rd Place */}
                         <div className="order-3 relative group">
-                            <div className="absolute inset-0 bg-orange-500/10 blur-[40px] rounded-full -z-10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                             <div className="text-center mb-4"><span className="text-orange-400/80 font-bold text-xs uppercase tracking-widest">3° Lugar</span></div>
                             <div className="bg-[#1e293b] p-6 rounded-3xl border border-[#324467] text-center shadow-xl relative overflow-hidden group-hover:border-orange-400/50 transition-colors">
                                 <div className="absolute top-0 left-0 w-full h-1 bg-orange-400"></div>
@@ -261,9 +242,8 @@ const App: React.FC = () => {
                     </div>
                 )}
 
-                {/* Main Table Card */}
+                {/* Table Section */}
                 <div className="bg-[#1e293b] rounded-3xl border border-[#324467] overflow-hidden shadow-2xl mb-12">
-                    {/* Toolbar */}
                     <div className="p-6 border-b border-[#324467] flex flex-col md:flex-row justify-between items-center gap-6">
                         <div className="relative w-full md:w-96">
                             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
@@ -272,10 +252,9 @@ const App: React.FC = () => {
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 placeholder="Filtrar por nombre..."
-                                className="w-full bg-[#101622] text-slate-200 pl-12 pr-4 py-3 rounded-xl border border-[#324467] focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all placeholder:text-slate-600 font-medium"
+                                className="w-full bg-[#101622] text-slate-200 pl-12 pr-4 py-3 rounded-xl border border-[#324467] focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all"
                             />
                         </div>
-
                         <div className="flex gap-4">
                             <div className="text-right">
                                 <p className="text-[10px] text-slate-500 font-bold uppercase">Corredores Activos</p>
@@ -288,7 +267,6 @@ const App: React.FC = () => {
                             </div>
                         </div>
                     </div>
-
                     <div className="overflow-x-auto">
                         <table className="w-full text-left">
                             <thead className="bg-[#162032] text-[10px] font-bold text-slate-400 uppercase tracking-wider">
@@ -312,11 +290,11 @@ const App: React.FC = () => {
 
                                     return (
                                         <tr key={item.name} className="group hover:bg-[#324467]/20 transition-colors">
-                                            <td className="px-6 py-4 text-center font-mono text-slate-500 group-hover:text-white transition-colors">{rank}</td>
+                                            <td className="px-6 py-4 text-center font-mono text-slate-500 group-hover:text-white">{rank}</td>
                                             <td className="px-6 py-4">
                                                 <div className="flex items-center gap-3">
                                                     {TeamIcon && (
-                                                        <div className={`p-1.5 rounded-lg bg-[#101622] border border-[#324467] ${team.color.replace('text-', 'text-opacity-80 text-')}`}>
+                                                        <div className={`p-1.5 rounded-lg bg-[#101622] border border-[#324467] ${team.color}`}>
                                                             <TeamIcon size={14} />
                                                         </div>
                                                     )}
@@ -330,17 +308,11 @@ const App: React.FC = () => {
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td className="px-6 py-4 text-center font-bold text-slate-300">
-                                                {item.leads || 0}
-                                            </td>
-                                            <td className="px-6 py-4 text-center font-bold text-slate-300">
-                                                {item.agendas || 0}
-                                            </td>
+                                            <td className="px-6 py-4 text-center font-bold text-slate-300">{item.leads || 0}</td>
+                                            <td className="px-6 py-4 text-center font-bold text-slate-300">{item.agendas || 0}</td>
                                             <td className="px-6 py-4 text-center bg-[#324467]/10 border-x border-[#324467] relative">
                                                 <span className="text-lg font-black text-white">{item.val}</span>
-                                                {item.fallen > 0 && (
-                                                    <span className="absolute bottom-2 left-0 w-full text-[9px] font-bold text-red-400 opacity-60">-{item.fallen} caídas</span>
-                                                )}
+                                                {item.fallen > 0 && <span className="absolute bottom-2 left-0 w-full text-[9px] font-bold text-red-400 opacity-60">-{item.fallen} caídas</span>}
                                             </td>
                                             <td className="px-6 py-4 text-center">
                                                 <div className={`inline-flex items-center gap-1 font-bold ${diff > 0 ? 'text-emerald-400' : diff < 0 ? 'text-red-400' : 'text-slate-500'}`}>
@@ -348,9 +320,7 @@ const App: React.FC = () => {
                                                 </div>
                                                 {history && <div className="text-[9px] text-slate-500 mt-0.5">({history.t} en 2025)</div>}
                                             </td>
-                                            <td className="px-6 py-4 text-center">
-                                                {getStatusBadge(item.val)}
-                                            </td>
+                                            <td className="px-6 py-4 text-center">{getStatusBadge(item.val)}</td>
                                         </tr>
                                     );
                                 })}
@@ -359,7 +329,7 @@ const App: React.FC = () => {
                     </div>
                 </div>
 
-                {/* Squads Grid */}
+                {/* Squads Rendering */}
                 <h3 className="text-xl font-bold text-white uppercase tracking-widest mb-6 flex items-center gap-3">
                     <Users size={20} className="text-blue-500" />
                     Rendimiento por Squad
@@ -369,13 +339,10 @@ const App: React.FC = () => {
                         const team = TEAMS[email];
                         if (!team || (data.cur === 0 && data.totalMembers === 0 && !team.my)) return null;
                         const TeamIcon = IconMap[team.icon as keyof typeof IconMap];
-
                         return (
                             <div key={email} className={`bg-[#1e293b] rounded-2xl p-6 border border-[#324467] hover:border-blue-500/50 transition-colors ${team.my ? 'ring-1 ring-orange-500/50' : ''}`}>
                                 <div className="flex justify-between items-start mb-6">
-                                    <div className={`p-3 rounded-xl bg-[#101622] border border-[#324467] ${team.color}`}>
-                                        {TeamIcon && <TeamIcon size={20} />}
-                                    </div>
+                                    <div className={`p-3 rounded-xl bg-[#101622] border border-[#324467] ${team.color}`}>{TeamIcon && <TeamIcon size={20} />}</div>
                                     <div className="text-right">
                                         <p className="text-3xl font-black text-white">{data.cur}</p>
                                         <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Reservas</p>
@@ -399,91 +366,57 @@ const App: React.FC = () => {
                     })}
                 </div>
 
-                {/* Daily Evolution Chart */}
+                {/* Stacking Chart */}
                 <h3 className="text-xl font-bold text-white uppercase tracking-widest mb-6 flex items-center gap-3">
                     <TrendingUp size={20} className="text-indigo-500" />
                     Evolución Diaria de Reservas
                 </h3>
-                <div className="bg-[#1e293b] p-6 rounded-3xl border border-[#324467] mb-20 overflow-x-auto shadow-xl">
-                    <div className="min-w-[800px] h-64 flex items-end gap-2 relative pl-10 pb-6">
-                        {/* Y-Axis Labels (Approximate) */}
-                        <div className="absolute left-0 top-0 bottom-6 w-8 flex flex-col justify-between text-[10px] text-slate-500 font-bold">
-                            <span>Max</span>
-                            <span>Avg</span>
-                            <span>0</span>
-                        </div>
-
-                        {/* Bars */}
+                <div className="bg-[#1e293b] p-8 rounded-[2rem] border border-[#324467] mb-20 shadow-2xl overflow-x-auto min-h-[400px]">
+                    <div className="min-w-[900px] h-[300px] flex items-end gap-3 relative px-10 pb-10">
+                        {/* Bars Generation */}
                         {(() => {
-                            // Aggregation logic
-                            const daysMap = new Map<string, Record<string, number>>(); // date -> { coord: count }
-                            const dates = Array.from({ length: 31 }, (_, i) => {
-                                const d = i + 1;
-                                return `2026-01-${d.toString().padStart(2, '0')}`;
-                            });
-
+                            const daysMap = new Map<string, Record<string, number>>();
+                            const dates = Array.from({ length: 31 }, (_, i) => `2026-01-${(i + 1).toString().padStart(2, '0')}`);
                             DAILY_STATS.forEach(stat => {
                                 const key = stat.date;
                                 if (!daysMap.has(key)) daysMap.set(key, {});
                                 const entry = daysMap.get(key)!;
                                 entry[stat.coord] = (entry[stat.coord] || 0) + stat.count;
                             });
-
-                            // Find Max for scaling
                             let maxVal = 0;
                             dates.forEach(date => {
-                                const dayData = daysMap.get(date) || {};
-                                const total = Object.values(dayData).reduce((a, b) => a + b, 0);
+                                const total = Object.values(daysMap.get(date) || {}).reduce((a, b) => a + b, 0);
                                 if (total > maxVal) maxVal = total;
                             });
-                            if (maxVal === 0) maxVal = 10; // Prevent div by zero
-
+                            if (maxVal === 0) maxVal = 10;
                             return dates.map((date, index) => {
-                                const dayNum = index + 1;
                                 const dayData = daysMap.get(date) || {};
                                 const total = Object.values(dayData).reduce((a, b) => a + b, 0);
                                 const heightPct = (total / maxVal) * 100;
-
                                 return (
                                     <div key={date} className="h-full flex-1 flex flex-col justify-end group relative">
-                                        <div className="w-full flex flex-col-reverse rounded-t-lg overflow-hidden relative" style={{ height: `${heightPct}%` }}>
+                                        <div className="w-full flex flex-col-reverse rounded-t-lg overflow-hidden relative shadow-lg" style={{ height: `${heightPct}%` }}>
                                             {Object.entries(dayData).map(([coord, count]) => {
                                                 const team = TEAMS[coord];
                                                 if (!team) return null;
                                                 const segmentHeight = (count / total) * 100;
+                                                const segmentColor = team.bg.replace('bg-', 'bg-').split(' ')[0].replace('-50', '-500');
                                                 return (
-                                                    <div
-                                                        key={coord}
-                                                        style={{ height: `${segmentHeight}%` }}
-                                                        className={`${team.bg.replace('bg-', 'bg-').split(' ')[0].replace('-50', '-500')} w-full border-t border-black/20 relative`}
-                                                        title={`${team.name}: ${count}`}
-                                                    >
-                                                    </div>
+                                                    <div key={coord} style={{ height: `${segmentHeight}%` }} className={`${segmentColor} w-full border-t border-black/10`} title={`${team.name}: ${count}`}></div>
                                                 );
                                             })}
-                                            {/* Total Label on Hover */}
-                                            <div className="opacity-0 group-hover:opacity-100 absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[10px] font-bold px-2 py-1 rounded shadow-xl whitespace-nowrap z-10 pointer-events-none transition-opacity">
-                                                {total} Reservas
-                                                <div className="text-[8px] text-slate-400 font-normal">{date}</div>
+                                            <div className="opacity-0 group-hover:opacity-100 absolute -top-12 left-1/2 -translate-x-1/2 bg-[#101622] text-white text-[10px] font-bold px-3 py-2 rounded-xl border border-white/10 shadow-2xl z-50 pointer-events-none transition-all scale-90 group-hover:scale-100">
+                                                <p className="text-white text-xs">{total} Reservas</p>
+                                                <p className="text-slate-500 font-normal">{date}</p>
                                             </div>
                                         </div>
-                                        <div className="text-[9px] text-slate-500 font-bold text-center mt-2 group-hover:text-white transition-colors">{dayNum}</div>
+                                        <div className="text-[10px] text-slate-500 font-black text-center mt-3 group-hover:text-white transition-colors">{index + 1}</div>
                                     </div>
                                 );
                             });
                         })()}
                     </div>
-                    {/* Legend */}
-                    <div className="flex flex-wrap justify-center gap-4 mt-4 border-t border-[#324467] pt-4">
-                        {Object.values(TEAMS).map(team => (
-                            <div key={team.name} className="flex items-center gap-2">
-                                <div className={`w-3 h-3 rounded-full ${team.bg.replace('bg-', 'bg-').split(' ')[0].replace('-50', '-500')}`}></div>
-                                <span className="text-[10px] text-slate-400 font-bold uppercase">{team.name}</span>
-                            </div>
-                        ))}
-                    </div>
                 </div>
-
             </main>
         </div>
     );

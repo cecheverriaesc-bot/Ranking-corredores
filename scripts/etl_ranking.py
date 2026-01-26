@@ -146,31 +146,48 @@ def fetch_agendas_count(conn, start_date, end_date):
 # 2.6.5 Fetch Historical Daily distribution for Goals
 def fetch_daily_goals_distribution(conn, monthly_goal_2026):
     """
-    Calculates 2026 daily goals based on Jan 2025 weights.
+    Calculates 2026 daily goals based on Jan 2025 weekday (Mon-Sun) weights.
+    This ensures that weekends have lower goals and peak days have higher goals
+    regardless of the specific calendar number.
     Returns dict: { day: goal_value }
     """
     cursor = conn.cursor()
+    # Get average count per weekday in Jan 2025
     query = """
-    SELECT DAY(fecha) as dia, COUNT(id) as count
+    SELECT DAYOFWEEK(fecha) as wday, COUNT(id) as total_count, COUNT(DISTINCT DATE(fecha)) as occurrences
     FROM reservas
     WHERE fecha BETWEEN '2025-01-01 00:00:00' AND '2025-01-31 23:59:59'
-    GROUP BY DAY(fecha)
+    GROUP BY wday
     """
     cursor.execute(query)
     rows = cursor.fetchall()
     
-    total_2025 = sum(r[1] for r in rows)
-    if total_2025 == 0: return {i: monthly_goal_2026/31 for i in range(1, 32)}
+    # Calculate average per weekday (1=Sun, 2=Mon, ..., 7=Sat)
+    weekday_avg = {r[0]: r[1]/r[2] for r in rows}
     
-    daily_goals = {}
-    for r in rows:
-        day = r[0]
-        weight = r[1] / total_2025
-        daily_goals[day] = round(monthly_goal_2026 * weight, 1)
+    # Map each day of Jan 2026 to its weekday and assign base weight
+    jan_2026_weights = {}
+    total_period_weight = 0
+    for d in range(1, 32):
+        # Python date.weekday() is 0=Mon, 6=Sun. 
+        # MySQL DAYOFWEEK is 1=Sun, 2=Mon, ..., 7=Sat.
+        dt = datetime(2026, 1, d)
+        python_wday = dt.weekday() # 0=Mon
+        mysql_wday = 2 + python_wday
+        if mysql_wday > 7: mysql_wday = 1 # Sunday fix
         
-    # Ensure all 31 days exist
-    for i in range(1, 32):
-        if i not in daily_goals: daily_goals[i] = 0
+        weight = weekday_avg.get(mysql_wday, 0)
+        jan_2026_weights[d] = weight
+        total_period_weight += weight
+        
+    if total_period_weight == 0: 
+        return {i: round(monthly_goal_2026/31, 1) for i in range(1, 32)}
+        
+    # Scale to match the specific 2026 monthly goal
+    daily_goals = {}
+    for d in range(1, 32):
+        weight = jan_2026_weights[d]
+        daily_goals[d] = round((weight / total_period_weight) * monthly_goal_2026, 1)
         
     return daily_goals
 

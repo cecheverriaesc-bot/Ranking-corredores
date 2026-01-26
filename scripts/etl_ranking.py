@@ -147,6 +147,7 @@ def fetch_agendas_count(conn, start_date, end_date):
 def fetch_daily_stats(conn, start_date, end_date):
     """
     Returns list of { date: 'YYYY-MM-DD', coord: 'email', count: N }
+    Excludes falls and inactive brokers to match Looker.
     """
     cursor = conn.cursor()
     query = """
@@ -155,22 +156,40 @@ def fetch_daily_stats(conn, start_date, end_date):
         u.email as coordinator_mail,
         COUNT(r.id) as count
     FROM reservas r
-    LEFT JOIN corredores c ON r.corredor_id = c.id
-    LEFT JOIN users u ON c.coordinador_id = u.id
+    JOIN corredores c ON r.corredor_id = c.id
+    JOIN users u ON c.coordinador_id = u.id
+    LEFT JOIN asignacion_reservas ar ON r.id = ar.reserva_id
     WHERE r.fecha BETWEEN %s AND %s
+      AND c.activo = 1
+      AND u.email IS NOT NULL
+      AND (ar.r_caida = 0 OR ar.r_caida IS NULL)
     GROUP BY DATE(r.fecha), u.email
     ORDER BY fecha ASC
     """
     cursor.execute(query, (start_date, end_date))
     rows = cursor.fetchall()
     
-    # Process
-    results = []
+    # Process and Regroup by Normalized Squad Email
+    # This prevents multiple entries for the same squad on the same day
+    daily_map = {} # (date, normalized_coord) -> total_count
+    
     for r in rows:
+        date_str = str(r[0])
+        norm_coord = get_squad_email(r[1])
+        count = r[2]
+        
+        key = (date_str, norm_coord)
+        daily_map[key] = daily_map.get(key, 0) + count
+        
+    # Convert back to list of dicts
+    results = []
+    # Sort keys to maintain date order (SQL already ordered by date, but map doesn't guarantee)
+    sorted_keys = sorted(daily_map.keys(), key=lambda x: (x[0], x[1]))
+    for key in sorted_keys:
         results.append({
-            "date": str(r[0]),
-            "coord": get_squad_email(r[1]),
-            "count": r[2]
+            "date": key[0],
+            "coord": key[1],
+            "count": daily_map[key]
         })
     return results
 

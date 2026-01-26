@@ -7,11 +7,6 @@ export const DAILY_STATS: DailyStat[] = [
     {
         "date": "2026-01-01",
         "coord": "carlos.echeverria@assetplan.cl",
-        "count": 1
-    },
-    {
-        "date": "2026-01-01",
-        "coord": "carlos.echeverria@assetplan.cl",
         "count": 5
     },
     {
@@ -22,12 +17,7 @@ export const DAILY_STATS: DailyStat[] = [
     {
         "date": "2026-01-02",
         "coord": "carlos.echeverria@assetplan.cl",
-        "count": 9
-    },
-    {
-        "date": "2026-01-02",
-        "coord": "carlos.echeverria@assetplan.cl",
-        "count": 17
+        "count": 16
     },
     {
         "date": "2026-01-02",
@@ -38,11 +28,6 @@ export const DAILY_STATS: DailyStat[] = [
         "date": "2026-01-02",
         "coord": "nataly.espinoza@assetplan.cl",
         "count": 1
-    },
-    {
-        "date": "2026-01-03",
-        "coord": "carlos.echeverria@assetplan.cl",
-        "count": 11
     },
     {
         "date": "2026-01-03",
@@ -57,7 +42,7 @@ export const DAILY_STATS: DailyStat[] = [
     {
         "date": "2026-01-03",
         "coord": "nataly.espinoza@assetplan.cl",
-        "count": 2
+        "count": 1
     },
     {
         "date": "2026-01-04",
@@ -77,12 +62,7 @@ export const DAILY_STATS: DailyStat[] = [
     {
         "date": "2026-01-05",
         "coord": "carlos.echeverria@assetplan.cl",
-        "count": 13
-    },
-    {
-        "date": "2026-01-05",
-        "coord": "carlos.echeverria@assetplan.cl",
-        "count": 43
+        "count": 42
     },
     {
         "date": "2026-01-05",
@@ -96,33 +76,23 @@ export const DAILY_STATS: DailyStat[] = [
     },
     {
         "date": "2026-01-06",
-        "coord": "carlos.echeverria@assetplan.cl",
-        "count": 11
-    },
-    {
-        "date": "2026-01-06",
         "coord": "angely.rojo@assetplan.cl",
         "count": 3
     },
     {
         "date": "2026-01-06",
         "coord": "carlos.echeverria@assetplan.cl",
-        "count": 42
+        "count": 41
     },
     {
         "date": "2026-01-06",
         "coord": "luis.gomez@assetplan.cl",
-        "count": 34
+        "count": 32
     },
     {
         "date": "2026-01-06",
         "coord": "nataly.espinoza@assetplan.cl",
         "count": 4
-    },
-    {
-        "date": "2026-01-07",
-        "coord": "carlos.echeverria@assetplan.cl",
-        "count": 15
     },
     {
         "date": "2026-01-07",
@@ -132,22 +102,17 @@ export const DAILY_STATS: DailyStat[] = [
     {
         "date": "2026-01-07",
         "coord": "carlos.echeverria@assetplan.cl",
-        "count": 40
+        "count": 38
     },
     {
         "date": "2026-01-07",
         "coord": "luis.gomez@assetplan.cl",
-        "count": 37
+        "count": 36
     },
     {
         "date": "2026-01-07",
         "coord": "nataly.espinoza@assetplan.cl",
         "count": 3
-    },
-    {
-        "date": "2026-01-08",
-        "coord": "carlos.echeverria@assetplan.cl",
-        "count": 13
     },
     {
         "date": "2026-01-08",
@@ -166,18 +131,13 @@ export const DAILY_STATS: DailyStat[] = [
     },
     {
         "date": "2026-01-09",
-        "coord": "carlos.echeverria@assetplan.cl",
-        "count": 14
-    },
-    {
-        "date": "2026-01-09",
         "coord": "angely.rojo@assetplan.cl",
         "count": 1
     },
     {
         "date": "2026-01-09",
         "coord": "carlos.echeverria@assetplan.cl",
-        "count": 51
+        "count": 47
     },
     {
         "date": "2026-01-09",
@@ -196,11 +156,6 @@ export const DAILY_STATS: DailyStat[] = [
     },
     {
         "date": "2026-01-10",
-        "coord": "carlos.echeverria@assetplan.cl",
-        "count": 6
-    },
-    {
-        "date": "2026-01-10",
         "coord": "angely.rojo@assetplan.cl",
         "count": 1
     },
@@ -212,7 +167,7 @@ export const DAILY_STATS: DailyStat[] = [
     {
         "date": "2026-01-10",
         "coord": "luis.gomez@assetplan.cl",
-        "count": 14
+        "count": 13
     },
     {
         "date": "2026-01-10",
@@ -222,12 +177,7 @@ export const DAILY_STATS: DailyStat[] = [
     {
         "date": "2026-01-11",
         "coord": "carlos.echeverria@assetplan.cl",
-        "count": 1
-    },
-    {
-        "date": "2026-01-11",
-        "coord": "carlos.echeverria@assetplan.cl",
-        "count": 10
+        "count": 9
     },
     {
         "date": "2026-01-11",
@@ -241,23 +191,18 @@ export const DAILY_STATS: DailyStat[] = [
     },
     {
         "date": "2026-01-12",
-        "coord": "carlos.echeverria@assetplan.cl",
-        "count": 9
-    },
-    {
-        "date": "2026-01-12",
         "coord": "angely.rojo@assetplan.cl",
         "count": 1
     },
     {
         "date": "2026-01-12",
         "coord": "carlos.echeverria@assetplan.cl",
-        "count": 35
+        "count": 32
     },
     {
         "date": "2026-01-12",
         "coord": "luis.gomez@assetplan.cl",
-        "count": 17
+        "count": 16
     },
     {
         "date": "2026-01-12",
@@ -272,12 +217,7 @@ export const DAILY_STATS: DailyStat[] = [
     {
         "date": "2026-01-13",
         "coord": "carlos.echeverria@assetplan.cl",
-        "count": 14
-    },
-    {
-        "date": "2026-01-13",
-        "coord": "carlos.echeverria@assetplan.cl",
-        "count": 39
+        "count": 37
     },
     {
         "date": "2026-01-13",
@@ -292,12 +232,7 @@ export const DAILY_STATS: DailyStat[] = [
     {
         "date": "2026-01-14",
         "coord": "carlos.echeverria@assetplan.cl",
-        "count": 9
-    },
-    {
-        "date": "2026-01-14",
-        "coord": "carlos.echeverria@assetplan.cl",
-        "count": 44
+        "count": 41
     },
     {
         "date": "2026-01-14",
@@ -316,11 +251,6 @@ export const DAILY_STATS: DailyStat[] = [
     },
     {
         "date": "2026-01-15",
-        "coord": "carlos.echeverria@assetplan.cl",
-        "count": 10
-    },
-    {
-        "date": "2026-01-15",
         "coord": "angely.rojo@assetplan.cl",
         "count": 2
     },
@@ -332,7 +262,7 @@ export const DAILY_STATS: DailyStat[] = [
     {
         "date": "2026-01-15",
         "coord": "luis.gomez@assetplan.cl",
-        "count": 36
+        "count": 35
     },
     {
         "date": "2026-01-15",
@@ -342,27 +272,17 @@ export const DAILY_STATS: DailyStat[] = [
     {
         "date": "2026-01-16",
         "coord": "carlos.echeverria@assetplan.cl",
-        "count": 11
-    },
-    {
-        "date": "2026-01-16",
-        "coord": "carlos.echeverria@assetplan.cl",
         "count": 36
     },
     {
         "date": "2026-01-16",
         "coord": "luis.gomez@assetplan.cl",
-        "count": 21
+        "count": 20
     },
     {
         "date": "2026-01-16",
         "coord": "nataly.espinoza@assetplan.cl",
         "count": 2
-    },
-    {
-        "date": "2026-01-17",
-        "coord": "carlos.echeverria@assetplan.cl",
-        "count": 6
     },
     {
         "date": "2026-01-17",
@@ -387,11 +307,6 @@ export const DAILY_STATS: DailyStat[] = [
     {
         "date": "2026-01-18",
         "coord": "carlos.echeverria@assetplan.cl",
-        "count": 3
-    },
-    {
-        "date": "2026-01-18",
-        "coord": "carlos.echeverria@assetplan.cl",
         "count": 6
     },
     {
@@ -403,11 +318,6 @@ export const DAILY_STATS: DailyStat[] = [
         "date": "2026-01-18",
         "coord": "nataly.espinoza@assetplan.cl",
         "count": 2
-    },
-    {
-        "date": "2026-01-19",
-        "coord": "carlos.echeverria@assetplan.cl",
-        "count": 5
     },
     {
         "date": "2026-01-19",
@@ -427,12 +337,7 @@ export const DAILY_STATS: DailyStat[] = [
     {
         "date": "2026-01-20",
         "coord": "carlos.echeverria@assetplan.cl",
-        "count": 7
-    },
-    {
-        "date": "2026-01-20",
-        "coord": "carlos.echeverria@assetplan.cl",
-        "count": 38
+        "count": 37
     },
     {
         "date": "2026-01-20",
@@ -443,11 +348,6 @@ export const DAILY_STATS: DailyStat[] = [
         "date": "2026-01-20",
         "coord": "nataly.espinoza@assetplan.cl",
         "count": 5
-    },
-    {
-        "date": "2026-01-21",
-        "coord": "carlos.echeverria@assetplan.cl",
-        "count": 10
     },
     {
         "date": "2026-01-21",
@@ -463,11 +363,6 @@ export const DAILY_STATS: DailyStat[] = [
         "date": "2026-01-21",
         "coord": "nataly.espinoza@assetplan.cl",
         "count": 7
-    },
-    {
-        "date": "2026-01-22",
-        "coord": "carlos.echeverria@assetplan.cl",
-        "count": 12
     },
     {
         "date": "2026-01-22",
@@ -488,11 +383,6 @@ export const DAILY_STATS: DailyStat[] = [
         "date": "2026-01-22",
         "coord": "nataly.espinoza@assetplan.cl",
         "count": 2
-    },
-    {
-        "date": "2026-01-23",
-        "coord": "carlos.echeverria@assetplan.cl",
-        "count": 9
     },
     {
         "date": "2026-01-23",
@@ -518,11 +408,6 @@ export const DAILY_STATS: DailyStat[] = [
         "date": "2026-01-23",
         "coord": "nataly.espinoza@assetplan.cl",
         "count": 4
-    },
-    {
-        "date": "2026-01-24",
-        "coord": "carlos.echeverria@assetplan.cl",
-        "count": 1
     },
     {
         "date": "2026-01-24",
@@ -2029,137 +1914,337 @@ export const NAMES_WITH_AGENDA: string[] = [
 
 // Historical Data Jan 2025
 export const HISTORY_2025: Record<string, HistoryData> = {
-    "Angela Palomo": {
-        "c": 6,
+    "Maria Fernanda Meneses": {
+        "c": 1,
+        "t": 5
+    },
+    "Angel Marquez": {
+        "c": 28,
+        "t": 35
+    },
+    "Ivon Urra": {
+        "c": 3,
+        "t": 3
+    },
+    "Morande Oficinas": {
+        "c": 3,
+        "t": 4
+    },
+    "Virginia Del Carmen Lobo Lobo": {
+        "c": 3,
+        "t": 4
+    },
+    "Jonathan Alfredo Lagos Licancura": {
+        "c": 7,
         "t": 9
     },
-    "Constanza Moya": {
-        "c": 1,
-        "t": 1
+    "Daniel Alfredo Devita Le\u00f3n": {
+        "c": 15,
+        "t": 17
     },
-    "Johana G\u00f3mez": {
-        "c": 6,
-        "t": 7
+    "Ximena Leiva": {
+        "c": 5,
+        "t": 5
     },
-    "Pamela Novoa": {
-        "c": 1,
-        "t": 1
-    },
-    "Nailet Rojo": {
-        "c": 3,
-        "t": 6
+    "Valeska Chavez": {
+        "c": 17,
+        "t": 21
     },
     "Daiana Quintero": {
         "c": 20,
         "t": 24
     },
-    "Eugenio Arrevilla": {
-        "c": 5,
+    "Esthefani Gonzalez": {
+        "c": 17,
+        "t": 23
+    },
+    "Corredor Switch": {
+        "c": 19,
+        "t": 25
+    },
+    "Robinson Mellado Mu\u00f1oz": {
+        "c": 4,
         "t": 8
     },
-    "Yerimar Portillo": {
-        "c": 24,
-        "t": 32
+    "Maria Del Pilar Diaz": {
+        "c": 1,
+        "t": 1
     },
-    "Kariangel Andrea Silva": {
-        "c": 14,
-        "t": 20
-    },
-    "Jeanette Mendoza": {
+    "Mar\u00eda Elena Katny": {
         "c": 2,
-        "t": 3
-    },
-    "Geraldine Trujillo": {
-        "c": 4,
-        "t": 4
-    },
-    "Jose Roche": {
-        "c": 3,
         "t": 3
     },
     "Yolimar Aguilar": {
         "c": 2,
         "t": 3
     },
-    "Dennys Morales": {
-        "c": 21,
-        "t": 27
-    },
-    "Alejandro Rodriguez": {
-        "c": 15,
-        "t": 18
-    },
-    "Jairon Dumes": {
-        "c": 16,
-        "t": 19
-    },
-    "Lesbia Utrilla": {
-        "c": 6,
+    "Cintia Cecilia Moreno Monz\u00f3n": {
+        "c": 7,
         "t": 8
-    },
-    "Carlos Zambrano": {
-        "c": 18,
-        "t": 22
-    },
-    "Douglas Rojo": {
-        "c": 21,
-        "t": 25
-    },
-    "Manuel Martinez": {
-        "c": 30,
-        "t": 39
-    },
-    "Benjamin Marcano": {
-        "c": 0,
-        "t": 3
     },
     "Maryelis Lugo": {
         "c": 1,
         "t": 4
     },
-    "Yinglis Hernandez": {
-        "c": 34,
-        "t": 39
+    "Nataly Concha": {
+        "c": 10,
+        "t": 10
     },
-    "Erika Cepeda": {
-        "c": 15,
-        "t": 23
+    "Yasmin Garc\u00eda": {
+        "c": 5,
+        "t": 12
     },
-    "Yonathan Pino": {
-        "c": 27,
-        "t": 31
+    "Maritza Faundez": {
+        "c": 12,
+        "t": 15
     },
-    "Enmanuel Guerrero": {
+    "Rosangela Cirelli": {
+        "c": 42,
+        "t": 54
+    },
+    "Christian Subiabre": {
+        "c": 13,
+        "t": 20
+    },
+    "Francisca Camila Cabero Gornall": {
+        "c": 2,
+        "t": 2
+    },
+    "Jose Roche": {
+        "c": 3,
+        "t": 3
+    },
+    "Romelean Lopez": {
+        "c": 2,
+        "t": 2
+    },
+    "Arlyn Pe\u00f1a": {
+        "c": 1,
+        "t": 2
+    },
+    "Ernesto Moscoso": {
         "c": 1,
         "t": 1
     },
-    "Robinson Mellado Mu\u00f1oz": {
-        "c": 4,
-        "t": 8
+    "Alexander Pereira": {
+        "c": 2,
+        "t": 3
     },
-    "Marlyn Parra": {
-        "c": 12,
-        "t": 14
+    "Andr\u00e9s Garcia": {
+        "c": 3,
+        "t": 4
     },
-    "Andres Reyes": {
+    "Michelle Pino": {
+        "c": 1,
+        "t": 1
+    },
+    "Alejandro Rodriguez": {
+        "c": 15,
+        "t": 18
+    },
+    "Saynell Patricia Mora Zambrano": {
+        "c": 9,
+        "t": 11
+    },
+    "Mar\u00eda Cristina De La Cuadra": {
         "c": 1,
         "t": 3
     },
-    "Sofia Bravo": {
-        "c": 4,
-        "t": 8
+    "Mario Lepore": {
+        "c": 7,
+        "t": 9
     },
-    "Joselin Quintero": {
-        "c": 0,
-        "t": 2
+    "Valeria Carolina Navarro Mondaca": {
+        "c": 4,
+        "t": 4
+    },
+    "Johanna Hernandez": {
+        "c": 32,
+        "t": 44
     },
     "Felix Ferrer": {
         "c": 18,
         "t": 25
     },
-    "Gensa Arriendos (Maria Araujo)": {
+    "Alejandra Romo": {
+        "c": 12,
+        "t": 15
+    },
+    "Yorcy Tovar": {
+        "c": 1,
+        "t": 1
+    },
+    "Elizabeth Valdes": {
+        "c": 18,
+        "t": 23
+    },
+    "Nelly Coromoto Zambrano": {
+        "c": 4,
+        "t": 5
+    },
+    "Ingrid Mu\u00f1oz": {
+        "c": 13,
+        "t": 17
+    },
+    "Geraldine Trujillo": {
+        "c": 4,
+        "t": 4
+    },
+    "Luisana Albarez": {
+        "c": 4,
+        "t": 6
+    },
+    "Karen Lesmes": {
+        "c": 2,
+        "t": 2
+    },
+    "Carlos Oropeza": {
+        "c": 1,
+        "t": 4
+    },
+    "Mayerling Soto": {
+        "c": 24,
+        "t": 30
+    },
+    "Diego Andrade": {
+        "c": 4,
+        "t": 5
+    },
+    "Karla Garcia": {
+        "c": 0,
+        "t": 2
+    },
+    "Marina Margarita Ceballos Rojas": {
+        "c": 3,
+        "t": 5
+    },
+    "Yanelaine Reyes": {
+        "c": 4,
+        "t": 4
+    },
+    "Andres Reyes": {
+        "c": 1,
+        "t": 3
+    },
+    "Daniela Paola Magrini": {
+        "c": 36,
+        "t": 39
+    },
+    "Patricia Gonzalez": {
         "c": 8,
-        "t": 11
+        "t": 10
+    },
+    "Yessica Asuaje": {
+        "c": 11,
+        "t": 12
+    },
+    "Mauricio Reyes": {
+        "c": 2,
+        "t": 2
+    },
+    "Miriam Flores": {
+        "c": 0,
+        "t": 1
+    },
+    "Daina Tapia": {
+        "c": 10,
+        "t": 16
+    },
+    "Maryse Arria": {
+        "c": 14,
+        "t": 23
+    },
+    "Alvaro Quintero": {
+        "c": 0,
+        "t": 5
+    },
+    "Gabriela Quintero": {
+        "c": 19,
+        "t": 19
+    },
+    "Sofia Bravo": {
+        "c": 4,
+        "t": 8
+    },
+    "Fabian Arenas": {
+        "c": 4,
+        "t": 4
+    },
+    "Rosa Gana": {
+        "c": 2,
+        "t": 3
+    },
+    "Pedro Riveiro": {
+        "c": 2,
+        "t": 3
+    },
+    "Ana Roman": {
+        "c": 11,
+        "t": 15
+    },
+    "Yinglis Hernandez": {
+        "c": 34,
+        "t": 39
+    },
+    "Ruben Andr\u00e9s Castro Amaza": {
+        "c": 4,
+        "t": 7
+    },
+    "Yonathan Pino": {
+        "c": 27,
+        "t": 31
+    },
+    "Johana G\u00f3mez": {
+        "c": 6,
+        "t": 7
+    },
+    "Manuel Martinez": {
+        "c": 30,
+        "t": 39
+    },
+    "Evelyn Carolina D\u00edaz Galaz": {
+        "c": 0,
+        "t": 2
+    },
+    "Carlos Zambrano": {
+        "c": 18,
+        "t": 22
+    },
+    "Andibet Quintero": {
+        "c": 14,
+        "t": 15
+    },
+    "Nailet Rojo": {
+        "c": 3,
+        "t": 6
+    },
+    "Nelly Ocando": {
+        "c": 24,
+        "t": 29
+    },
+    "Benjamin Marcano": {
+        "c": 0,
+        "t": 3
+    },
+    "Jennyfer Portillo": {
+        "c": 21,
+        "t": 24
+    },
+    "Emeric Bergstrom Ibarra": {
+        "c": 2,
+        "t": 7
+    },
+    "Laura Moizant": {
+        "c": 5,
+        "t": 7
+    },
+    "Manuel Silva": {
+        "c": 5,
+        "t": 8
+    },
+    "Ver\u00f3nica Gonz\u00e1lez": {
+        "c": 4,
+        "t": 6
     },
     "Kareen Araya": {
         "c": 2,
@@ -2169,139 +2254,119 @@ export const HISTORY_2025: Record<string, HistoryData> = {
         "c": 2,
         "t": 2
     },
-    "Evelyn Carolina D\u00edaz Galaz": {
-        "c": 0,
-        "t": 2
-    },
-    "Cintia Cecilia Moreno Monz\u00f3n": {
-        "c": 7,
-        "t": 8
-    },
-    "Melida Casta\u00f1eda": {
-        "c": 9,
-        "t": 10
-    },
-    "Yulenny Bencomo": {
-        "c": 17,
-        "t": 22
-    },
-    "Yanelaine Reyes": {
-        "c": 4,
-        "t": 4
-    },
-    "Carlos Oropeza": {
-        "c": 1,
-        "t": 4
-    },
-    "Paul Perdomo": {
-        "c": 17,
-        "t": 20
-    },
-    "Karol Yusty": {
-        "c": 7,
-        "t": 8
-    },
-    "Rodrigo Valderrama": {
+    "Annhelys Cardiet": {
         "c": 18,
-        "t": 20
+        "t": 24
     },
-    "Jorge A\u00f1ez": {
-        "c": 14,
-        "t": 20
+    "Yerimar Portillo": {
+        "c": 24,
+        "t": 32
     },
-    "Elizabeth Valdes": {
-        "c": 18,
-        "t": 23
-    },
-    "Jonathan Alfredo Lagos Licancura": {
-        "c": 7,
-        "t": 9
-    },
-    "Nataly Concha": {
-        "c": 10,
-        "t": 10
-    },
-    "Raquel Rosa Valenzuela Brizuela": {
-        "c": 1,
-        "t": 1
-    },
-    "Ivon Urra": {
-        "c": 3,
-        "t": 3
-    },
-    "Corredor Switch": {
-        "c": 19,
-        "t": 25
-    },
-    "Daniel Alfredo Devita Le\u00f3n": {
-        "c": 15,
-        "t": 17
-    },
-    "Maria Fernanda Meneses": {
-        "c": 1,
-        "t": 5
-    },
-    "Miriam Flores": {
-        "c": 0,
-        "t": 1
-    },
-    "Santiago Fuentes": {
-        "c": 16,
+    "Joenny Moncada": {
+        "c": 17,
         "t": 21
     },
-    "Diego Andrade": {
-        "c": 4,
-        "t": 5
-    },
-    "Yorcy Tovar": {
-        "c": 1,
-        "t": 1
-    },
-    "Henry Rodriguez": {
-        "c": 33,
-        "t": 43
-    },
-    "Karla Garcia": {
-        "c": 0,
-        "t": 2
-    },
-    "Carla Palma": {
-        "c": 2,
-        "t": 2
-    },
-    "Giovanny Gutierrez": {
-        "c": 8,
-        "t": 12
+    "Maria Morales": {
+        "c": 11,
+        "t": 14
     },
     "Plaza & Nieto (Gloria Nieto)": {
         "c": 4,
         "t": 5
     },
-    "Ruben Andr\u00e9s Castro Amaza": {
-        "c": 4,
-        "t": 7
+    "Cristian Uribe": {
+        "c": 3,
+        "t": 4
+    },
+    "Pamela Novoa": {
+        "c": 1,
+        "t": 1
+    },
+    "Guillermo Antolinez": {
+        "c": 1,
+        "t": 3
     },
     "Luis Pernalete": {
         "c": 16,
         "t": 17
     },
-    "Maria Del Pilar Diaz": {
+    "Giovanny Gutierrez": {
+        "c": 8,
+        "t": 12
+    },
+    "Erika Cepeda": {
+        "c": 15,
+        "t": 23
+    },
+    "Rosanyelys Cordova": {
+        "c": 18,
+        "t": 23
+    },
+    "Yexica Gomez": {
+        "c": 8,
+        "t": 17
+    },
+    "Diego Loy": {
+        "c": 5,
+        "t": 5
+    },
+    "Leslie Mariscal": {
+        "c": 11,
+        "t": 12
+    },
+    "Kariangel Andrea Silva": {
+        "c": 14,
+        "t": 20
+    },
+    "Lesbia Utrilla": {
+        "c": 6,
+        "t": 8
+    },
+    "Henry Colina (Rumirent)": {
+        "c": 0,
+        "t": 6
+    },
+    "Alberto Del Campo": {
         "c": 1,
         "t": 1
     },
-    "Virginia Del Carmen Lobo Lobo": {
-        "c": 3,
-        "t": 4
-    },
-    "Esthefani Gonzalez": {
-        "c": 17,
-        "t": 23
-    },
-    "Andreina Carolina L\u00f3pez Pedrique": {
+    "Jorge A\u00f1ez": {
         "c": 14,
-        "t": 19
+        "t": 20
     },
-    "Katerin Reyes": {
+    "Gustavo Gonzalez": {
+        "c": 29,
+        "t": 34
+    },
+    "Hector Cardiet": {
+        "c": 12,
+        "t": 17
+    },
+    "Carlos Alvarez": {
+        "c": 9,
+        "t": 11
+    },
+    "Sinead Vasquez": {
+        "c": 1,
+        "t": 2
+    },
+    "Ana Flores": {
+        "c": 0,
+        "t": 1
+    },
+    "Greiry Rodriguez": {
+        "c": 2,
+        "t": 2
+    },
+    "Melida Casta\u00f1eda": {
+        "c": 9,
+        "t": 10
+    },
+    "Isadora Zepeda": {
+        "c": 26,
+        "t": 35
+    },
+    "Raquel Rosa Valenzuela Brizuela": {
         "c": 1,
         "t": 1
     },
@@ -2309,317 +2374,137 @@ export const HISTORY_2025: Record<string, HistoryData> = {
         "c": 2,
         "t": 2
     },
-    "Mayerling Soto": {
-        "c": 24,
-        "t": 30
-    },
-    "Luisana Albarez": {
-        "c": 4,
-        "t": 6
-    },
-    "Yessica Asuaje": {
-        "c": 11,
-        "t": 12
-    },
-    "Gabriela Quintero": {
-        "c": 19,
-        "t": 19
-    },
-    "Ana Flores": {
-        "c": 0,
-        "t": 1
-    },
-    "Ernesto Moscoso": {
+    "Yuleidy Caraballo": {
         "c": 1,
         "t": 1
     },
-    "Ingrid Mu\u00f1oz": {
-        "c": 13,
-        "t": 17
-    },
-    "Annhelys Cardiet": {
-        "c": 18,
-        "t": 24
-    },
-    "Mario Lepore": {
-        "c": 7,
+    "Angela Palomo": {
+        "c": 6,
         "t": 9
     },
-    "Alejandra Romo": {
-        "c": 12,
-        "t": 15
-    },
-    "Daina Tapia": {
-        "c": 10,
-        "t": 16
-    },
-    "Victoria D\u00edaz": {
-        "c": 8,
-        "t": 10
+    "Andreina Carolina L\u00f3pez Pedrique": {
+        "c": 14,
+        "t": 19
     },
     "Adriana Ollarves": {
         "c": 15,
         "t": 22
     },
-    "Arlyn Pe\u00f1a": {
-        "c": 1,
-        "t": 2
-    },
-    "Rosangela Cirelli": {
-        "c": 42,
-        "t": 54
-    },
-    "Saynell Patricia Mora Zambrano": {
-        "c": 9,
-        "t": 11
-    },
-    "Carlos Gonzalez": {
-        "c": 9,
-        "t": 14
-    },
-    "Marco Martinez": {
-        "c": 9,
-        "t": 10
-    },
-    "Yexica Gomez": {
-        "c": 8,
-        "t": 17
-    },
-    "Laura Moizant": {
-        "c": 5,
-        "t": 7
-    },
-    "Alexander Pereira": {
-        "c": 2,
-        "t": 3
-    },
-    "Hector Cardiet": {
-        "c": 12,
-        "t": 17
-    },
-    "Yuleidy Caraballo": {
+    "Constanza Moya": {
         "c": 1,
         "t": 1
     },
-    "Camila Fuenzalida": {
+    "Jeanette Mendoza": {
+        "c": 2,
+        "t": 3
+    },
+    "Enmanuel Guerrero": {
         "c": 1,
         "t": 1
     },
-    "Daniela Paola Magrini": {
-        "c": 36,
-        "t": 39
-    },
-    "Valeria Carolina Navarro Mondaca": {
-        "c": 4,
-        "t": 4
-    },
-    "Patricia Gonzalez": {
-        "c": 8,
-        "t": 10
-    },
-    "Alvaro Quintero": {
-        "c": 0,
-        "t": 5
-    },
-    "Maria Morales": {
-        "c": 11,
-        "t": 14
-    },
-    "Mar\u00eda Elena Katny": {
-        "c": 2,
-        "t": 3
-    },
-    "Mauricio Reyes": {
-        "c": 2,
-        "t": 2
-    },
-    "Karen Lesmes": {
-        "c": 2,
-        "t": 2
-    },
-    "Ver\u00f3nica Gonz\u00e1lez": {
-        "c": 4,
-        "t": 6
-    },
-    "Greiry Rodriguez": {
-        "c": 2,
-        "t": 2
-    },
-    "Guillermo Antolinez": {
-        "c": 1,
-        "t": 3
-    },
-    "Maryse Arria": {
-        "c": 14,
-        "t": 23
-    },
-    "Isadora Zepeda": {
-        "c": 26,
-        "t": 35
-    },
-    "Andr\u00e9s Garcia": {
-        "c": 3,
-        "t": 4
-    },
-    "Nelly Ocando": {
-        "c": 24,
-        "t": 29
-    },
-    "Marina Margarita Ceballos Rojas": {
-        "c": 3,
-        "t": 5
-    },
-    "Manuel Silva": {
-        "c": 5,
-        "t": 8
-    },
-    "Enihet Curpa": {
-        "c": 9,
-        "t": 12
-    },
-    "Francisca Camila Cabero Gornall": {
-        "c": 2,
-        "t": 2
-    },
-    "Christian Subiabre": {
-        "c": 13,
-        "t": 20
+    "Jairon Dumes": {
+        "c": 16,
+        "t": 19
     },
     "Daniela Pino": {
         "c": 16,
         "t": 21
     },
-    "Michelle Pino": {
-        "c": 1,
-        "t": 1
-    },
-    "Dutglas Delmoral": {
-        "c": 35,
-        "t": 49
-    },
-    "Alberto Del Campo": {
-        "c": 1,
-        "t": 1
-    },
-    "Maritza Faundez": {
-        "c": 12,
-        "t": 15
-    },
-    "Henry Colina (Rumirent)": {
-        "c": 0,
-        "t": 6
-    },
-    "Carolina Valenzuela": {
-        "c": 0,
-        "t": 0
-    },
-    "Rosanyelys Cordova": {
-        "c": 18,
-        "t": 23
-    },
-    "Carlos Alvarez": {
-        "c": 9,
-        "t": 11
-    },
-    "Morande Oficinas": {
-        "c": 3,
-        "t": 4
-    },
-    "Johanna Hernandez": {
-        "c": 32,
-        "t": 44
-    },
-    "Jennyfer Portillo": {
-        "c": 21,
-        "t": 24
-    },
-    "Nelly Coromoto Zambrano": {
-        "c": 4,
-        "t": 5
-    },
-    "Angel Marquez": {
-        "c": 28,
-        "t": 35
-    },
-    "Gustavo Gonzalez": {
-        "c": 29,
-        "t": 34
-    },
-    "Fabian Arenas": {
-        "c": 4,
-        "t": 4
-    },
-    "Yasmin Garc\u00eda": {
-        "c": 5,
-        "t": 12
-    },
-    "Andibet Quintero": {
-        "c": 14,
-        "t": 15
-    },
-    "Ximena Leiva": {
-        "c": 5,
-        "t": 5
-    },
-    "Joenny Moncada": {
+    "Yulenny Bencomo": {
         "c": 17,
-        "t": 21
+        "t": 22
     },
     "Elkis Daza": {
         "c": 30,
         "t": 33
     },
-    "Rosa Gana": {
-        "c": 2,
-        "t": 3
-    },
-    "Valeska Chavez": {
+    "Paul Perdomo": {
         "c": 17,
-        "t": 21
+        "t": 20
     },
-    "Pedro Riveiro": {
-        "c": 2,
-        "t": 3
+    "Victoria D\u00edaz": {
+        "c": 8,
+        "t": 10
     },
-    "Romelean Lopez": {
-        "c": 2,
-        "t": 2
+    "Enihet Curpa": {
+        "c": 9,
+        "t": 12
     },
-    "Emeric Bergstrom Ibarra": {
-        "c": 2,
-        "t": 7
+    "Marlyn Parra": {
+        "c": 12,
+        "t": 14
     },
-    "Mar\u00eda Cristina De La Cuadra": {
-        "c": 1,
-        "t": 3
+    "Gensa Arriendos (Maria Araujo)": {
+        "c": 8,
+        "t": 11
     },
-    "Ana Roman": {
-        "c": 11,
-        "t": 15
-    },
-    "Cristian Uribe": {
-        "c": 3,
-        "t": 4
-    },
-    "Diego Loy": {
+    "Eugenio Arrevilla": {
         "c": 5,
-        "t": 5
+        "t": 8
     },
-    "Sinead Vasquez": {
-        "c": 1,
+    "Carlos Gonzalez": {
+        "c": 9,
+        "t": 14
+    },
+    "Joselin Quintero": {
+        "c": 0,
         "t": 2
     },
     "Ejecutivo Assetplan": {
         "c": 0,
         "t": 2
     },
+    "Santiago Fuentes": {
+        "c": 16,
+        "t": 21
+    },
+    "Henry Rodriguez": {
+        "c": 33,
+        "t": 43
+    },
+    "Rodrigo Valderrama": {
+        "c": 18,
+        "t": 20
+    },
+    "Katerin Reyes": {
+        "c": 1,
+        "t": 1
+    },
+    "Dennys Morales": {
+        "c": 21,
+        "t": 27
+    },
+    "Carolina Valenzuela": {
+        "c": 0,
+        "t": 0
+    },
+    "Carla Palma": {
+        "c": 2,
+        "t": 2
+    },
     "Dania Chirinos": {
         "c": 20,
         "t": 25
     },
-    "Leslie Mariscal": {
-        "c": 11,
-        "t": 12
+    "Dutglas Delmoral": {
+        "c": 35,
+        "t": 49
+    },
+    "Douglas Rojo": {
+        "c": 21,
+        "t": 25
+    },
+    "Karol Yusty": {
+        "c": 7,
+        "t": 8
+    },
+    "Camila Fuenzalida": {
+        "c": 1,
+        "t": 1
+    },
+    "Marco Martinez": {
+        "c": 9,
+        "t": 10
     }
 };
 

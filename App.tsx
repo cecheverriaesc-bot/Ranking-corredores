@@ -177,13 +177,12 @@ const App: React.FC = () => {
                         </div>
                     </div>
 
-                    <div className="flex flex-col items-end gap-2">
-                        <span className="text-blue-100 text-sm font-medium border-l border-blue-400 pl-3 uppercase italic">Líder: Carlos Echeverría</span>
-                        <div className="bg-[#1e293b] border border-emerald-500/30 rounded-2xl px-5 py-4 shadow-2xl backdrop-blur-xl">
-                            <p className="text-[9px] text-slate-500 font-bold uppercase tracking-[0.2em] mb-1 text-right">Última reserva en base de datos</p>
-                            <p className="text-emerald-400 font-black text-2xl tracking-tighter leading-none flex items-center gap-2 justify-end">
-                                <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
-                                {LAST_UPDATE}
+                    <div className="flex flex-col items-end gap-1">
+                        <span className="text-blue-200/50 text-[10px] font-bold uppercase tracking-widest italic group-hover:text-blue-200 transition-colors">Líder: Carlos Echeverría</span>
+                        <div className="flex items-center gap-2 text-slate-500">
+                            <Clock size={12} className="text-emerald-500/50" />
+                            <p className="text-[10px] font-bold uppercase tracking-wider">
+                                <span className="text-slate-600">Última reserva:</span> <span className="text-emerald-500/80">{LAST_UPDATE}</span>
                             </p>
                         </div>
                     </div>

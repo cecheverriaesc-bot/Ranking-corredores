@@ -395,6 +395,12 @@ const App: React.FC = () => {
                                 const heightPct = (total / maxVal) * 100;
                                 return (
                                     <div key={date} className="h-full flex-1 flex flex-col justify-end group relative">
+                                        {/* Total Label - Permanent */}
+                                        {total > 0 && (
+                                            <div className="text-[10px] font-black text-blue-300 text-center mb-1 group-hover:text-white transition-colors">
+                                                {total}
+                                            </div>
+                                        )}
                                         <div className="w-full flex flex-col-reverse rounded-t-lg overflow-hidden relative shadow-lg" style={{ height: `${heightPct}%` }}>
                                             {Object.entries(dayData).map(([coord, count]) => {
                                                 const team = TEAMS[coord];

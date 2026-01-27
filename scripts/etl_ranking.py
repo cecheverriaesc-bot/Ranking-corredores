@@ -6,7 +6,15 @@ from datetime import datetime
 from dotenv import load_dotenv
 
 # Load Env
-load_dotenv(r"c:\Users\assetplan\Desktop\Ranking Enero 2026\.env")
+env_path = r"c:\Users\assetplan\Desktop\Ranking Enero 2026\.env"
+if os.path.exists(env_path):
+    load_dotenv(env_path)
+else:
+    # Fallback to local .env in the root of the project (for GitHub Actions or other environments)
+    # The script is in /scripts/, so .env is usually in /
+    load_dotenv(os.path.join(os.path.dirname(__file__), "..", ".env"))
+    # Also load from system environment variables (GitHub Secrets) 
+    # load_dotenv() is already called, which handles this partially.
 
 # DB Connection
 def get_connection():

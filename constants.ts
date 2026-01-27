@@ -423,6 +423,21 @@ export const DAILY_STATS: DailyStat[] = [
         "date": "2026-01-24",
         "coord": "nataly.espinoza@assetplan.cl",
         "count": 2
+    },
+    {
+        "date": "2026-01-25",
+        "coord": "carlos.echeverria@assetplan.cl",
+        "count": 15
+    },
+    {
+        "date": "2026-01-25",
+        "coord": "luis.gomez@assetplan.cl",
+        "count": 3
+    },
+    {
+        "date": "2026-01-25",
+        "coord": "nataly.espinoza@assetplan.cl",
+        "count": 2
     }
 ];
 export const DAILY_GOALS: Record<number, number> = {
@@ -464,19 +479,19 @@ export const DAILY_GOALS: Record<number, number> = {
 // ============================================================================
 export const OTHER_BROKERS_2026: CorredorData[] = [
     {
-        "name": "Henry Colina (Rumirent)",
-        "val": 39,
+        "name": "Vivao (Nicole Jones)",
+        "val": 45,
         "fallen": 0,
-        "leads": 298,
-        "agendas": 56,
+        "leads": 124,
+        "agendas": 5,
         "coord": "carlos.echeverria@assetplan.cl"
     },
     {
-        "name": "Vivao (Nicole Jones)",
-        "val": 38,
+        "name": "Henry Colina (Rumirent)",
+        "val": 39,
         "fallen": 0,
-        "leads": 116,
-        "agendas": 4,
+        "leads": 302,
+        "agendas": 56,
         "coord": "carlos.echeverria@assetplan.cl"
     },
     {
@@ -491,8 +506,8 @@ export const OTHER_BROKERS_2026: CorredorData[] = [
         "name": "Confianza Inmobiliaria (Raul Mena)",
         "val": 20,
         "fallen": 0,
-        "leads": 119,
-        "agendas": 74,
+        "leads": 122,
+        "agendas": 75,
         "coord": "carlos.echeverria@assetplan.cl"
     },
     {
@@ -505,7 +520,7 @@ export const OTHER_BROKERS_2026: CorredorData[] = [
     },
     {
         "name": "Plaza & Nieto (Gloria Nieto)",
-        "val": 8,
+        "val": 9,
         "fallen": 0,
         "leads": 20,
         "agendas": 2,
@@ -539,7 +554,7 @@ export const OTHER_BROKERS_2026: CorredorData[] = [
         "name": "Rosa Gana",
         "val": 2,
         "fallen": 0,
-        "leads": 67,
+        "leads": 70,
         "agendas": 0,
         "coord": "carlos.echeverria@assetplan.cl"
     },
@@ -609,7 +624,7 @@ export const CURRENT_RANKING_2026: CorredorData[] = [
         "name": "Rosangela Cirelli",
         "val": 53,
         "fallen": 1,
-        "leads": 205,
+        "leads": 213,
         "agendas": 65,
         "coord": "luis.gomez@assetplan.cl"
     },
@@ -625,15 +640,15 @@ export const CURRENT_RANKING_2026: CorredorData[] = [
         "name": "Johanna Hernandez",
         "val": 34,
         "fallen": 0,
-        "leads": 166,
+        "leads": 170,
         "agendas": 2,
         "coord": "carlos.echeverria@assetplan.cl"
     },
     {
         "name": "Henry Rodriguez",
-        "val": 28,
+        "val": 29,
         "fallen": 1,
-        "leads": 285,
+        "leads": 308,
         "agendas": 42,
         "coord": "carlos.echeverria@assetplan.cl"
     },
@@ -657,7 +672,7 @@ export const CURRENT_RANKING_2026: CorredorData[] = [
         "name": "Adriana Ollarves",
         "val": 23,
         "fallen": 0,
-        "leads": 232,
+        "leads": 242,
         "agendas": 37,
         "coord": "luis.gomez@assetplan.cl"
     },
@@ -673,7 +688,7 @@ export const CURRENT_RANKING_2026: CorredorData[] = [
         "name": "Elkis Daza",
         "val": 21,
         "fallen": 1,
-        "leads": 103,
+        "leads": 110,
         "agendas": 54,
         "coord": "luis.gomez@assetplan.cl"
     },
@@ -681,15 +696,23 @@ export const CURRENT_RANKING_2026: CorredorData[] = [
         "name": "Annhelys Cardiet",
         "val": 21,
         "fallen": 0,
-        "leads": 242,
+        "leads": 251,
         "agendas": 30,
         "coord": "luis.gomez@assetplan.cl"
+    },
+    {
+        "name": "Dennys Morales",
+        "val": 20,
+        "fallen": 1,
+        "leads": 247,
+        "agendas": 65,
+        "coord": "carlos.echeverria@assetplan.cl"
     },
     {
         "name": "Mayerling Soto",
         "val": 19,
         "fallen": 1,
-        "leads": 99,
+        "leads": 102,
         "agendas": 30,
         "coord": "carlos.echeverria@assetplan.cl"
     },
@@ -697,23 +720,15 @@ export const CURRENT_RANKING_2026: CorredorData[] = [
         "name": "Yonathan Pino",
         "val": 19,
         "fallen": 0,
-        "leads": 97,
+        "leads": 102,
         "agendas": 62,
-        "coord": "carlos.echeverria@assetplan.cl"
-    },
-    {
-        "name": "Dennys Morales",
-        "val": 19,
-        "fallen": 1,
-        "leads": 243,
-        "agendas": 65,
         "coord": "carlos.echeverria@assetplan.cl"
     },
     {
         "name": "Nailet Rojo",
         "val": 19,
         "fallen": 1,
-        "leads": 256,
+        "leads": 260,
         "agendas": 64,
         "coord": "luis.gomez@assetplan.cl"
     },
@@ -721,7 +736,7 @@ export const CURRENT_RANKING_2026: CorredorData[] = [
         "name": "Luis Pernalete",
         "val": 18,
         "fallen": 0,
-        "leads": 124,
+        "leads": 131,
         "agendas": 51,
         "coord": "carlos.echeverria@assetplan.cl"
     },
@@ -734,10 +749,18 @@ export const CURRENT_RANKING_2026: CorredorData[] = [
         "coord": "carlos.echeverria@assetplan.cl"
     },
     {
+        "name": "Victoria D\u00edaz",
+        "val": 17,
+        "fallen": 2,
+        "leads": 150,
+        "agendas": 28,
+        "coord": "carlos.echeverria@assetplan.cl"
+    },
+    {
         "name": "Carlos Zambrano",
         "val": 17,
         "fallen": 1,
-        "leads": 100,
+        "leads": 102,
         "agendas": 8,
         "coord": "carlos.echeverria@assetplan.cl"
     },
@@ -745,8 +768,16 @@ export const CURRENT_RANKING_2026: CorredorData[] = [
         "name": "Daniela Maritza Portillo Trompiz",
         "val": 17,
         "fallen": 1,
-        "leads": 267,
+        "leads": 288,
         "agendas": 21,
+        "coord": "carlos.echeverria@assetplan.cl"
+    },
+    {
+        "name": "Angela Palomo",
+        "val": 16,
+        "fallen": 0,
+        "leads": 46,
+        "agendas": 0,
         "coord": "carlos.echeverria@assetplan.cl"
     },
     {
@@ -758,34 +789,34 @@ export const CURRENT_RANKING_2026: CorredorData[] = [
         "coord": "carlos.echeverria@assetplan.cl"
     },
     {
-        "name": "Victoria D\u00edaz",
-        "val": 16,
-        "fallen": 2,
-        "leads": 149,
-        "agendas": 28,
-        "coord": "carlos.echeverria@assetplan.cl"
-    },
-    {
         "name": "Yanelaine Reyes",
         "val": 16,
         "fallen": 0,
-        "leads": 160,
+        "leads": 162,
         "agendas": 45,
         "coord": "carlos.echeverria@assetplan.cl"
+    },
+    {
+        "name": "Yinglis Hernandez",
+        "val": 16,
+        "fallen": 0,
+        "leads": 156,
+        "agendas": 36,
+        "coord": "luis.gomez@assetplan.cl"
     },
     {
         "name": "Sofia Bravo",
         "val": 16,
         "fallen": 0,
-        "leads": 126,
-        "agendas": 54,
+        "leads": 130,
+        "agendas": 58,
         "coord": "luis.gomez@assetplan.cl"
     },
     {
         "name": "Christian Subiabre",
         "val": 15,
         "fallen": 0,
-        "leads": 238,
+        "leads": 245,
         "agendas": 51,
         "coord": "luis.gomez@assetplan.cl"
     },
@@ -793,32 +824,24 @@ export const CURRENT_RANKING_2026: CorredorData[] = [
         "name": "Daina Tapia",
         "val": 15,
         "fallen": 1,
-        "leads": 86,
+        "leads": 89,
         "agendas": 15,
-        "coord": "carlos.echeverria@assetplan.cl"
-    },
-    {
-        "name": "Angela Palomo",
-        "val": 15,
-        "fallen": 0,
-        "leads": 45,
-        "agendas": 0,
         "coord": "carlos.echeverria@assetplan.cl"
     },
     {
         "name": "Enihet Curpa",
         "val": 15,
         "fallen": 0,
-        "leads": 159,
+        "leads": 165,
         "agendas": 21,
         "coord": "luis.gomez@assetplan.cl"
     },
     {
-        "name": "Yinglis Hernandez",
-        "val": 15,
-        "fallen": 0,
-        "leads": 149,
-        "agendas": 36,
+        "name": "Erika Cepeda",
+        "val": 14,
+        "fallen": 1,
+        "leads": 103,
+        "agendas": 24,
         "coord": "luis.gomez@assetplan.cl"
     },
     {
@@ -833,23 +856,15 @@ export const CURRENT_RANKING_2026: CorredorData[] = [
         "name": "Dania Chirinos",
         "val": 13,
         "fallen": 1,
-        "leads": 158,
+        "leads": 162,
         "agendas": 3,
         "coord": "carlos.echeverria@assetplan.cl"
-    },
-    {
-        "name": "Erika Cepeda",
-        "val": 13,
-        "fallen": 1,
-        "leads": 102,
-        "agendas": 24,
-        "coord": "luis.gomez@assetplan.cl"
     },
     {
         "name": "Ingrid Mu\u00f1oz",
         "val": 13,
         "fallen": 0,
-        "leads": 78,
+        "leads": 81,
         "agendas": 16,
         "coord": "luis.gomez@assetplan.cl"
     },
@@ -857,7 +872,7 @@ export const CURRENT_RANKING_2026: CorredorData[] = [
         "name": "Marklim Javier Gonz\u00e1lez Arria",
         "val": 13,
         "fallen": 0,
-        "leads": 145,
+        "leads": 149,
         "agendas": 30,
         "coord": "luis.gomez@assetplan.cl"
     },
@@ -865,7 +880,7 @@ export const CURRENT_RANKING_2026: CorredorData[] = [
         "name": "Maritza Faundez",
         "val": 12,
         "fallen": 1,
-        "leads": 176,
+        "leads": 182,
         "agendas": 4,
         "coord": "luis.gomez@assetplan.cl"
     },
@@ -873,7 +888,7 @@ export const CURRENT_RANKING_2026: CorredorData[] = [
         "name": "Gustavo Gonzalez",
         "val": 11,
         "fallen": 0,
-        "leads": 155,
+        "leads": 156,
         "agendas": 2,
         "coord": "carlos.echeverria@assetplan.cl"
     },
@@ -881,7 +896,7 @@ export const CURRENT_RANKING_2026: CorredorData[] = [
         "name": "Daniel Alfredo Devita Le\u00f3n",
         "val": 11,
         "fallen": 0,
-        "leads": 110,
+        "leads": 111,
         "agendas": 4,
         "coord": "luis.gomez@assetplan.cl"
     },
@@ -889,7 +904,7 @@ export const CURRENT_RANKING_2026: CorredorData[] = [
         "name": "Daniela Paola Magrini",
         "val": 11,
         "fallen": 0,
-        "leads": 90,
+        "leads": 97,
         "agendas": 13,
         "coord": "luis.gomez@assetplan.cl"
     },
@@ -897,7 +912,7 @@ export const CURRENT_RANKING_2026: CorredorData[] = [
         "name": "Paul Perdomo",
         "val": 11,
         "fallen": 0,
-        "leads": 73,
+        "leads": 78,
         "agendas": 50,
         "coord": "carlos.echeverria@assetplan.cl"
     },
@@ -905,23 +920,31 @@ export const CURRENT_RANKING_2026: CorredorData[] = [
         "name": "Ana Flores",
         "val": 11,
         "fallen": 0,
-        "leads": 131,
+        "leads": 141,
         "agendas": 24,
         "coord": "luis.gomez@assetplan.cl"
+    },
+    {
+        "name": "Gabriela Margoth D\u00edaz G\u00f3mez",
+        "val": 11,
+        "fallen": 0,
+        "leads": 68,
+        "agendas": 4,
+        "coord": "nataly.espinoza@assetplan.cl"
     },
     {
         "name": "Karla Garcia",
         "val": 10,
         "fallen": 1,
-        "leads": 62,
-        "agendas": 6,
+        "leads": 68,
+        "agendas": 7,
         "coord": "carlos.echeverria@assetplan.cl"
     },
     {
         "name": "Marlyn Parra",
         "val": 10,
         "fallen": 0,
-        "leads": 95,
+        "leads": 96,
         "agendas": 33,
         "coord": "luis.gomez@assetplan.cl"
     },
@@ -929,7 +952,7 @@ export const CURRENT_RANKING_2026: CorredorData[] = [
         "name": "Rosanyelys Cordova",
         "val": 10,
         "fallen": 0,
-        "leads": 180,
+        "leads": 187,
         "agendas": 34,
         "coord": "carlos.echeverria@assetplan.cl"
     },
@@ -937,23 +960,15 @@ export const CURRENT_RANKING_2026: CorredorData[] = [
         "name": "Julio C\u00e9sar Marcano Giuliani",
         "val": 10,
         "fallen": 0,
-        "leads": 94,
+        "leads": 95,
         "agendas": 15,
         "coord": "carlos.echeverria@assetplan.cl"
-    },
-    {
-        "name": "Gabriela Margoth D\u00edaz G\u00f3mez",
-        "val": 10,
-        "fallen": 0,
-        "leads": 63,
-        "agendas": 3,
-        "coord": "nataly.espinoza@assetplan.cl"
     },
     {
         "name": "Lorena Son Rangel",
         "val": 10,
         "fallen": 1,
-        "leads": 113,
+        "leads": 127,
         "agendas": 18,
         "coord": "nataly.espinoza@assetplan.cl"
     },
@@ -977,7 +992,7 @@ export const CURRENT_RANKING_2026: CorredorData[] = [
         "name": "Giovanny Gutierrez",
         "val": 9,
         "fallen": 0,
-        "leads": 76,
+        "leads": 78,
         "agendas": 8,
         "coord": "luis.gomez@assetplan.cl"
     },
@@ -985,15 +1000,15 @@ export const CURRENT_RANKING_2026: CorredorData[] = [
         "name": "Hugo Sebasti\u00e1n Gonz\u00e1lez Vel\u00e1squez",
         "val": 9,
         "fallen": 0,
-        "leads": 103,
-        "agendas": 10,
+        "leads": 108,
+        "agendas": 11,
         "coord": "carlos.echeverria@assetplan.cl"
     },
     {
         "name": "Alexander Pereira",
         "val": 8,
         "fallen": 1,
-        "leads": 28,
+        "leads": 29,
         "agendas": 0,
         "coord": "carlos.echeverria@assetplan.cl"
     },
@@ -1001,7 +1016,7 @@ export const CURRENT_RANKING_2026: CorredorData[] = [
         "name": "Esthefani Gonzalez",
         "val": 8,
         "fallen": 0,
-        "leads": 62,
+        "leads": 67,
         "agendas": 15,
         "coord": "luis.gomez@assetplan.cl"
     },
@@ -1009,7 +1024,7 @@ export const CURRENT_RANKING_2026: CorredorData[] = [
         "name": "Yolimar Aguilar",
         "val": 8,
         "fallen": 0,
-        "leads": 65,
+        "leads": 66,
         "agendas": 23,
         "coord": "luis.gomez@assetplan.cl"
     },
@@ -1017,7 +1032,7 @@ export const CURRENT_RANKING_2026: CorredorData[] = [
         "name": "Carolina Rosales",
         "val": 8,
         "fallen": 0,
-        "leads": 44,
+        "leads": 45,
         "agendas": 16,
         "coord": "luis.gomez@assetplan.cl"
     },
@@ -1025,7 +1040,7 @@ export const CURRENT_RANKING_2026: CorredorData[] = [
         "name": "Mar\u00eda Andreina P\u00e9rez Guerrero",
         "val": 8,
         "fallen": 0,
-        "leads": 248,
+        "leads": 258,
         "agendas": 52,
         "coord": "luis.gomez@assetplan.cl"
     },
@@ -1033,7 +1048,7 @@ export const CURRENT_RANKING_2026: CorredorData[] = [
         "name": "Elisa Torres",
         "val": 8,
         "fallen": 0,
-        "leads": 145,
+        "leads": 153,
         "agendas": 19,
         "coord": "carlos.echeverria@assetplan.cl"
     },
@@ -1041,7 +1056,7 @@ export const CURRENT_RANKING_2026: CorredorData[] = [
         "name": "Kelly Alexandra V\u00e1squez Narvaez",
         "val": 8,
         "fallen": 0,
-        "leads": 173,
+        "leads": 179,
         "agendas": 11,
         "coord": "luis.gomez@assetplan.cl"
     },
@@ -1049,7 +1064,7 @@ export const CURRENT_RANKING_2026: CorredorData[] = [
         "name": "Susana Fabiola S\u00e1nchez Hern\u00e1ndez",
         "val": 8,
         "fallen": 0,
-        "leads": 83,
+        "leads": 85,
         "agendas": 26,
         "coord": "nataly.espinoza@assetplan.cl"
     },
@@ -1073,7 +1088,7 @@ export const CURRENT_RANKING_2026: CorredorData[] = [
         "name": "Nelly Ocando",
         "val": 7,
         "fallen": 0,
-        "leads": 60,
+        "leads": 61,
         "agendas": 24,
         "coord": "luis.gomez@assetplan.cl"
     },
@@ -1081,7 +1096,7 @@ export const CURRENT_RANKING_2026: CorredorData[] = [
         "name": "Yanioscar Margarita Nu\u00f1ez Sarramera",
         "val": 7,
         "fallen": 0,
-        "leads": 57,
+        "leads": 63,
         "agendas": 18,
         "coord": "carlos.echeverria@assetplan.cl"
     },
@@ -1089,7 +1104,7 @@ export const CURRENT_RANKING_2026: CorredorData[] = [
         "name": "Santiago Fuentes",
         "val": 7,
         "fallen": 0,
-        "leads": 166,
+        "leads": 169,
         "agendas": 32,
         "coord": "luis.gomez@assetplan.cl"
     },
@@ -1097,7 +1112,7 @@ export const CURRENT_RANKING_2026: CorredorData[] = [
         "name": "Maryse Arria",
         "val": 7,
         "fallen": 0,
-        "leads": 70,
+        "leads": 71,
         "agendas": 11,
         "coord": "luis.gomez@assetplan.cl"
     },
@@ -1113,7 +1128,7 @@ export const CURRENT_RANKING_2026: CorredorData[] = [
         "name": "Sarah Volcanes",
         "val": 7,
         "fallen": 0,
-        "leads": 77,
+        "leads": 78,
         "agendas": 15,
         "coord": "luis.gomez@assetplan.cl"
     },
@@ -1121,7 +1136,7 @@ export const CURRENT_RANKING_2026: CorredorData[] = [
         "name": "Yealvanny Perez",
         "val": 7,
         "fallen": 0,
-        "leads": 67,
+        "leads": 71,
         "agendas": 8,
         "coord": "carlos.echeverria@assetplan.cl"
     },
@@ -1137,7 +1152,7 @@ export const CURRENT_RANKING_2026: CorredorData[] = [
         "name": "M\u00e1ximo Humberto P\u00e9rez Gonz\u00e1lez",
         "val": 7,
         "fallen": 0,
-        "leads": 55,
+        "leads": 61,
         "agendas": 39,
         "coord": "nataly.espinoza@assetplan.cl"
     },
@@ -1145,15 +1160,23 @@ export const CURRENT_RANKING_2026: CorredorData[] = [
         "name": "Patricia Gonzalez",
         "val": 6,
         "fallen": 0,
-        "leads": 58,
-        "agendas": 9,
+        "leads": 64,
+        "agendas": 10,
+        "coord": "luis.gomez@assetplan.cl"
+    },
+    {
+        "name": "Felix Ferrer",
+        "val": 6,
+        "fallen": 0,
+        "leads": 164,
+        "agendas": 12,
         "coord": "luis.gomez@assetplan.cl"
     },
     {
         "name": "Daiana Quintero",
         "val": 6,
         "fallen": 0,
-        "leads": 27,
+        "leads": 28,
         "agendas": 7,
         "coord": "luis.gomez@assetplan.cl"
     },
@@ -1161,7 +1184,7 @@ export const CURRENT_RANKING_2026: CorredorData[] = [
         "name": "Enmanuel Guerrero",
         "val": 6,
         "fallen": 0,
-        "leads": 19,
+        "leads": 20,
         "agendas": 1,
         "coord": "carlos.echeverria@assetplan.cl"
     },
@@ -1185,7 +1208,7 @@ export const CURRENT_RANKING_2026: CorredorData[] = [
         "name": "Ruth Mary Mata Martinez",
         "val": 6,
         "fallen": 0,
-        "leads": 66,
+        "leads": 67,
         "agendas": 2,
         "coord": "nataly.espinoza@assetplan.cl"
     },
@@ -1201,7 +1224,7 @@ export const CURRENT_RANKING_2026: CorredorData[] = [
         "name": "Daniela Cordero",
         "val": 5,
         "fallen": 0,
-        "leads": 58,
+        "leads": 59,
         "agendas": 2,
         "coord": "nataly.espinoza@assetplan.cl"
     },
@@ -1214,18 +1237,10 @@ export const CURRENT_RANKING_2026: CorredorData[] = [
         "coord": "carlos.echeverria@assetplan.cl"
     },
     {
-        "name": "Felix Ferrer",
-        "val": 5,
-        "fallen": 0,
-        "leads": 164,
-        "agendas": 11,
-        "coord": "luis.gomez@assetplan.cl"
-    },
-    {
         "name": "Luisana Albarez",
         "val": 5,
         "fallen": 0,
-        "leads": 62,
+        "leads": 66,
         "agendas": 11,
         "coord": "luis.gomez@assetplan.cl"
     },
@@ -1241,7 +1256,7 @@ export const CURRENT_RANKING_2026: CorredorData[] = [
         "name": "Yenny Alejandra D\u00edaz Vald\u00e9s",
         "val": 5,
         "fallen": 0,
-        "leads": 191,
+        "leads": 194,
         "agendas": 11,
         "coord": "carlos.echeverria@assetplan.cl"
     },
@@ -1254,10 +1269,18 @@ export const CURRENT_RANKING_2026: CorredorData[] = [
         "coord": "luis.gomez@assetplan.cl"
     },
     {
+        "name": "Aillien Rojas",
+        "val": 5,
+        "fallen": 0,
+        "leads": 62,
+        "agendas": 9,
+        "coord": "carlos.echeverria@assetplan.cl"
+    },
+    {
         "name": "Patricia Latorre",
         "val": 5,
         "fallen": 0,
-        "leads": 37,
+        "leads": 38,
         "agendas": 2,
         "coord": "carlos.echeverria@assetplan.cl"
     },
@@ -1268,6 +1291,14 @@ export const CURRENT_RANKING_2026: CorredorData[] = [
         "leads": 33,
         "agendas": 6,
         "coord": "angely.rojo@assetplan.cl"
+    },
+    {
+        "name": "Edmary Dauvinett Bolivar Hern\u00e1ndez",
+        "val": 5,
+        "fallen": 0,
+        "leads": 180,
+        "agendas": 9,
+        "coord": "nataly.espinoza@assetplan.cl"
     },
     {
         "name": "Andrea Carolina Soto Inzunza",
@@ -1282,14 +1313,14 @@ export const CURRENT_RANKING_2026: CorredorData[] = [
         "val": 5,
         "fallen": 0,
         "leads": 95,
-        "agendas": 30,
+        "agendas": 32,
         "coord": "nataly.espinoza@assetplan.cl"
     },
     {
         "name": "Romelean Lopez",
         "val": 4,
         "fallen": 0,
-        "leads": 25,
+        "leads": 26,
         "agendas": 2,
         "coord": "carlos.echeverria@assetplan.cl"
     },
@@ -1310,14 +1341,6 @@ export const CURRENT_RANKING_2026: CorredorData[] = [
         "coord": "luis.gomez@assetplan.cl"
     },
     {
-        "name": "Aillien Rojas",
-        "val": 4,
-        "fallen": 0,
-        "leads": 61,
-        "agendas": 9,
-        "coord": "carlos.echeverria@assetplan.cl"
-    },
-    {
         "name": "Yeni Isabel Mar\u00edn D\u00edaz",
         "val": 4,
         "fallen": 1,
@@ -1329,7 +1352,7 @@ export const CURRENT_RANKING_2026: CorredorData[] = [
         "name": "Paul Andr\u00e9s Gonz\u00e1lez Cerda",
         "val": 4,
         "fallen": 0,
-        "leads": 53,
+        "leads": 57,
         "agendas": 4,
         "coord": "luis.gomez@assetplan.cl"
     },
@@ -1345,23 +1368,15 @@ export const CURRENT_RANKING_2026: CorredorData[] = [
         "name": "Desiree Hern\u00e1ndez Nieto",
         "val": 4,
         "fallen": 0,
-        "leads": 85,
-        "agendas": 20,
-        "coord": "nataly.espinoza@assetplan.cl"
-    },
-    {
-        "name": "Edmary Dauvinett Bolivar Hern\u00e1ndez",
-        "val": 4,
-        "fallen": 0,
-        "leads": 180,
-        "agendas": 9,
+        "leads": 92,
+        "agendas": 22,
         "coord": "nataly.espinoza@assetplan.cl"
     },
     {
         "name": "Jennyfer Portillo",
         "val": 3,
         "fallen": 1,
-        "leads": 18,
+        "leads": 19,
         "agendas": 1,
         "coord": "luis.gomez@assetplan.cl"
     },
@@ -1372,6 +1387,14 @@ export const CURRENT_RANKING_2026: CorredorData[] = [
         "leads": 7,
         "agendas": 0,
         "coord": "luis.gomez@assetplan.cl"
+    },
+    {
+        "name": "Juan Uribe",
+        "val": 3,
+        "fallen": 0,
+        "leads": 20,
+        "agendas": 0,
+        "coord": "carlos.echeverria@assetplan.cl"
     },
     {
         "name": "Carlos Gonzalez",
@@ -1385,7 +1408,7 @@ export const CURRENT_RANKING_2026: CorredorData[] = [
         "name": "Andreina Carolina L\u00f3pez Pedrique",
         "val": 3,
         "fallen": 0,
-        "leads": 16,
+        "leads": 18,
         "agendas": 10,
         "coord": "luis.gomez@assetplan.cl"
     },
@@ -1401,15 +1424,15 @@ export const CURRENT_RANKING_2026: CorredorData[] = [
         "name": "Luimar Marilin Sucre Jim\u00e9nez",
         "val": 3,
         "fallen": 0,
-        "leads": 124,
-        "agendas": 7,
+        "leads": 136,
+        "agendas": 8,
         "coord": "luis.gomez@assetplan.cl"
     },
     {
         "name": "Yenkly Karelys Le\u00f3n Pereira",
         "val": 3,
         "fallen": 0,
-        "leads": 83,
+        "leads": 84,
         "agendas": 4,
         "coord": "luis.gomez@assetplan.cl"
     },
@@ -1425,8 +1448,8 @@ export const CURRENT_RANKING_2026: CorredorData[] = [
         "name": "Sebastian Pirela",
         "val": 3,
         "fallen": 0,
-        "leads": 62,
-        "agendas": 12,
+        "leads": 66,
+        "agendas": 13,
         "coord": "angely.rojo@assetplan.cl"
     },
     {
@@ -1441,7 +1464,7 @@ export const CURRENT_RANKING_2026: CorredorData[] = [
         "name": "Joenny Moncada",
         "val": 2,
         "fallen": 0,
-        "leads": 21,
+        "leads": 22,
         "agendas": 1,
         "coord": "carlos.echeverria@assetplan.cl"
     },
@@ -1457,7 +1480,7 @@ export const CURRENT_RANKING_2026: CorredorData[] = [
         "name": "Ana Mar\u00eda Pernia Vivas",
         "val": 2,
         "fallen": 0,
-        "leads": 23,
+        "leads": 30,
         "agendas": 1,
         "coord": "luis.gomez@assetplan.cl"
     },
@@ -1473,7 +1496,7 @@ export const CURRENT_RANKING_2026: CorredorData[] = [
         "name": "Yoanetzy Rodriguez",
         "val": 2,
         "fallen": 0,
-        "leads": 41,
+        "leads": 42,
         "agendas": 5,
         "coord": "maria.chacin@assetplan.cl"
     },
@@ -1489,7 +1512,7 @@ export const CURRENT_RANKING_2026: CorredorData[] = [
         "name": "Osclari Andreina Fiorino Saavedra",
         "val": 2,
         "fallen": 0,
-        "leads": 33,
+        "leads": 44,
         "agendas": 3,
         "coord": "nataly.espinoza@assetplan.cl"
     },
@@ -1505,16 +1528,8 @@ export const CURRENT_RANKING_2026: CorredorData[] = [
         "name": "Mar\u00eda Elena Katny",
         "val": 1,
         "fallen": 0,
-        "leads": 78,
+        "leads": 80,
         "agendas": 4,
-        "coord": "carlos.echeverria@assetplan.cl"
-    },
-    {
-        "name": "Juan Uribe",
-        "val": 1,
-        "fallen": 0,
-        "leads": 20,
-        "agendas": 0,
         "coord": "carlos.echeverria@assetplan.cl"
     },
     {
@@ -1614,14 +1629,6 @@ export const CURRENT_RANKING_2026: CorredorData[] = [
         "coord": "carlos.echeverria@assetplan.cl"
     },
     {
-        "name": "Diego Andrade",
-        "val": 0,
-        "fallen": 0,
-        "leads": 0,
-        "agendas": 0,
-        "coord": "carlos.echeverria@assetplan.cl"
-    },
-    {
         "name": "Francisca Camila Cabero Gornall",
         "val": 0,
         "fallen": 0,
@@ -1649,7 +1656,7 @@ export const CURRENT_RANKING_2026: CorredorData[] = [
         "name": "Douglas Rojo",
         "val": 0,
         "fallen": 0,
-        "leads": 10,
+        "leads": 13,
         "agendas": 0,
         "coord": "luis.gomez@assetplan.cl"
     },
@@ -1745,7 +1752,7 @@ export const CURRENT_RANKING_2026: CorredorData[] = [
         "name": "Yelitza Andrea Perdomo Ocampo",
         "val": 0,
         "fallen": 0,
-        "leads": 39,
+        "leads": 43,
         "agendas": 0,
         "coord": "carlos.echeverria@assetplan.cl"
     },
@@ -1881,7 +1888,7 @@ export const CURRENT_RANKING_2026: CorredorData[] = [
         "name": "Fernanda Trinidad Gonz\u00e1lez Abarca",
         "val": 0,
         "fallen": 0,
-        "leads": 31,
+        "leads": 34,
         "agendas": 4,
         "coord": "nataly.espinoza@assetplan.cl"
     },
@@ -1947,555 +1954,43 @@ export const NAMES_WITH_AGENDA: string[] = [
 
 // Historical Data Jan 2025
 export const HISTORY_2025: Record<string, HistoryData> = {
-    "Leslie Mariscal": {
-        "c": 11,
-        "t": 12
-    },
-    "Andr\u00e9s Garcia": {
-        "c": 3,
-        "t": 4
-    },
-    "Camila Fuenzalida": {
-        "c": 1,
-        "t": 1
-    },
-    "Giovanny Gutierrez": {
-        "c": 8,
-        "t": 12
-    },
-    "Francisca Camila Cabero Gornall": {
-        "c": 2,
-        "t": 2
-    },
-    "Diego Andrade": {
-        "c": 4,
-        "t": 5
-    },
-    "Jorge A\u00f1ez": {
-        "c": 14,
-        "t": 20
-    },
-    "Joenny Moncada": {
-        "c": 17,
-        "t": 21
-    },
-    "Andres Reyes": {
-        "c": 1,
-        "t": 3
-    },
-    "Enmanuel Guerrero": {
-        "c": 1,
-        "t": 1
-    },
-    "Cintia Cecilia Moreno Monz\u00f3n": {
-        "c": 7,
-        "t": 8
-    },
-    "Valeska Chavez": {
-        "c": 17,
-        "t": 21
-    },
-    "Emeric Bergstrom Ibarra": {
-        "c": 2,
-        "t": 7
-    },
-    "Fabian Arenas": {
-        "c": 4,
-        "t": 4
-    },
-    "Gabriela Quintero": {
-        "c": 19,
-        "t": 19
-    },
-    "Ejecutivo Assetplan": {
-        "c": 0,
-        "t": 2
-    },
-    "Corredor Switch": {
-        "c": 19,
-        "t": 25
-    },
-    "Laura Moizant": {
-        "c": 5,
-        "t": 7
-    },
-    "Gensa Arriendos (Maria Araujo)": {
-        "c": 8,
-        "t": 11
-    },
-    "Miriam Flores": {
-        "c": 0,
-        "t": 1
-    },
-    "Ana Flores": {
-        "c": 0,
-        "t": 1
-    },
-    "Rosanyelys Cordova": {
-        "c": 18,
-        "t": 23
-    },
-    "Evelyn Carolina D\u00edaz Galaz": {
-        "c": 0,
-        "t": 2
-    },
-    "Marlyn Parra": {
-        "c": 12,
-        "t": 14
-    },
-    "Jose Roche": {
-        "c": 3,
-        "t": 3
-    },
-    "Daiana Quintero": {
-        "c": 20,
-        "t": 24
-    },
-    "Alvaro Quintero": {
-        "c": 0,
-        "t": 5
-    },
-    "Plaza & Nieto (Gloria Nieto)": {
-        "c": 4,
-        "t": 5
-    },
-    "Sinead Vasquez": {
-        "c": 1,
-        "t": 2
-    },
-    "Alejandro Rodriguez": {
-        "c": 15,
-        "t": 18
-    },
-    "Manuel Martinez": {
-        "c": 30,
-        "t": 39
-    },
-    "Isadora Zepeda": {
-        "c": 26,
-        "t": 35
-    },
-    "Dutglas Delmoral": {
-        "c": 35,
-        "t": 49
-    },
-    "Dennys Morales": {
-        "c": 21,
-        "t": 27
-    },
-    "Yasmin Garc\u00eda": {
-        "c": 5,
-        "t": 12
-    },
-    "Ivon Urra": {
-        "c": 3,
-        "t": 3
-    },
-    "Joselin Quintero": {
-        "c": 0,
-        "t": 2
-    },
-    "Maryse Arria": {
-        "c": 14,
-        "t": 23
-    },
-    "Maryelis Lugo": {
-        "c": 1,
-        "t": 4
-    },
-    "Ingrid Mu\u00f1oz": {
-        "c": 13,
-        "t": 17
-    },
-    "Arlyn Pe\u00f1a": {
-        "c": 1,
-        "t": 2
-    },
-    "Elkis Daza": {
-        "c": 30,
-        "t": 33
-    },
-    "Yorcy Tovar": {
-        "c": 1,
-        "t": 1
-    },
-    "Karen Lesmes": {
-        "c": 2,
-        "t": 2
-    },
-    "Ana Roman": {
-        "c": 11,
-        "t": 15
-    },
-    "Yessica Asuaje": {
-        "c": 11,
-        "t": 12
-    },
-    "Esthefani Gonzalez": {
-        "c": 17,
-        "t": 23
-    },
-    "Yuleidy Caraballo": {
-        "c": 1,
-        "t": 1
-    },
-    "Andibet Quintero": {
-        "c": 14,
-        "t": 15
-    },
-    "Virginia Del Carmen Lobo Lobo": {
-        "c": 3,
-        "t": 4
-    },
-    "Carlos Alvarez": {
-        "c": 9,
-        "t": 11
-    },
-    "Mauricio Reyes": {
-        "c": 2,
-        "t": 2
-    },
-    "Melida Casta\u00f1eda": {
-        "c": 9,
-        "t": 10
-    },
-    "Eugenio Arrevilla": {
-        "c": 5,
-        "t": 8
-    },
-    "Kareen Araya": {
-        "c": 2,
-        "t": 2
-    },
-    "Ruben Andr\u00e9s Castro Amaza": {
-        "c": 4,
-        "t": 7
-    },
-    "Mayerling Soto": {
-        "c": 24,
-        "t": 30
-    },
-    "Maritza Faundez": {
-        "c": 12,
-        "t": 15
-    },
-    "Marina Margarita Ceballos Rojas": {
-        "c": 3,
-        "t": 5
-    },
-    "Kariangel Andrea Silva": {
-        "c": 14,
-        "t": 20
-    },
-    "Ximena Leiva": {
-        "c": 5,
-        "t": 5
-    },
-    "Guillermo Antolinez": {
-        "c": 1,
-        "t": 3
-    },
-    "Daina Tapia": {
-        "c": 10,
-        "t": 16
-    },
-    "Cristian Uribe": {
-        "c": 3,
-        "t": 4
-    },
-    "Alberto Del Campo": {
-        "c": 1,
-        "t": 1
-    },
-    "Ernesto Moscoso": {
-        "c": 1,
-        "t": 1
-    },
-    "Yerimar Portillo": {
-        "c": 24,
-        "t": 32
-    },
     "Daniela Paola Magrini": {
         "c": 36,
         "t": 39
-    },
-    "Carolina Valenzuela": {
-        "c": 0,
-        "t": 0
-    },
-    "Marco Martinez": {
-        "c": 9,
-        "t": 10
-    },
-    "Lesbia Utrilla": {
-        "c": 6,
-        "t": 8
-    },
-    "Rosangela Cirelli": {
-        "c": 42,
-        "t": 54
-    },
-    "Annhelys Cardiet": {
-        "c": 18,
-        "t": 24
-    },
-    "Katerin Reyes": {
-        "c": 1,
-        "t": 1
-    },
-    "Francisco Gonzalez": {
-        "c": 2,
-        "t": 2
-    },
-    "Greiry Rodriguez": {
-        "c": 2,
-        "t": 2
-    },
-    "Victoria D\u00edaz": {
-        "c": 8,
-        "t": 10
-    },
-    "Daniela Pino": {
-        "c": 16,
-        "t": 21
-    },
-    "Jonathan Alfredo Lagos Licancura": {
-        "c": 7,
-        "t": 9
-    },
-    "Nataly Concha": {
-        "c": 10,
-        "t": 10
-    },
-    "Benjamin Marcano": {
-        "c": 0,
-        "t": 3
-    },
-    "Felix Ferrer": {
-        "c": 18,
-        "t": 25
     },
     "Henry Colina (Rumirent)": {
         "c": 0,
         "t": 6
     },
-    "Paul Perdomo": {
-        "c": 17,
-        "t": 20
-    },
-    "Saynell Patricia Mora Zambrano": {
-        "c": 9,
-        "t": 11
-    },
-    "Maria Del Pilar Diaz": {
-        "c": 1,
-        "t": 1
-    },
-    "Constanza Moya": {
-        "c": 1,
-        "t": 1
-    },
-    "Yanelaine Reyes": {
-        "c": 4,
-        "t": 4
-    },
-    "Yonathan Pino": {
-        "c": 27,
-        "t": 31
-    },
-    "Maria Morales": {
-        "c": 11,
-        "t": 14
-    },
-    "Carla Palma": {
-        "c": 2,
-        "t": 2
-    },
-    "Santiago Fuentes": {
-        "c": 16,
-        "t": 21
-    },
-    "Michelle Pino": {
-        "c": 1,
-        "t": 1
-    },
-    "Carlos Zambrano": {
-        "c": 18,
-        "t": 22
-    },
-    "Valeria Carolina Navarro Mondaca": {
-        "c": 4,
-        "t": 4
-    },
-    "Carlos Gonzalez": {
-        "c": 9,
-        "t": 14
-    },
-    "Luis Pernalete": {
-        "c": 16,
-        "t": 17
-    },
-    "Angel Marquez": {
-        "c": 28,
-        "t": 35
-    },
-    "Luisana Albarez": {
-        "c": 4,
-        "t": 6
-    },
-    "Elizabeth Valdes": {
-        "c": 18,
+    "Erika Cepeda": {
+        "c": 15,
         "t": 23
     },
-    "Daniel Alfredo Devita Le\u00f3n": {
-        "c": 15,
-        "t": 17
+    "Leslie Mariscal": {
+        "c": 11,
+        "t": 12
     },
-    "Adriana Ollarves": {
-        "c": 15,
-        "t": 22
+    "Giovanny Gutierrez": {
+        "c": 8,
+        "t": 12
     },
-    "Nelly Ocando": {
-        "c": 24,
-        "t": 29
-    },
-    "Angela Palomo": {
-        "c": 6,
-        "t": 9
-    },
-    "Rosa Gana": {
-        "c": 2,
-        "t": 3
-    },
-    "Andreina Carolina L\u00f3pez Pedrique": {
-        "c": 14,
-        "t": 19
-    },
-    "Carlos Oropeza": {
-        "c": 1,
-        "t": 4
-    },
-    "Yinglis Hernandez": {
-        "c": 34,
-        "t": 39
-    },
-    "Henry Rodriguez": {
-        "c": 33,
-        "t": 43
-    },
-    "Diego Loy": {
-        "c": 5,
-        "t": 5
-    },
-    "Christian Subiabre": {
-        "c": 13,
-        "t": 20
-    },
-    "Manuel Silva": {
+    "Sofia Bravo": {
         "c": 5,
         "t": 8
-    },
-    "Alexander Pereira": {
-        "c": 2,
-        "t": 3
-    },
-    "Rodrigo Valderrama": {
-        "c": 18,
-        "t": 20
-    },
-    "Gustavo Gonzalez": {
-        "c": 29,
-        "t": 34
-    },
-    "Raquel Rosa Valenzuela Brizuela": {
-        "c": 1,
-        "t": 1
-    },
-    "Mario Lepore": {
-        "c": 7,
-        "t": 9
-    },
-    "Maria Fernanda Meneses": {
-        "c": 1,
-        "t": 5
-    },
-    "Mar\u00eda Elena Katny": {
-        "c": 2,
-        "t": 3
-    },
-    "Robinson Mellado Mu\u00f1oz": {
-        "c": 4,
-        "t": 8
-    },
-    "Patricia Gonzalez": {
-        "c": 8,
-        "t": 10
-    },
-    "Yexica Gomez": {
-        "c": 8,
-        "t": 17
-    },
-    "Jennyfer Portillo": {
-        "c": 21,
-        "t": 24
-    },
-    "Dania Chirinos": {
-        "c": 20,
-        "t": 25
-    },
-    "Rita Valiente": {
-        "c": 2,
-        "t": 2
     },
     "Jairon Dumes": {
         "c": 16,
         "t": 19
     },
-    "Hector Cardiet": {
-        "c": 12,
-        "t": 17
+    "Yinglis Hernandez": {
+        "c": 34,
+        "t": 39
     },
-    "Karol Yusty": {
-        "c": 7,
-        "t": 8
-    },
-    "Jeanette Mendoza": {
-        "c": 2,
-        "t": 3
-    },
-    "Yulenny Bencomo": {
-        "c": 17,
-        "t": 22
-    },
-    "Johanna Hernandez": {
-        "c": 32,
-        "t": 44
-    },
-    "Sofia Bravo": {
-        "c": 4,
-        "t": 8
-    },
-    "Nelly Coromoto Zambrano": {
-        "c": 4,
-        "t": 5
-    },
-    "Alejandra Romo": {
-        "c": 12,
-        "t": 15
-    },
-    "Enihet Curpa": {
-        "c": 9,
-        "t": 12
-    },
-    "Pedro Riveiro": {
-        "c": 2,
-        "t": 3
-    },
-    "Morande Oficinas": {
+    "Nailet Rojo": {
         "c": 3,
-        "t": 4
+        "t": 6
     },
-    "Mar\u00eda Cristina De La Cuadra": {
+    "Andres Reyes": {
         "c": 1,
         "t": 3
     },
@@ -2503,45 +1998,557 @@ export const HISTORY_2025: Record<string, HistoryData> = {
         "c": 2,
         "t": 3
     },
-    "Johana G\u00f3mez": {
-        "c": 6,
-        "t": 7
-    },
-    "Erika Cepeda": {
-        "c": 15,
-        "t": 23
-    },
-    "Nailet Rojo": {
+    "Morande Oficinas": {
         "c": 3,
-        "t": 6
+        "t": 4
+    },
+    "Mar\u00eda Elena Katny": {
+        "c": 2,
+        "t": 3
+    },
+    "Joselin Quintero": {
+        "c": 0,
+        "t": 2
+    },
+    "Rodrigo Valderrama": {
+        "c": 18,
+        "t": 20
+    },
+    "Rosa Gana": {
+        "c": 2,
+        "t": 3
+    },
+    "Mario Lepore": {
+        "c": 7,
+        "t": 9
+    },
+    "Carlos Zambrano": {
+        "c": 18,
+        "t": 22
+    },
+    "Ana Roman": {
+        "c": 11,
+        "t": 15
+    },
+    "Elkis Daza": {
+        "c": 30,
+        "t": 33
+    },
+    "Alejandra Romo": {
+        "c": 12,
+        "t": 15
+    },
+    "Carolina Valenzuela": {
+        "c": 0,
+        "t": 0
+    },
+    "Rita Valiente": {
+        "c": 2,
+        "t": 2
     },
     "Douglas Rojo": {
         "c": 21,
         "t": 25
     },
-    "Pamela Novoa": {
-        "c": 1,
-        "t": 1
-    },
-    "Romelean Lopez": {
-        "c": 2,
-        "t": 2
-    },
-    "Geraldine Trujillo": {
-        "c": 4,
+    "Cristian Uribe": {
+        "c": 3,
         "t": 4
+    },
+    "Andreina Carolina L\u00f3pez Pedrique": {
+        "c": 14,
+        "t": 19
     },
     "Ver\u00f3nica Gonz\u00e1lez": {
         "c": 4,
         "t": 6
     },
+    "Yessica Asuaje": {
+        "c": 11,
+        "t": 12
+    },
+    "Manuel Silva": {
+        "c": 5,
+        "t": 8
+    },
+    "Enmanuel Guerrero": {
+        "c": 1,
+        "t": 1
+    },
+    "Jeanette Mendoza": {
+        "c": 2,
+        "t": 3
+    },
+    "Ivon Urra": {
+        "c": 3,
+        "t": 3
+    },
+    "Laura Moizant": {
+        "c": 5,
+        "t": 7
+    },
+    "Carlos Gonzalez": {
+        "c": 9,
+        "t": 14
+    },
+    "Constanza Moya": {
+        "c": 1,
+        "t": 1
+    },
+    "Mar\u00eda Cristina De La Cuadra": {
+        "c": 2,
+        "t": 3
+    },
+    "Johanna Hernandez": {
+        "c": 34,
+        "t": 44
+    },
+    "Lesbia Utrilla": {
+        "c": 6,
+        "t": 8
+    },
+    "Alexander Pereira": {
+        "c": 2,
+        "t": 3
+    },
+    "Miriam Flores": {
+        "c": 0,
+        "t": 1
+    },
+    "Enihet Curpa": {
+        "c": 9,
+        "t": 12
+    },
+    "Victoria D\u00edaz": {
+        "c": 8,
+        "t": 10
+    },
+    "Maria Del Pilar Diaz": {
+        "c": 1,
+        "t": 1
+    },
+    "Andibet Quintero": {
+        "c": 14,
+        "t": 15
+    },
+    "Ernesto Moscoso": {
+        "c": 1,
+        "t": 1
+    },
+    "Yexica Gomez": {
+        "c": 10,
+        "t": 17
+    },
+    "Katerin Reyes": {
+        "c": 1,
+        "t": 1
+    },
+    "Patricia Gonzalez": {
+        "c": 8,
+        "t": 10
+    },
+    "Maryelis Lugo": {
+        "c": 2,
+        "t": 4
+    },
+    "Ingrid Mu\u00f1oz": {
+        "c": 13,
+        "t": 17
+    },
+    "Dennys Morales": {
+        "c": 21,
+        "t": 27
+    },
+    "Plaza & Nieto (Gloria Nieto)": {
+        "c": 4,
+        "t": 5
+    },
+    "Saynell Patricia Mora Zambrano": {
+        "c": 9,
+        "t": 11
+    },
+    "Karol Yusty": {
+        "c": 7,
+        "t": 8
+    },
+    "Jennyfer Portillo": {
+        "c": 21,
+        "t": 24
+    },
+    "Daniel Alfredo Devita Le\u00f3n": {
+        "c": 16,
+        "t": 17
+    },
+    "Yanelaine Reyes": {
+        "c": 4,
+        "t": 4
+    },
+    "Yulenny Bencomo": {
+        "c": 17,
+        "t": 22
+    },
+    "Alejandro Rodriguez": {
+        "c": 15,
+        "t": 18
+    },
+    "Yuleidy Caraballo": {
+        "c": 1,
+        "t": 1
+    },
+    "Ejecutivo Assetplan": {
+        "c": 0,
+        "t": 2
+    },
+    "Esthefani Gonzalez": {
+        "c": 18,
+        "t": 23
+    },
+    "Valeska Chavez": {
+        "c": 17,
+        "t": 21
+    },
+    "Arlyn Pe\u00f1a": {
+        "c": 1,
+        "t": 2
+    },
+    "Joenny Moncada": {
+        "c": 17,
+        "t": 21
+    },
+    "Alberto Del Campo": {
+        "c": 1,
+        "t": 1
+    },
+    "Rosangela Cirelli": {
+        "c": 44,
+        "t": 54
+    },
+    "Romelean Lopez": {
+        "c": 2,
+        "t": 2
+    },
+    "Francisco Gonzalez": {
+        "c": 2,
+        "t": 2
+    },
+    "Diego Loy": {
+        "c": 5,
+        "t": 5
+    },
     "Karla Garcia": {
         "c": 0,
         "t": 2
+    },
+    "Kariangel Andrea Silva": {
+        "c": 14,
+        "t": 20
+    },
+    "Johana G\u00f3mez": {
+        "c": 6,
+        "t": 7
+    },
+    "Mauricio Reyes": {
+        "c": 2,
+        "t": 2
+    },
+    "Marlyn Parra": {
+        "c": 12,
+        "t": 14
+    },
+    "Nelly Ocando": {
+        "c": 24,
+        "t": 29
+    },
+    "Henry Rodriguez": {
+        "c": 34,
+        "t": 43
+    },
+    "Yorcy Tovar": {
+        "c": 1,
+        "t": 1
+    },
+    "Michelle Pino": {
+        "c": 1,
+        "t": 1
+    },
+    "Francisca Camila Cabero Gornall": {
+        "c": 2,
+        "t": 2
+    },
+    "Emeric Bergstrom Ibarra": {
+        "c": 2,
+        "t": 7
+    },
+    "Yasmin Garc\u00eda": {
+        "c": 5,
+        "t": 12
+    },
+    "Daina Tapia": {
+        "c": 10,
+        "t": 16
+    },
+    "Adriana Ollarves": {
+        "c": 17,
+        "t": 22
+    },
+    "Marco Martinez": {
+        "c": 9,
+        "t": 10
+    },
+    "Carlos Oropeza": {
+        "c": 1,
+        "t": 4
+    },
+    "Pedro Riveiro": {
+        "c": 2,
+        "t": 3
+    },
+    "Geraldine Trujillo": {
+        "c": 4,
+        "t": 4
+    },
+    "Eugenio Arrevilla": {
+        "c": 5,
+        "t": 8
+    },
+    "Daiana Quintero": {
+        "c": 20,
+        "t": 24
+    },
+    "Benjamin Marcano": {
+        "c": 0,
+        "t": 3
+    },
+    "Virginia Del Carmen Lobo Lobo": {
+        "c": 3,
+        "t": 4
+    },
+    "Dutglas Delmoral": {
+        "c": 36,
+        "t": 49
+    },
+    "Marina Margarita Ceballos Rojas": {
+        "c": 3,
+        "t": 5
+    },
+    "Dania Chirinos": {
+        "c": 20,
+        "t": 25
+    },
+    "Yerimar Portillo": {
+        "c": 25,
+        "t": 32
+    },
+    "Elizabeth Valdes": {
+        "c": 18,
+        "t": 23
+    },
+    "Maritza Faundez": {
+        "c": 12,
+        "t": 15
+    },
+    "Christian Subiabre": {
+        "c": 13,
+        "t": 20
+    },
+    "Gensa Arriendos (Maria Araujo)": {
+        "c": 8,
+        "t": 11
+    },
+    "Manuel Martinez": {
+        "c": 30,
+        "t": 39
+    },
+    "Karen Lesmes": {
+        "c": 2,
+        "t": 2
+    },
+    "Carla Palma": {
+        "c": 2,
+        "t": 2
+    },
+    "Luisana Albarez": {
+        "c": 4,
+        "t": 6
+    },
+    "Melida Casta\u00f1eda": {
+        "c": 9,
+        "t": 10
+    },
+    "Angel Marquez": {
+        "c": 28,
+        "t": 35
+    },
+    "Nelly Coromoto Zambrano": {
+        "c": 4,
+        "t": 5
+    },
+    "Pamela Novoa": {
+        "c": 1,
+        "t": 1
+    },
+    "Corredor Switch": {
+        "c": 19,
+        "t": 25
+    },
+    "Santiago Fuentes": {
+        "c": 16,
+        "t": 21
+    },
+    "Yonathan Pino": {
+        "c": 27,
+        "t": 31
+    },
+    "Gabriela Quintero": {
+        "c": 19,
+        "t": 19
+    },
+    "Ana Flores": {
+        "c": 0,
+        "t": 1
+    },
+    "Maryse Arria": {
+        "c": 16,
+        "t": 23
+    },
+    "Cintia Cecilia Moreno Monz\u00f3n": {
+        "c": 7,
+        "t": 8
+    },
+    "Jonathan Alfredo Lagos Licancura": {
+        "c": 7,
+        "t": 9
+    },
+    "Ruben Andr\u00e9s Castro Amaza": {
+        "c": 4,
+        "t": 7
+    },
+    "Sinead Vasquez": {
+        "c": 1,
+        "t": 2
+    },
+    "Alvaro Quintero": {
+        "c": 0,
+        "t": 5
+    },
+    "Paul Perdomo": {
+        "c": 18,
+        "t": 20
+    },
+    "Luis Pernalete": {
+        "c": 16,
+        "t": 17
+    },
+    "Annhelys Cardiet": {
+        "c": 18,
+        "t": 24
+    },
+    "Hector Cardiet": {
+        "c": 12,
+        "t": 17
+    },
+    "Maria Morales": {
+        "c": 11,
+        "t": 14
+    },
+    "Jorge A\u00f1ez": {
+        "c": 14,
+        "t": 20
+    },
+    "Valeria Carolina Navarro Mondaca": {
+        "c": 4,
+        "t": 4
+    },
+    "Jose Roche": {
+        "c": 3,
+        "t": 3
+    },
+    "Mayerling Soto": {
+        "c": 24,
+        "t": 30
+    },
+    "Andr\u00e9s Garcia": {
+        "c": 3,
+        "t": 4
+    },
+    "Diego Andrade": {
+        "c": 4,
+        "t": 5
+    },
+    "Maria Fernanda Meneses": {
+        "c": 2,
+        "t": 5
+    },
+    "Daniela Pino": {
+        "c": 16,
+        "t": 21
+    },
+    "Felix Ferrer": {
+        "c": 19,
+        "t": 25
+    },
+    "Carlos Alvarez": {
+        "c": 9,
+        "t": 11
+    },
+    "Rosanyelys Cordova": {
+        "c": 18,
+        "t": 23
+    },
+    "Kareen Araya": {
+        "c": 2,
+        "t": 2
+    },
+    "Guillermo Antolinez": {
+        "c": 1,
+        "t": 3
+    },
+    "Camila Fuenzalida": {
+        "c": 1,
+        "t": 1
+    },
+    "Isadora Zepeda": {
+        "c": 26,
+        "t": 35
+    },
+    "Raquel Rosa Valenzuela Brizuela": {
+        "c": 1,
+        "t": 1
+    },
+    "Angela Palomo": {
+        "c": 6,
+        "t": 9
+    },
+    "Evelyn Carolina D\u00edaz Galaz": {
+        "c": 0,
+        "t": 2
+    },
+    "Gustavo Gonzalez": {
+        "c": 29,
+        "t": 34
+    },
+    "Greiry Rodriguez": {
+        "c": 2,
+        "t": 2
+    },
+    "Nataly Concha": {
+        "c": 10,
+        "t": 10
+    },
+    "Fabian Arenas": {
+        "c": 4,
+        "t": 4
+    },
+    "Ximena Leiva": {
+        "c": 5,
+        "t": 5
+    },
+    "Robinson Mellado Mu\u00f1oz": {
+        "c": 4,
+        "t": 8
     }
 };
 
-export const LAST_UPDATE = '24/01/2026 23:22';
+export const LAST_UPDATE = '25/01/2026 22:57 (Actualizado)';
 
 export const TEAMS: Record<string, TeamConfig> = {
     "carlos.echeverria@assetplan.cl": { name: "Squad Carlos", icon: "Flame", color: "text-orange-600", bg: "bg-orange-50 border-orange-200", my: false },

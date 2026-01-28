@@ -45,6 +45,8 @@ export interface DashboardStats {
   total2025Today: number;
   globalQualified: number;
   squadStats: Record<string, SquadStats>;
+  accMetaToToday: number;
+  accRealToToday: number;
   diagnostics: {
     loss: DiagnosticItem[];
     lossVolume: number;

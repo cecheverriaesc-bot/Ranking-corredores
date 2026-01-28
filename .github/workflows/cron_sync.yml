@@ -1,6 +1,8 @@
 name: Cloud Sync (15 min)
 
 on:
+  push:
+    branches: [ main ]
   schedule:
     - cron: '*/15 * * * *'
   workflow_dispatch: # Permite ejecutar manualmente desde la pestaña Actions

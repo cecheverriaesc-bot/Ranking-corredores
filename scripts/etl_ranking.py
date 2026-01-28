@@ -6,15 +6,26 @@ from datetime import datetime
 from dotenv import load_dotenv
 
 # Load Env
-env_path = r"c:\Users\assetplan\Desktop\Ranking Enero 2026\.env"
-if os.path.exists(env_path):
-    load_dotenv(env_path)
-else:
-    # Fallback to local .env in the root of the project (for GitHub Actions or other environments)
-    # The script is in /scripts/, so .env is usually in /
-    load_dotenv(os.path.join(os.path.dirname(__file__), "..", ".env"))
-    # Also load from system environment variables (GitHub Secrets) 
-    # load_dotenv() is already called, which handles this partially.
+script_dir = os.path.dirname(os.path.abspath(__file__))
+# .env is in the root of the consolidated folder, which is two levels up from dashboard/scripts/
+# or one level up from dashboard/ if running from there.
+# Let's check both options to be robust.
+env_options = [
+    os.path.join(script_dir, "..", "..", ".env"), # From dashboard/scripts/
+    os.path.join(script_dir, "..", ".env"),        # From dashboard/
+    os.path.join(os.getcwd(), ".env")               # From current working dir
+]
+
+env_loaded = False
+for path in env_options:
+    if os.path.exists(path):
+        load_dotenv(path)
+        print(f"INFO: Cargado .env desde {os.path.abspath(path)}")
+        env_loaded = True
+        break
+
+if not env_loaded:
+    print("WARNING: No se encontry archivo .env en las rutas buscadas.")
 
 # DB Connection
 def get_connection():
@@ -407,10 +418,9 @@ def main():
         ts_content += "// Historical Data Jan 2025\n"
         ts_content += "export const HISTORY_2025: Record<string, HistoryData> = " + json.dumps(history_map, indent=4) + ";\n\n"
         
-        # 6. Last Update
-        last_date = get_last_reservation_date(conn)
-        last_date_str = last_date.strftime("%d/%m/%Y %H:%M") if last_date else datetime.now().strftime("%d/%m/%Y %H:%M")
-        ts_content += f"export const LAST_UPDATE = '{last_date_str}';\n\n"
+        # 6. Last Update (Now shows the sync time to avoid confusion when no new sales exist)
+        last_date_str = datetime.now().strftime("%d/%m/%Y %H:%M")
+        ts_content += f"export const LAST_UPDATE = '{last_date_str} (Actualizado)';\n\n"
 
         # 7. Teams (Static constant)
         ts_content += """export const TEAMS: Record<string, TeamConfig> = {

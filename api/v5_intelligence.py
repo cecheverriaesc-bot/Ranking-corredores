@@ -2,67 +2,55 @@ from http.server import BaseHTTPRequestHandler
 import json
 import mysql.connector
 import os
-from dotenv import load_dotenv
 from datetime import datetime, date
 import calendar
 import statistics
 import math
 
-# Load environment variables
-script_dir = os.path.dirname(os.path.abspath(__file__))
-env_options = [
-    os.path.join(script_dir, "..", "..", ".env"),
-    os.path.join(script_dir, "..", ".env"),
-    os.path.join(os.getcwd(), ".env")
-]
-for path in env_options:
-    if os.path.exists(path):
-        load_dotenv(path)
-        print(f"INFO: Loaded .env from {path}")
-        break
-else:
-    load_dotenv()
+# ===================================================================
+# LOAD ENVIRONMENT VARIABLES (compatible con Vercel sin python-dotenv)
+# ===================================================================
+def load_env_vars():
+    env_vars = {}
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    env_options = [
+        os.path.join(script_dir, '..', '..', '.env'),
+        os.path.join(script_dir, '..', '.env'),
+        os.path.join(os.getcwd(), '.env')
+    ]
+    for env_file_path in env_options:
+        if os.path.exists(env_file_path):
+            with open(env_file_path, 'r', encoding='utf-8') as f:
+                for line in f:
+                    line = line.strip()
+                    if not line or line.startswith('#'):
+                        continue
+                    if '=' in line:
+                        key, value = line.split('=', 1)
+                        env_vars[key.strip()] = value.strip()
+            break
+
+    for key in ['DB_HOST', 'DB_USER', 'DB_PASSWORD', 'DB_PORT']:
+        if key in os.environ:
+            env_vars[key] = os.environ[key]
+
+    return env_vars
+
+ENV_VARS = load_env_vars()
 
 # ===================================================================
 # CONSTANTES GLOBALES
 # ===================================================================
-META_GLOBAL_110 = 1707  # Meta total mensual (110%)
+META_GLOBAL_110 = 1707
 CURRENT_YEAR = datetime.now().year
-CURRENT_MONTH = datetime.now().month  # Dinámico - mes actual
-
-# Comunas de Región Metropolitana (RM)
-RM_COMUNAS = {
-    'Santiago', 'Estación Central', 'Independencia', 'La Cisterna', 
-    'La Florida', 'Las Condes', 'Macul', 'Ñuñoa', 'Providencia', 
-    'Quinta Normal', 'San Joaquín', 'San Miguel', 'Vitacura', 'Renca',
-    'Cerrillos', 'Huechuraba', 'La Granja', 'Maipú', 'Recoleta',
-    'Pedro Aguirre Cerda', 'La Reina', 'Peñalolén', 'San Ramón',
-    'El Bosque', 'Conchalí', 'Lo Espejo', 'Pudahuel', 'Quilicura',
-    'Lo Prado', 'La Pintana', 'San José de Maipo', 'Padre Hurtado',
-    'Pirque', 'Peñaflor', 'Talagante', 'Buin', 'Paine', 'Colina',
-    'Lampa', 'Tiltil', 'Curacaví', 'María Pinto', 'El Monte',
-    'Isla de Maipo', 'Calera de Tango', 'San Bernardo', 'Puente Alto'
-}
-
-# Comunas de Regiones (fuera de RM)
-REGIONES_COMUNAS = {
-    'Valparaíso', 'Villa Alemana', 'Viña Del Mar', 'Concón', 'Quilpué',
-    'Rancagua', 'Machalí', 'Requínoa',
-    'Temuco', 'Padre Las Casas', 'Villarrica', 'Pucón',
-    'Coquimbo', 'La Serena', 'Ovalle',
-    'Concepción', 'Talcahuano', 'Chillán', 'Los Ángeles',
-    'Calama', 'Antofagasta', 'Copiapó',
-    'Iquique', 'Arica', 'Osorno', 'Puerto Montt', 'Valdivia',
-    'Talca', 'Curicó', 'Linares', 'Cauquenes'
-}
+CURRENT_MONTH = datetime.now().month
 
 def get_db_connection():
-    """Get database connection with environment variables"""
     return mysql.connector.connect(
-        host=os.environ.get('DB_HOST') or os.getenv('DB_HOST'),
-        user=os.environ.get('DB_USER') or os.getenv('DB_USER'),
-        password=os.environ.get('DB_PASSWORD') or os.getenv('DB_PASSWORD'),
-        port=int(os.environ.get('DB_PORT', 3306) or os.getenv('DB_PORT', 3306)),
+        host=ENV_VARS.get('DB_HOST'),
+        user=ENV_VARS.get('DB_USER'),
+        password=ENV_VARS.get('DB_PASSWORD'),
+        port=int(ENV_VARS.get('DB_PORT', 3306)),
         database='bi_assetplan'
     )
 

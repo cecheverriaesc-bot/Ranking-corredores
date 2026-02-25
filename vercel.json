@@ -19,11 +19,6 @@
       "destination": "/index.html"
     }
   ],
-  "functions": {
-    "api/*.py": {
-      "runtime": "python3.9"
-    }
-  },
   "env": {
     "PYTHON_VERSION": "3.9",
     "PIP_INSTALL": "1"

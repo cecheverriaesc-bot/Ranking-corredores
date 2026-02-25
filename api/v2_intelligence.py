@@ -28,8 +28,8 @@ else:
 # CONSTANTES GLOBALES
 # ===================================================================
 META_GLOBAL_110 = 1707  # Meta total mensual (110%)
-CURRENT_YEAR = 2026
-CURRENT_MONTH = 1  # Enero
+CURRENT_YEAR = datetime.now().year
+CURRENT_MONTH = datetime.now().month  # Dinámico - mes actual
 
 def get_db_connection():
     """Get database connection with environment variables"""
@@ -61,9 +61,7 @@ def normalize_z_score(values, inverse=False):
         inverse: Si True, invierte la escala (para métricas donde menor es mejor)
     """
     if not values or len(values) < 2:
-        return [0.5] * len(values
-
-)
+        return [0.5] * len(values)
     
     mean = statistics.mean(values)
     stdev = statistics.stdev(values) if len(values) > 1 else 1.0

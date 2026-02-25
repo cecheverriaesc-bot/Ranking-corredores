@@ -108,47 +108,42 @@ const SquadLaboratory: React.FC<SquadLaboratoryProps> = ({ onBack, rankingData, 
 
     const coverageAlerts = coverage.filter((d: any) => d.stock > 20 && d.activeBrokers < 2);
 
-    return (
-        <div className="min-h-screen bg-[#0f172a] text-slate-200 font-sans p-6 pb-20 animate-in fade-in duration-500">
-            {/* Loading State */}
-            {isLoading && (
-                <div className="fixed inset-0 z-[100] bg-[#0f172a]/80 backdrop-blur-md flex flex-col items-center justify-center">
+    // Early return for loading state
+    if (isLoading) {
+        return (
+            <div className="min-h-screen bg-[#0f172a] text-slate-200 font-sans">
+                <div className="fixed inset-0 z-[100] bg-[#0f172a] flex flex-col items-center justify-center">
                     <div className="w-16 h-16 border-4 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin mb-4"></div>
                     <p className="text-indigo-400 font-black uppercase tracking-widest text-xs animate-pulse">Cargando Inteligencia...</p>
                 </div>
-            )}
+            </div>
+        );
+    }
 
-            {/* Error State */}
-            {error && (
+    // Early return for error state
+    if (error) {
+        return (
+            <div className="min-h-screen bg-[#0f172a] text-slate-200 font-sans">
                 <div className="fixed inset-0 z-[100] bg-[#0f172a] flex flex-col items-center justify-center p-6">
                     <div className="max-w-md bg-red-500/10 border border-red-500/30 rounded-xl p-6 text-center">
                         <AlertTriangle className="w-12 h-12 text-red-400 mx-auto mb-4" />
-                        <h3 className="text-xl font-bold text-red-400 mb-2">Error</h3>
+                        <h3 className="text-xl font-bold text-red-400 mb-2">Error de Conexión</h3>
                         <p className="text-slate-400 mb-4">{error}</p>
+                        <p className="text-slate-500 text-xs mb-6">Las APIs de inteligencia no están respondiendo correctamente. Esto puede ser un problema temporal de conexión a la base de datos.</p>
                         <button
                             onClick={onBack}
-                            className="px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg text-white transition-colors"
+                            className="px-6 py-3 bg-slate-700 hover:bg-slate-600 rounded-xl text-white font-bold transition-colors uppercase tracking-widest text-xs"
                         >
                             Volver al Dashboard
                         </button>
                     </div>
                 </div>
-            )}
+            </div>
+        );
+    }
 
-            {/* Error State */}
-            {error && !isLoading && (
-                <div className="fixed inset-0 z-[100] bg-[#0f172a] flex items-center justify-center p-6">
-                    <div className="bg-red-500/10 border border-red-500/30 rounded-2xl p-8 max-w-md">
-                        <p className="text-red-400 font-bold text-center mb-4">❌ {error}</p>
-                        <button
-                            onClick={onBack}
-                            className="w-full py-3 bg-slate-800 hover:bg-slate-700 rounded-xl text-white font-bold transition-all"
-                        >
-                            Volver al Dashboard
-                        </button>
-                    </div>
-                </div>
-            )}
+    return (
+        <div className="min-h-screen bg-[#0f172a] text-slate-200 font-sans p-6 pb-20 animate-in fade-in duration-500">
 
             {/* Encabezado */}
             <header className="flex justify-between items-center mb-10 border-b border-indigo-500/20 pb-6">

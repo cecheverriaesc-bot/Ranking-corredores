@@ -27,8 +27,8 @@ else:
 # CONSTANTES GLOBALES
 # ===================================================================
 META_GLOBAL_110 = 1707  # Meta total mensual (110%)
-CURRENT_YEAR = 2026
-CURRENT_MONTH = 1  # Enero
+CURRENT_YEAR = datetime.now().year
+CURRENT_MONTH = datetime.now().month  # Dinámico - mes actual
 
 # Comunas de Región Metropolitana (RM)
 RM_COMUNAS = {
@@ -235,9 +235,9 @@ def fetch_squad_intelligence_v5(coordinador_email="carlos.echeverria", filter_re
         contratos_equipo_mes = int(cursor.fetchone()['contratos_mes'] or 0)
         
         # ================================================================
-        # PASO 3: Data Individual Base con Comunas y Métricas de Tiempo
+        # PASO 3: Data Individual Base con Comunas, Métricas de Tiempo y Teléfono
         # ================================================================
-        debug_log.append("Query 3: Data individual base con comunas y tiempos")
+        debug_log.append("Query 3: Data individual base con comunas, tiempos y telefono")
         cursor.execute('''
             SELECT
                 c.corredor_id,
@@ -253,7 +253,15 @@ def fetch_squad_intelligence_v5(coordinador_email="carlos.echeverria", filter_re
                 COALESCE(t.tiempo_prom_resolucion, 0) as tiempo_prom_resolucion,
                 COALESCE(t.tickets_severidad_ponderada, 0) as tickets_severidad,
                 COALESCE(t.prospectos_demora, 0) as prospectos_demora,
-                GROUP_CONCAT(DISTINCT a.comuna) as comunas
+                GROUP_CONCAT(DISTINCT a.comuna) as comunas,
+                -- Obtener teléfono desde bi_DimLeads (último lead del mes)
+                (SELECT dl.telefono 
+                 FROM bi_DimLeads dl 
+                 WHERE dl.corredor_id = c.corredor_id 
+                   AND YEAR(dl.fecha_tomado) = %s
+                   AND MONTH(dl.fecha_tomado) = %s
+                   AND dl.telefono IS NOT NULL 
+                 LIMIT 1) as telefono
             FROM bi_DimCorredores c
             LEFT JOIN (
                 SELECT
@@ -274,7 +282,7 @@ def fetch_squad_intelligence_v5(coordinador_email="carlos.echeverria", filter_re
                 SELECT
                     corredor_id,
                     AVG(tiempo_resolucion_horas) as tiempo_prom_resolucion,
-                    SUM(CASE 
+                    SUM(CASE
                         WHEN severidad = 'alta' THEN 3
                         WHEN severidad = 'media' THEN 2
                         WHEN severidad = 'baja' THEN 1
@@ -291,12 +299,12 @@ def fetch_squad_intelligence_v5(coordinador_email="carlos.echeverria", filter_re
                 AND MONTH(a.agenda_fecha) = %s
             WHERE c.coordinador = %s
               AND c.activo = 1
-            GROUP BY c.corredor_id, c.nombre_corredor, c.reserva, 
+            GROUP BY c.corredor_id, c.nombre_corredor, c.reserva,
                      l.contratos_mes, l.leads_tomados_mes, l.prospectos_mes,
                      l.leads_descartados_sin_gestion, l.prospectos_descartados, l.contacto_24h,
                      l.accion_24h, t.tiempo_prom_resolucion, t.tickets_severidad_ponderada, t.prospectos_demora
             ORDER BY contratos_mes DESC, c.reserva DESC
-        ''', (CURRENT_YEAR, CURRENT_MONTH, CURRENT_YEAR, CURRENT_MONTH, CURRENT_YEAR, CURRENT_MONTH, coordinador_email))
+        ''', (CURRENT_YEAR, CURRENT_MONTH, CURRENT_YEAR, CURRENT_MONTH, CURRENT_YEAR, CURRENT_MONTH, CURRENT_YEAR, CURRENT_MONTH, coordinador_email))
         
         corredores_data = cursor.fetchall()
         
@@ -411,6 +419,7 @@ def fetch_squad_intelligence_v5(coordinador_email="carlos.echeverria", filter_re
                 'visitas_canceladas': visitas_canceladas,
                 'no_contesto': no_contesto,
                 'leads_diarios_necesarios': leads_diarios_necesarios,
+                'telefono': corredor.get('telefono'),  # Teléfono desde bi_DimLeads
                 # Métricas RAW Engagement (Pilar 1)
                 'tasa_visitas': tasa_visitas,
                 'tasa_cancelacion': tasa_cancelacion,
@@ -586,6 +595,7 @@ def fetch_squad_intelligence_v5(coordinador_email="carlos.echeverria", filter_re
                 "visitas_realizadas": broker['visitas_realizadas'],
                 "visitas_canceladas": broker['visitas_canceladas'],
                 "no_contesto": broker['no_contesto'],
+                "telefono": broker.get('telefono'),  # Teléfono para WhatsApp
                 "breakdown_engagement": {
                     "visitas_realizadas": round(eng_visitas, 2),
                     "visitas_no_canceladas": round(eng_no_cancela, 2),

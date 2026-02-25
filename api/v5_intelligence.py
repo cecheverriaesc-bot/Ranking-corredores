@@ -235,7 +235,7 @@ def fetch_squad_intelligence_v5(coordinador_email="carlos.echeverria", filter_re
         contratos_equipo_mes = int(cursor.fetchone()['contratos_mes'] or 0)
         
         # ================================================================
-        # PASO 3: Data Individual Base con Comunas, Métricas de Tiempo y Teléfono
+        # PASO 3: Data Individual Base con Comunas, Métricas de Tiempo y Teléfono (desde Zendesk)
         # ================================================================
         debug_log.append("Query 3: Data individual base con comunas, tiempos y telefono")
         cursor.execute('''
@@ -254,13 +254,13 @@ def fetch_squad_intelligence_v5(coordinador_email="carlos.echeverria", filter_re
                 COALESCE(t.tickets_severidad_ponderada, 0) as tickets_severidad,
                 COALESCE(t.prospectos_demora, 0) as prospectos_demora,
                 GROUP_CONCAT(DISTINCT a.comuna) as comunas,
-                -- Obtener teléfono desde bi_DimLeads (último lead del mes)
-                (SELECT dl.telefono 
-                 FROM bi_DimLeads dl 
-                 WHERE dl.corredor_id = c.corredor_id 
-                   AND YEAR(dl.fecha_tomado) = %s
-                   AND MONTH(dl.fecha_tomado) = %s
-                   AND dl.telefono IS NOT NULL 
+                -- Obtener teléfono desde bi_dimzendesksc (último ticket del mes)
+                (SELECT z.telefono 
+                 FROM bi_dimzendesksc z 
+                 WHERE z.corredor_id = c.corredor_id 
+                   AND YEAR(z.fecha_apertura) = %s
+                   AND MONTH(z.fecha_apertura) = %s
+                   AND z.telefono IS NOT NULL 
                  LIMIT 1) as telefono
             FROM bi_DimCorredores c
             LEFT JOIN (
@@ -304,7 +304,7 @@ def fetch_squad_intelligence_v5(coordinador_email="carlos.echeverria", filter_re
                      l.leads_descartados_sin_gestion, l.prospectos_descartados, l.contacto_24h,
                      l.accion_24h, t.tiempo_prom_resolucion, t.tickets_severidad_ponderada, t.prospectos_demora
             ORDER BY contratos_mes DESC, c.reserva DESC
-        ''', (CURRENT_YEAR, CURRENT_MONTH, CURRENT_YEAR, CURRENT_MONTH, CURRENT_YEAR, CURRENT_MONTH, CURRENT_YEAR, CURRENT_MONTH, coordinador_email))
+        ''', (CURRENT_YEAR, CURRENT_MONTH, CURRENT_YEAR, CURRENT_MONTH, CURRENT_YEAR, CURRENT_MONTH, CURRENT_YEAR, CURRENT_MONTH, CURRENT_YEAR, CURRENT_MONTH, coordinador_email))
         
         corredores_data = cursor.fetchall()
         

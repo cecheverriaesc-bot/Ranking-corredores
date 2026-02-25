@@ -1,15 +1,38 @@
 import mysql.connector
 import os
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 from http.server import BaseHTTPRequestHandler
+
+def load_env_vars():
+    """Carga variables de entorno desde .env o variables del sistema"""
+    env_vars = {}
+    env_file_path = os.path.join(os.path.dirname(__file__), "..", ".env")
+    if os.path.exists(env_file_path):
+        with open(env_file_path, 'r', encoding='utf-8') as f:
+            for line in f:
+                line = line.strip()
+                if not line or line.startswith('#'):
+                    continue
+                if '=' in line:
+                    key, value = line.split('=', 1)
+                    env_vars[key.strip()] = value.strip()
+    
+    # Sobrescribir con variables de entorno del sistema (para Vercel)
+    for key in ['DB_HOST', 'DB_USER', 'DB_PASSWORD', 'DB_PORT', 'DB_NAME']:
+        if key in os.environ:
+            env_vars[key] = os.environ[key]
+    
+    return env_vars
+
+ENV_VARS = load_env_vars()
 
 def get_connection():
     return mysql.connector.connect(
-        host=os.getenv("DB_HOST"),
-        user=os.getenv("DB_USER"),
-        password=os.getenv("DB_PASSWORD"),
-        port=os.getenv("DB_PORT", 3306),
+        host=ENV_VARS.get("DB_HOST"),
+        user=ENV_VARS.get("DB_USER"),
+        password=ENV_VARS.get("DB_PASSWORD"),
+        port=int(ENV_VARS.get("DB_PORT", 3306)),
         database='assetplan_rentas'
     )
 

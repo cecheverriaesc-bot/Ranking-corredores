@@ -44,10 +44,10 @@ def etl_loop():
         time.sleep(POLL_INTERVAL_MINUTES * 60)
 
 def start_dashboard():
-    """Starts the Vite dev server."""
-    print(f"[{datetime.now().strftime('%H:%M:%S')}] Starting Dashboard...")
-    # npm run dev in DASHBOARD_DIR
-    process = subprocess.Popen("npm run dev", shell=True, cwd=DASHBOARD_DIR)
+    """Starts the Vercel dev server (Frontend + API)."""
+    print(f"[{datetime.now().strftime('%H:%M:%S')}] Starting Vercel Dev Server at http://localhost:5173 ...")
+    # Using npx -y vercel dev with specific port
+    process = subprocess.Popen("npx -y vercel dev --listen 5173", shell=True, cwd=DASHBOARD_DIR)
     return process
 
 def main():

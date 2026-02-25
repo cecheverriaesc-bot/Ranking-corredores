@@ -7,13 +7,10 @@ from dotenv import load_dotenv
 
 # Load Env
 script_dir = os.path.dirname(os.path.abspath(__file__))
-# .env is in the root of the consolidated folder, which is two levels up from dashboard/scripts/
-# or one level up from dashboard/ if running from there.
-# Let's check both options to be robust.
 env_options = [
-    os.path.join(script_dir, "..", "..", ".env"), # From dashboard/scripts/
-    os.path.join(script_dir, "..", ".env"),        # From dashboard/
-    os.path.join(os.getcwd(), ".env")               # From current working dir
+    os.path.join(script_dir, "..", "..", ".env"),
+    os.path.join(script_dir, "..", ".env"),
+    os.path.join(os.getcwd(), ".env")
 ]
 
 env_loaded = False
@@ -25,7 +22,7 @@ for path in env_options:
         break
 
 if not env_loaded:
-    print("WARNING: No se encontry archivo .env en las rutas buscadas.")
+    print("WARNING: No se encontro archivo .env en las rutas buscadas.")
 
 # DB Connection
 def get_connection():
@@ -37,14 +34,19 @@ def get_connection():
         database='assetplan_rentas'
     )
 
+def get_bi_connection():
+    return mysql.connector.connect(
+        host=os.getenv("DB_HOST"),
+        user=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASSWORD"),
+        port=os.getenv("DB_PORT", 3306),
+        database='bi_assetplan'
+    )
+
 # Mapeo de Coordinadores
-# We map DB user IDs or Emails to the specific Squad Emails used in frontend
 def get_squad_email(coordinator_email):
-    # Normalize
-    if not coordinator_email: return "carlos.echeverria@assetplan.cl" # Default fallback
+    if not coordinator_email: return "sin_asignar@assetplan.cl"
     email = coordinator_email.lower().strip()
-    
-    # Map to Squad Leaders
     squads = [
         "carlos.echeverria@assetplan.cl",
         "luis.gomez@assetplan.cl",
@@ -54,13 +56,23 @@ def get_squad_email(coordinator_email):
     ]
     if email in squads:
         return email
-    return "carlos.echeverria@assetplan.cl" # Default
+    return "sin_asignar@assetplan.cl"
+
+def fetch_last_db_update(conn):
+    cursor = conn.cursor()
+    query = "SELECT MAX(fecha) FROM reservas"
+    cursor.execute(query)
+    result = cursor.fetchone()
+    if result and result[0]:
+        return result[0].strftime('%d/%m/%Y %H:%M')
+    return "N/A"
+
+
+
+
 
 def fetch_ranking_data(conn, start_date, end_date):
     cursor = conn.cursor(dictionary=True)
-    
-    # Query: ALL Active Corredores (activo=1) LEFT JOIN Reservas
-    # This allows counting total squad members even if they have 0 sales.
     query = """
     SELECT 
         c.id,
@@ -78,60 +90,31 @@ def fetch_ranking_data(conn, start_date, end_date):
     WHERE c.activo = 1 AND u.email IS NOT NULL
     GROUP BY c.id, c.nombre, c.apellido, c.externo, u.email
     """
-    
     cursor.execute(query, (start_date, end_date))
     return cursor.fetchall()
 
-def fetch_history_data(conn, start_date, end_date):
-    """
-    Fetches data for History (2025).
-    CRITICAL: Must include ALL brokers who had reservations, 
-    regardless of whether they are currently active or not.
-    """
+def fetch_history_data(conn, start_date, end_date, partial_end=None):
     cursor = conn.cursor(dictionary=True)
-    
+    p_end = partial_end if partial_end else end_date
     query = """
-    SELECT 
-        c.nombre, 
-        c.apellido, 
-        COUNT(r.id) as gross_val,
+    SELECT
+        c.nombre,
+        c.apellido,
+        COUNT(r.id) as gross_val_total,
+        SUM(CASE WHEN r.fecha <= %s THEN 1 ELSE 0 END) as gross_val_partial,
         SUM(CASE WHEN ar.r_caida = 1 THEN 1 ELSE 0 END) as fallen_val
     FROM reservas r
     JOIN corredores c ON r.corredor_id = c.id
     LEFT JOIN asignacion_reservas ar ON r.id = ar.reserva_id
     WHERE r.fecha BETWEEN %s AND %s
+      AND c.activo = 1
     GROUP BY c.id, c.nombre, c.apellido
     """
-    
-    cursor.execute(query, (start_date, end_date))
+    cursor.execute(query, (p_end, start_date, end_date))
     return cursor.fetchall()
 
-    cursor.execute(query, (start_date, end_date))
-    return cursor.fetchall()
-
-def get_last_reservation_date(conn):
-    try:
-        cursor = conn.cursor()
-        query = "SELECT MAX(fecha) FROM reservas WHERE fecha <= NOW()"
-        cursor.execute(query)
-        res = cursor.fetchone()
-        if res and res[0]:
-            return res[0] # Returns datetime object
-        return None
-    except Exception:
-        return None
-
-
-# 2.5 Fetch Leads (Jan 2026)
 def fetch_leads_count(conn, start_date, end_date):
-    """
-    Returns dict: { corredor_id: count }
-    """
     cursor = conn.cursor()
-    # Assuming 'created_at' is the relevant date for New Leads.
-    # Note: If 'Asignados' is the metric, maybe check assigned date?
-    # User rule: "Nuevos: Total creados", "Asignados: Con corredor asignado".
-    # We want Leads Assigned to that broker. So we group by corredor_id.
     query = """
     SELECT corredor_id, COUNT(*) 
     FROM leads 
@@ -142,14 +125,8 @@ def fetch_leads_count(conn, start_date, end_date):
     cursor.execute(query, (start_date, end_date))
     return {row[0]: row[1] for row in cursor.fetchall()}
 
-# 2.6 Fetch Agendas (Jan 2026)
 def fetch_agendas_count(conn, start_date, end_date):
-    """
-    Returns dict: { corredor_id: count }
-    Metric: Agendas "Realizadas" (Visitado) linked to broker.
-    """
     cursor = conn.cursor()
-    # We link via leads table using lead_id.
     query = """
     SELECT l.corredor_id, COUNT(la.id)
     FROM lead_agendas la
@@ -162,60 +139,47 @@ def fetch_agendas_count(conn, start_date, end_date):
     cursor.execute(query, (start_date, end_date))
     return {row[0]: row[1] for row in cursor.fetchall()}
 
-# 2.6.5 Fetch Historical Daily distribution for Goals
-def fetch_daily_goals_distribution(conn, monthly_goal_2026):
+def fetch_contracts_count(bi_conn, start_date, end_date):
+    """Fetch real contract counts per broker from bi_assetplan.
+    Query calibrada contra tabla oficial: tipo_renovacion='Nuevo', corredor IS NOT NULL, vigente=1
     """
-    Calculates 2026 daily goals based on Jan 2025 weekday (Mon-Sun) weights.
-    This ensures that weekends have lower goals and peak days have higher goals
-    regardless of the specific calendar number.
-    Returns dict: { day: goal_value }
-    """
-    cursor = conn.cursor()
-    # Get average count per weekday in Jan 2025
+    cursor = bi_conn.cursor(dictionary=True)
     query = """
-    SELECT DAYOFWEEK(fecha) as wday, COUNT(id) as total_count, COUNT(DISTINCT DATE(fecha)) as occurrences
+    SELECT 
+        CAST(corredor_id AS UNSIGNED) as corredor_id,
+        COUNT(*) as contracts
+    FROM bi_DimContratos
+    WHERE created_at BETWEEN %s AND %s
+      AND tipo_renovacion = 'Nuevo'
+      AND corredor_id IS NOT NULL
+      AND vigente = 1
+    GROUP BY corredor_id
+    """
+    cursor.execute(query, (start_date, end_date))
+    result = {}
+    for row in cursor.fetchall():
+        result[int(row['corredor_id'])] = int(row['contracts'])
+    return result
+
+def fetch_broker_historical_weights(conn):
+    """Calcula el peso de participacion historica de cada corredor activo.
+    Usamos datos de los últimos 6 meses para estabilidad.
+    """
+    cursor = conn.cursor(dictionary=True)
+    query = """
+    SELECT 
+        corredor_id,
+        COUNT(*) as hist_total
     FROM reservas
-    WHERE fecha BETWEEN '2025-01-01 00:00:00' AND '2025-01-31 23:59:59'
-    GROUP BY wday
+    WHERE fecha >= DATE_SUB(NOW(), INTERVAL 6 MONTH)
+    GROUP BY corredor_id
     """
     cursor.execute(query)
     rows = cursor.fetchall()
-    
-    # Calculate average per weekday (1=Sun, 2=Mon, ..., 7=Sat)
-    weekday_avg = {r[0]: r[1]/r[2] for r in rows}
-    
-    # Map each day of Jan 2026 to its weekday and assign base weight
-    jan_2026_weights = {}
-    total_period_weight = 0
-    for d in range(1, 32):
-        # Python date.weekday() is 0=Mon, 6=Sun. 
-        # MySQL DAYOFWEEK is 1=Sun, 2=Mon, ..., 7=Sat.
-        dt = datetime(2026, 1, d)
-        python_wday = dt.weekday() # 0=Mon
-        mysql_wday = 2 + python_wday
-        if mysql_wday > 7: mysql_wday = 1 # Sunday fix
-        
-        weight = weekday_avg.get(mysql_wday, 0)
-        jan_2026_weights[d] = weight
-        total_period_weight += weight
-        
-    if total_period_weight == 0: 
-        return {i: round(monthly_goal_2026/31, 1) for i in range(1, 32)}
-        
-    # Scale to match the specific 2026 monthly goal
-    daily_goals = {}
-    for d in range(1, 32):
-        weight = jan_2026_weights[d]
-        daily_goals[d] = round((weight / total_period_weight) * monthly_goal_2026, 1)
-        
-    return daily_goals
+    total_reservas = sum(r['hist_total'] for r in rows) if rows else 1
+    return {r['corredor_id']: r['hist_total'] / total_global if (total_global := total_reservas) > 0 else 0 for r in rows}
 
-# 2.7 Fetch Daily Stats (Stacked by Coordinator)
 def fetch_daily_stats(conn, start_date, end_date):
-    """
-    Returns list of { date: 'YYYY-MM-DD', coord: 'email', count: N }
-    Excludes falls and inactive brokers to match Looker.
-    """
     cursor = conn.cursor()
     query = """
     SELECT 
@@ -236,21 +200,15 @@ def fetch_daily_stats(conn, start_date, end_date):
     cursor.execute(query, (start_date, end_date))
     rows = cursor.fetchall()
     
-    # Process and Regroup by Normalized Squad Email
-    # This prevents multiple entries for the same squad on the same day
-    daily_map = {} # (date, normalized_coord) -> total_count
-    
+    daily_map = {}
     for r in rows:
         date_str = str(r[0])
         norm_coord = get_squad_email(r[1])
         count = r[2]
-        
         key = (date_str, norm_coord)
         daily_map[key] = daily_map.get(key, 0) + count
         
-    # Convert back to list of dicts
     results = []
-    # Sort keys to maintain date order (SQL already ordered by date, but map doesn't guarantee)
     sorted_keys = sorted(daily_map.keys(), key=lambda x: (x[0], x[1]))
     for key in sorted_keys:
         results.append({
@@ -260,195 +218,251 @@ def fetch_daily_stats(conn, start_date, end_date):
         })
     return results
 
+def fetch_daily_goals_distribution_dynamic(conn, monthly_contract_goal, month_num):
+    # SMART GOAL LOGIC V2 (Feb 2026)
+    # 1. Safety Margin: 5% (Target = Contracts / 0.95)
+    monthly_reservation_target = monthly_contract_goal / 0.95
+    
+    # 2. Seasonality Weights (Based on 6-month analysis Aug'25-Jan'26)
+    # MySQL DAYOFWEEK: 1=Sun, 2=Mon, 3=Tue, 4=Wed, 5=Thu, 6=Fri, 7=Sat
+    # Weights normalised around 1.0
+    weights_map = {
+        1: 0.261, # Sunday (Low)
+        2: 1.165, # Monday (High)
+        3: 1.386, # Tuesday (Peak)
+        4: 1.226, # Wednesday
+        5: 1.072, # Thursday
+        6: 1.149, # Friday
+        7: 0.741  # Saturday
+    }
+    
+    if month_num == 1: days_in_month = 31
+    elif month_num == 2: days_in_month = 28
+    else: days_in_month = 30
+    
+    # Calculate Total Weight for the specific month structure
+    total_month_weight = 0
+    daily_weights = {}
+    
+    for d in range(1, days_in_month + 1):
+        # Create date object for 2026 to get correct Day of Week
+        dt = datetime(2026, month_num, d)
+        # Python weekday: 0=Mon, 6=Sun. 
+        # MySQL/Map: 1=Sun, 2=Mon... 
+        # Conversion: Python (0) -> Map (2). Python (6) -> Map (1).
+        py_wday = dt.weekday()
+        if py_wday == 6: mysql_wday = 1
+        else: mysql_wday = py_wday + 2
+            
+        w = weights_map.get(mysql_wday, 1.0)
+        daily_weights[d] = w
+        total_month_weight += w
+        
+    # Distribute Target based on weights
+    daily_goals = {}
+    current_sum = 0
+    
+    for d in range(1, days_in_month + 1):
+        w = daily_weights[d]
+        # Formula: (Target * DayWeight) / TotalMonthWeight
+        raw_goal = (monthly_reservation_target * w) / total_month_weight
+        daily_goals[d] = round(raw_goal, 1)
+        current_sum += daily_goals[d]
+        
+    print(f"INFO: Smart Goal Target={int(monthly_reservation_target)} (Contracts={monthly_contract_goal}), DistSum={int(current_sum)}")
+    return daily_goals, int(monthly_reservation_target)
+
 def main():
+    conn = None
+    bi_conn = None
     try:
         conn = get_connection()
+        bi_conn = get_bi_connection()
+        last_db_update = fetch_last_db_update(conn)
+        hist_weights = fetch_broker_historical_weights(conn)
         
-        MONTHLY_GOAL = 1928
-        start_date_2026 = '2026-01-01 00:00:00'
-        end_date_2026 = '2026-01-31 23:59:59'
-
-        # 1. Fetch CURRENT (Jan 2026)
-        print("Fetching Current Data (Jan 2026)...")
-        rows_2026 = fetch_ranking_data(conn, start_date_2026, end_date_2026)
-
-        # 1b. Fetch Leads & Agendas
-        print("Fetching Leads & Agendas...")
-        leads_map = fetch_leads_count(conn, start_date_2026, end_date_2026)
-        agendas_map = fetch_agendas_count(conn, start_date_2026, end_date_2026)
-
-        # 1c. Fetch Daily Stats
-        print("Fetching Daily Stats...")
-        daily_stats = fetch_daily_stats(conn, start_date_2026, end_date_2026)
+        # Configuration for each month
+        MONTHS_CONFIG = [
+            {
+                "id": "2026-01",
+                "goal": 1928,
+                "contract_goal": 1928,  # Jan: same as goal
+                "start": "2026-01-01 00:00:00",
+                "end": "2026-01-31 23:59:59",
+                "history_start": "2025-01-01 00:00:00",
+                "daily_goal_base_month": 1
+            },
+            {
+                "id": "2026-02",
+                "goal": 2066, # 110% of 1878 (stretch target)
+                "contract_goal": 2066,  # 110% of 1878 — meta oficial contratos
+                "start": "2026-02-01 00:00:00",
+                "end": "2026-02-28 23:59:59",
+                "history_start": "2025-02-01 00:00:00",
+                "daily_goal_base_month": 2
+            }
+        ]
         
-        # 1d. Fetch Daily Goals (based on 2025 distribution)
-        print("Calculating Daily Goals...")
-        daily_goals = fetch_daily_goals_distribution(conn, MONTHLY_GOAL)
+        monthly_data_export = {}
         
-        today = datetime.now()
-        # For testing purposes or manual run, we assume 'today' month is Jan.
-        # If we are in Feb, this might break, but focus on Jan 2026 ranking.
-        
-        # 2a. Fetch HISTORY Partial (Jan 1 2025 - Jan X 2025)
-        # Calculate same day in 2025.
-        # If today is Jan 22 2026, we want Jan 22 2025.
-        current_day = today.day
-        if today.month != 1: 
-             current_day = 31 
-             
-        end_date_partial_2025 = f'2025-01-{current_day:02d} 23:59:59'
-        
-        print(f"Fetching History Partial (Jan 1 2025 - Jan {current_day} 2025)...")
-        rows_2025_partial = fetch_history_data(conn, '2025-01-01 00:00:00', end_date_partial_2025)
-
-        # 2b. Fetch HISTORY Total (Jan 1 2025 - Jan 31 2025)
-        print("Fetching History Total (Jan 2025)...")
-        rows_2025_total = fetch_history_data(conn, '2025-01-01 00:00:00', '2025-01-31 23:59:59')
-        
-        # Helper to process raw rows to dict {name: net_val}
-        def process_rows_to_dict(rows):
-            d = {}
+        for config in MONTHS_CONFIG:
+            mid = config["id"]
+            print(f"--- Processing Month: {mid} ---")
+            
+            start_date = config["start"]
+            end_date = config["end"]
+            goal = config["goal"]
+            
+            rows = fetch_ranking_data(conn, start_date, end_date)
+            leads_map = fetch_leads_count(conn, start_date, end_date)
+            agendas_map = fetch_agendas_count(conn, start_date, end_date)
+            contracts_map = fetch_contracts_count(bi_conn, start_date, end_date)
+            daily_stats = fetch_daily_stats(conn, start_date, end_date)
+            daily_goals, reservation_goal = fetch_daily_goals_distribution_dynamic(conn, goal, config["daily_goal_base_month"])
+            
+            freelance_list = []
+            institutional_list = []
+            
             for r in rows:
                 full_name = f"{r['nombre']} {r['apellido']}".strip()
                 net = int(r['gross_val']) - int(r['fallen_val'])
-                d[full_name] = net
-            return d
-
-        partial_map = process_rows_to_dict(rows_2025_partial)
-        total_map = process_rows_to_dict(rows_2025_total)
-
-        history_map = {}
-        # Union of names from both maps
-        all_hist_names = set(partial_map.keys()) | set(total_map.keys())
-        
-        for name in all_hist_names:
-            c_val = partial_map.get(name, 0)
-            t_val = total_map.get(name, 0)
-            history_map[name] = { 'c': c_val, 't': t_val } 
-
-        # Process Current Data
-        freelance_list = []
-        institutional_list = []
-        
-        # Manual overrides for names if needed (e.g. "Vivao (Nicole Jones)")
-        # We will use raw DB name + surname 
-        
-        names_with_agenda = [] 
-        
-        today = datetime.now()
-        
-        for r in rows_2026:
-            full_name = f"{r['nombre']} {r['apellido']}".strip()
-            # Ensure numbers are int/float not Decimals if connector returns them
-            net = int(r['gross_val']) - int(r['fallen_val'])
-            fallen = int(r['fallen_val'])
-            coord = get_squad_email(r['coordinator_mail'])
-            
-            # Additional Metrics
-            cid = r['id']
-            lead_count = leads_map.get(cid, 0)
-            agenda_count = agendas_map.get(cid, 0)
-
-            # Construct Obj
-            obj = {
-                "name": full_name,
-                "val": net,
-                "fallen": fallen,
-                "leads": lead_count,
-                "agendas": agenda_count,
-                "coord": coord
-            }
-            
-            # Hide "Corredor Reservas Adicionales" but keep in array for totals
-            if "reservas adicionales" in full_name.lower():
-                obj["hidden"] = True
-
-            if r['externo'] == 1:
-                institutional_list.append(obj)
-            else:
-                freelance_list.append(obj)
+                fallen = int(r['fallen_val'])
+                coord = get_squad_email(r['coordinator_mail'])
+                cid = r['id']
                 
-        # Sort desc by val
-        freelance_list.sort(key=lambda x: x['val'], reverse=True)
-        institutional_list.sort(key=lambda x: x['val'], reverse=True)
-        
-        # Generate CONSTANTS.TS content
-        # We need to construct the file string manually to preserve variable exports
-        
-        # 1. Monthly Goal (Static)
-        ts_content = "import { CorredorData, HistoryData, TeamConfig } from './types';\n\n"
-        ts_content += "export const MONTHLY_GOAL = 1928;\n\n"
-        
-        # 1.5 Daily Stats & Goals
-        ts_content += "export interface DailyStat { date: string; coord: string; count: number; }\n"
-        ts_content += "export const DAILY_STATS: DailyStat[] = " + json.dumps(daily_stats, indent=4) + ";\n"
-        ts_content += "export const DAILY_GOALS: Record<number, number> = " + json.dumps(daily_goals, indent=4) + ";\n\n"
+                # Calcular Meta Personal basada en peso histórico
+                weight = hist_weights.get(cid, 0)
+                # Si no tiene peso (nuevo), le damos un mínimo proporcional (ej: 0.8 del promedio)
+                if weight == 0:
+                    active_count = len(rows) if rows else 1
+                    weight = 0.8 / active_count
+                
+                personal_meta = int(config["contract_goal"] * weight)
+                if personal_meta < 5: personal_meta = 5 # Meta mínima saludable
+                
+                obj = {
+                    "name": full_name,
+                    "val": net,
+                    "fallen": fallen,
+                    "leads": leads_map.get(cid, 0),
+                    "agendas": agendas_map.get(cid, 0),
+                    "contracts": contracts_map.get(cid, 0),
+                    "personalMeta": personal_meta,
+                    "coord": coord
+                }
+                
+                if "reservas adicionales" in full_name.lower():
+                    obj["hidden"] = True
 
+                if r['externo'] == 1:
+                    institutional_list.append(obj)
+                else:
+                    freelance_list.append(obj)
+            
+            freelance_list.sort(key=lambda x: x['val'], reverse=True)
+            institutional_list.sort(key=lambda x: x['val'], reverse=True)
+            
+            # History
+            s_2025 = start_date.replace("2026", "2025")
+            e_2025_total = end_date.replace("2026", "2025")
+            is_current_month = (datetime.now().strftime("%Y-%m") == mid)
+            
+            if is_current_month:
+                now = datetime.now()
+                p_end_2025 = f"2025-{now.month:02d}-{now.day:02d} 23:59:59"
+            elif mid < datetime.now().strftime("%Y-%m"):
+                p_end_2025 = e_2025_total
+            else:
+                p_end_2025 = s_2025 
 
+            h_rows = fetch_history_data(conn, s_2025, e_2025_total, p_end_2025)
+            
+            history_map_local = {}
+            total_2025 = 0 # This needs to be total of PARTIAL 2025? Or Total Month?
+            # Dashboard uses total2025Today for "Vs 2025". This implies PARTIAL.
+            
+            for r in h_rows:
+                full_name = f"{r['nombre']} {r['apellido']}".strip()
+                g_partial = int(r['gross_val_partial'] or 0)
+                g_total = int(r['gross_val_total'] or 0)
+                f_val = int(r['fallen_val'] or 0)
+                
+                history_map_local[full_name] = {
+                    "c": g_partial,
+                    "t": g_total - f_val
+                }
+                total_2025 += g_partial # Sum of partials
+
+            monthly_data_export[mid] = {
+                "goal": goal,
+                "contract_goal": config["contract_goal"],
+                "ranking": freelance_list,
+                "others": institutional_list,
+                "daily_stats": daily_stats,
+                "daily_goals": daily_goals,
+                "reservation_goal": reservation_goal,
+                "total_2025_ytd": total_2025,
+                "history": history_map_local
+            }
+
+        # Global History Map Fallback (Curren Month)
+        current_month_id = datetime.now().strftime("%Y-%m")
+        if current_month_id not in monthly_data_export:
+             current_month_id = "2026-02" 
         
-        # 2. Others
-        ts_content += "// ============================================================================\n"
-        ts_content += "// OTROS CORREDORES (Institucionales / No RM / Switch) - GENERATED DYNAMICALLY\n"
-        ts_content += "// ============================================================================\n"
-        ts_content += "export const OTHER_BROKERS_2026: CorredorData[] = " + json.dumps(institutional_list, indent=4) + ";\n\n"
+        curr_d = monthly_data_export[current_month_id]
+        processed_hist = curr_d["history"]
+
+        # Generate TS content
+        ts_content = "import { CorredorData, HistoryData, TeamConfig, MonthData } from './types';\n\n"
+        ts_content += "export const MONTHLY_DATA: Record<string, MonthData> = " + json.dumps(monthly_data_export, indent=4) + ";\n\n"
         
-        # 3. Current Ranking
-        ts_content += "// ============================================================================\n"
-        ts_content += "// RANKING ENERO 2026 - GENERATED DYNAMICALLY\n"
-        ts_content += "// ============================================================================\n"
-        ts_content += "export const CURRENT_RANKING_2026: CorredorData[] = " + json.dumps(freelance_list, indent=4) + ";\n\n"
-        
-        # 4. Names with Agenda (Curated list filtered by active status)
+        # Legacy Exports
+        ts_content += f"export const MONTHLY_GOAL = {curr_d['goal']};\n"
+        ts_content += f"export const MONTHLY_RESERVATION_GOAL = {curr_d['reservation_goal']};\n"
+        ts_content += f"export const CURRENT_RANKING_2026 = MONTHLY_DATA['{current_month_id}'].ranking;\n"
+        ts_content += f"export const OTHER_BROKERS_2026 = MONTHLY_DATA['{current_month_id}'].others;\n"
+        ts_content += f"export const DAILY_STATS = MONTHLY_DATA['{current_month_id}'].daily_stats;\n"
+        ts_content += f"export const DAILY_GOALS = MONTHLY_DATA['{current_month_id}'].daily_goals;\n\n"
+
+        active_names = {x['name'] for x in curr_d['ranking']}
         curated_agenda = [
             "Erika Cepeda", "Henry Rodriguez", "Luis Pernalete", "Mayerling Soto", 
             "Nailet Rojo", "Paul Perdomo", "Rosangela Cirelli", "Sofia Bravo", 
             "Victoria Díaz", "Yanelaine Reyes", "Yessica Asuaje", "Yexica Gomez", 
             "Yinglis Hernandez", "Yonathan Pino"
         ]
-        
-        # We only keep them if they are in the freelance_list (which only has active=1 brokers)
-        # or institutional_list if applicable, but usually they are freelance.
-        active_names = {x['name'] for x in freelance_list} | {x['name'] for x in institutional_list}
         final_agenda = [name for name in curated_agenda if name in active_names]
-        
-        ts_content += "// Curated Agenda Members (Filtered by active status in DB)\n"
         ts_content += "export const NAMES_WITH_AGENDA: string[] = " + json.dumps(final_agenda, indent=4) + ";\n\n"
         
-        # 5. History
-        ts_content += "// Historical Data Jan 2025\n"
-        ts_content += "export const HISTORY_2025: Record<string, HistoryData> = " + json.dumps(history_map, indent=4) + ";\n\n"
+        ts_content += "export const HISTORY_2025: Record<string, HistoryData> = " + json.dumps(processed_hist, indent=4) + ";\n"
+        ts_content += f"export const LAST_UPDATE = '{datetime.now().strftime('%d/%m/%Y %H:%M')} (Script)';\n"
+        ts_content += f"export const LAST_DB_UPDATE = '{last_db_update}';\n\n"
         
-        # 6. Last Update (Now shows the sync time to avoid confusion when no new sales exist)
-        last_date_str = datetime.now().strftime("%d/%m/%Y %H:%M")
-        ts_content += f"export const LAST_UPDATE = '{last_date_str} (Actualizado)';\n\n"
-
-        # 7. Teams (Static constant)
         ts_content += """export const TEAMS: Record<string, TeamConfig> = {
-    "carlos.echeverria@assetplan.cl": { name: "Squad Carlos", icon: "Flame", color: "text-orange-600", bg: "bg-orange-50 border-orange-200", my: false },
+    "carlos.echeverria@assetplan.cl": { name: "Carlos Echeverria", icon: "Flame", color: "text-orange-600", bg: "bg-orange-50 border-orange-200", my: false },
     "luis.gomez@assetplan.cl": { name: "Squad Luis", icon: "Droplet", color: "text-blue-500", bg: "bg-blue-50 border-blue-200", my: false },
     "nataly.espinoza@assetplan.cl": { name: "Squad Natu", icon: "GraduationCap", color: "text-indigo-600", bg: "bg-indigo-50 border-indigo-200", my: false },
     "angely.rojo@assetplan.cl": { name: "Squad Angely", icon: "Flower2", color: "text-pink-600", bg: "bg-pink-50 border-pink-200", my: false },
-    "maria.chacin@assetplan.cl": { name: "Squad Gabriela", icon: "Star", color: "text-yellow-500", bg: "bg-yellow-50 border-yellow-200", my: false }
+    "maria.chacin@assetplan.cl": { name: "Squad Gabriela", icon: "Star", color: "text-yellow-500", bg: "bg-yellow-50 border-yellow-200", my: false },
+    "sin_asignar@assetplan.cl": { name: "Sin Asignar", icon: "UserMinus", color: "text-slate-500", bg: "bg-slate-200 border-slate-300", my: false }
 };
 """
 
-        # Write file
-        # Determine path relative to this script
         script_dir = os.path.dirname(os.path.abspath(__file__))
-        # Go up one level to 'ranking-corredores-rm---dashboard' (if script is in scripts/)
-        # Actually structure is: dashboard/scripts/etl.py -> dashboard/constants.ts
         output_path = os.path.join(script_dir, "..", "constants.ts")
-        
         with open(output_path, "w", encoding="utf-8") as f:
             f.write(ts_content)
             
-        print(f"Success! Updated constants.ts with {len(freelance_list)} freelancers and {len(institutional_list)} others.")
+        print("Success! Updated constants.ts with Multi-Month Data.")
 
     except Exception as e:
         print(f"Error: {e}")
     finally:
-        if 'conn' in locals() and conn.is_connected():
+        if conn and conn.is_connected():
             conn.close()
+        if bi_conn and bi_conn.is_connected():
+            bi_conn.close()
 
 if __name__ == "__main__":
     main()

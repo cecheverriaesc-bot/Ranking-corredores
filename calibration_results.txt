@@ -1,0 +1,291 @@
+================================================================================
+CALIBRACIÓN: Dashboard vs Tabla Oficial (Feb 2026)
+================================================================================
+
+DATOS DE REFERENCIA (día 16, último dato real):
+  Contratos Real:  865
+  Reservas Real:   925
+  Meta Contratos (fin mes):  1,878 (100%)
+  Meta Reservas (fin mes):   2,086
+
+────────────────────────────────────────────────────────────
+CALIBRACIÓN CONTRATOS: Buscando query que dé ~865
+────────────────────────────────────────────────────────────
+
+Query                                          Resultado  Diff vs 865
+----------------------------------------------------------------------
+A) Todos los contratos                              1323         +458
+B) Contratos vigentes                               1313         +448
+C) Nuevos (sin renovación web)                      1145         +280
+D) Nuevos con corredor                               870           +5 ← MATCH!
+E) Nuevos vigentes                                  1137         +272
+F) Nuevos vigentes con corredor                      868           +3 ← MATCH!
+G) Solo tipo_renovacion = 'Nuevo'                   1145         +280
+H) tipo_renovacion = 'Nuevo' y vigente              1137         +272
+I) tipo_renovacion = 'Nuevo' y NO heredado          1135         +270
+J) Nuevos con corredor y no heredados                868           +3 ← MATCH!
+K) Nuevos vigentes no heredados                     1127         +262
+
+
+────────────────────────────────────────────────────────────
+CALIBRACIÓN RESERVAS: Buscando query que dé ~925
+────────────────────────────────────────────────────────────
+
+Query                                          Resultado  Diff vs 925
+----------------------------------------------------------------------
+A) Raw: Todas las reservas                          1070         +145
+B) Raw: Netas (sin caída)                           1068         +143
+C) Raw: Netas + activo + coord                       921           -4 ← MATCH!
+D) Raw: Netas SIN filtro activo                     1068         +143
+E) BI: bi_DimReservas total                         1058         +133
+F) BI: bi_DimReservas con flag reserva=1            1058         +133
+
+
+────────────────────────────────────────────────────────────
+COMPARATIVA DIARIA: User Table vs BI Queries
+────────────────────────────────────────────────────────────
+
+Día      C.User     C.BI   Diff  |    R.User     R.BI   Diff
+-----------------------------------------------------------------
+   1          0        0     +0  |        24       25     +1
+   2         86      118    +32  |       100      115    +15
+   3        176      230    +54  |       181      210    +29
+   4        254      329    +75  |       252      291    +39
+   5        326      427   +101  |       326      376    +50
+   6        411      538   +127  |       395      455    +60
+   7        443      539    +96  |       435      500    +65
+   8        412        0   -412  |       446      513    +67
+   9        488      648   +160  |       519      603    +84
+  10        565      748   +183  |       584      674    +90
+  11        630      842   +212  |       666      764    +98
+  12        693      925   +232  |       732      839   +107
+  13        762     1003   +241  |       806      919   +113
+  14        762     1010   +248  |       851      973   +122
+  15        762        0   -762  |       862      987   +125
+  16        865     1137   +272  |       925     1058   +133
+
+================================================================================
+FIN CALIBRACIÓN
+================================================================================
+
+
+================================================================================
+CALIBRACIÓN PARTE 2: Fuente RAW (assetplan_rentas)
+================================================================================
+
+Tablas con 'contrato' en assetplan_rentas:
+  - asset_contratos
+  - contrato_arriendo_addendums
+  - contrato_arriendo_avales
+  - contrato_arriendo_cartas
+  - contrato_arriendo_cartas_detalles
+  - contrato_arriendo_comentarios
+  - contrato_arriendo_firmas
+  - contrato_arriendo_fondo_coberturas
+  - contrato_arriendo_habitantes
+  - contrato_arriendo_historical_attachments
+  - contrato_arriendo_mascotas
+  - contrato_arriendo_reajustes
+  - contrato_arriendo_vehiculos
+  - contrato_arriendo_vigentes
+  - contrato_arriendos
+  - contrato_arriendos_properties
+  - contrato_photos
+  - contrato_propiedad
+  - contratos_administracion
+  - datos_contrato_completar
+  - owner_contrato_firmas
+  - owner_contratos
+  - property_contrato_subarriendo
+  - property_contrato_subarriendo_firmas
+  - rrhh_employee_contratos
+
+── Tabla: contrato_arriendos ──
+Columnas de fecha encontradas:
+  fecha_inicio (date)
+  fecha_fin (date)
+  fecha_inicio_referencia (date)
+  inicio_original (date)
+  fecha_inicio_original (date)
+  fecha_retiro_efectiva (date)
+  created (datetime)
+  modified (datetime)
+  deleted_at (timestamp)
+  fecha_avisado (date)
+  fecha_checkin (date)
+  created_by (int)
+  fecha_fin_tacita (date)
+  fecha_fin_rotacion (datetime)
+
+Contratos por día (assetplan_rentas.contrato_arriendos):
+  Error con created_at: 1054 (42S22): Unknown column 'created_at' in 'field list'
+
+  Usando campo: fecha_inicio
+  Día      Diario     Acum     User     Diff
+  ------------------------------------------
+     1        454      454        0      454
+     2        319      773       86      687
+     3         78      851      176      675
+     4         71      922      254      668
+     5         99     1021      326      695
+     6         93     1114      411      703
+     7         84     1198      443      755
+     8          9     1207      412      795
+     9         83     1290      488      802
+    10         81     1371      565      806
+    11         36     1407      630      777
+    12         46     1453      693      760
+    13         69     1522      762      760
+    14         72     1594      762      832
+    15         29     1623      762      861
+    16         88     1711      865      846
+
+
+── Contratos con filtros ETL (activo, coordinador, neto) ──
+  Error: 1054 (42S22): Unknown column 'ca.created_at' in 'field list'
+
+
+── Verificación: Query del ETL actual ──
+
+  Reservas ETL (netas activos) por día:
+  Día      Diario     Acum     User     Diff
+  ------------------------------------------
+     1         24       24       24        0
+     2         76      100      100        0
+     3         81      181      181        0
+     4         71      252      252        0
+     5         73      325      326       -1
+     6         68      393      395       -2
+     7         39      432      435       -3
+     8         11      443      446       -3
+     9         73      516      519       -3
+    10         65      581      584       -3
+    11         82      663      666       -3
+    12         65      728      732       -4
+    13         74      802      806       -4
+    14         45      847      851       -4
+    15         11      858      862       -4
+    16         63      921      925       -4
+
+================================================================================
+FIN CALIBRACIÓN PARTE 2
+================================================================================
+
+
+================================================================================
+CALIBRACIÓN PARTE 3: Contratos con campo 'created'
+================================================================================
+
+
+  A) created, sin filtros
+   Día   Diario     Acum     User     Diff
+  ------------------------------------------
+     2      161      161       86      +75
+     3      148      309      176     +133
+     4      129      438      254     +184
+     5      118      556      326     +230
+     6      135      691      411     +280
+     7        1      692      443     +249
+     9      127      819      488     +331
+    10      112      931      565     +366
+    11      108     1039      630     +409
+    12       95     1134      693     +441
+    13       81     1215      762     +453
+    14        7     1222      762     +460
+    16      138     1360      865     +495
+  Total acumulado: 1360
+
+  B) created + activo + coord
+   Día   Diario     Acum     User     Diff
+  ------------------------------------------
+     2       86       86       86       +0 ← MATCH
+     3       87      173      176       -3 ← MATCH
+     4       82      255      254       +1 ← MATCH
+     5       72      327      326       +1 ← MATCH
+     6       87      414      411       +3 ← MATCH
+     7        1      415      443      -28
+     9       75      490      488       +2 ← MATCH
+    10       79      569      565       +4 ← MATCH
+    11       68      637      630       +7
+    12       63      700      693       +7
+    13       67      767      762       +5 ← MATCH
+    16      104      871      865       +6
+  Total acumulado: 871
+
+  C) created + corredor_id IS NOT NULL
+   Día   Diario     Acum     User     Diff
+  ------------------------------------------
+     2       89       89       86       +3 ← MATCH
+     3       93      182      176       +6
+     4       82      264      254      +10
+     5       78      342      326      +16
+     6       92      434      411      +23
+     7        1      435      443       -8
+     9       78      513      488      +25
+    10       80      593      565      +28
+    11       69      662      630      +32
+    12       64      726      693      +33
+    13       71      797      762      +35
+    16      104      901      865      +36
+  Total acumulado: 901
+
+
+── Tabla contrato_arriendo_vigentes ──
+Columnas:
+  id (bigint unsigned)
+  property_id (int unsigned)
+  contrato_arriendo_id (int unsigned)
+  monto_arriendo (decimal(15,2))
+  monto_ggcc (decimal(15,2))
+  estacionamiento_id (int unsigned)
+  bodega_id (int unsigned)
+  created_at (timestamp)
+  updated_at (timestamp)
+
+
+── ¿Qué usa el ETL para el valor del ranking? ──
+El ETL actual usa reservas (bruto - caídas) como 'val'.
+Esto es DIFERENTE de contratos.
+La tabla oficial del usuario muestra CONTRATOS = 865.
+Nuestro dashboard muestra RESERVAS = 921.
+
+
+── BI: bi_DimContratos NUEVOS con corredor (día a día) ──
+   Día   Diario     Acum     User     Diff
+  ------------------------------------------
+     2       86       86       86       +0 ← MATCH
+     3       90      176      176       +0 ← MATCH
+     4       78      254      254       +0 ← MATCH
+     5       73      327      326       +1 ← MATCH
+     6       86      413      411       +2 ← MATCH
+     7        1      414      443      -29
+     9       76      490      488       +2 ← MATCH
+    10       77      567      565       +2 ← MATCH
+    11       66      633      630       +3 ← MATCH
+    12       62      695      693       +2 ← MATCH
+    13       71      766      762       +4 ← MATCH
+    16      104      870      865       +5 ← MATCH
+  Total: 870
+
+
+── BI: Contratos vigentes ACUMULADOS hasta cada día ──
+  Día  1: BI=     0  User=     0  Diff=    +0 ← MATCH
+  Día  2: BI=    84  User=    86  Diff=    -2 ← MATCH
+  Día  3: BI=   174  User=   176  Diff=    -2 ← MATCH
+  Día  4: BI=   252  User=   254  Diff=    -2 ← MATCH
+  Día  5: BI=   325  User=   326  Diff=    -1 ← MATCH
+  Día  6: BI=   411  User=   411  Diff=    +0 ← MATCH
+  Día  7: BI=   412  User=   443  Diff=   -31
+  Día  8: BI=   412  User=   412  Diff=    +0 ← MATCH
+  Día  9: BI=   488  User=   488  Diff=    +0 ← MATCH
+  Día 10: BI=   565  User=   565  Diff=    +0 ← MATCH
+  Día 11: BI=   631  User=   630  Diff=    +1 ← MATCH
+  Día 12: BI=   693  User=   693  Diff=    +0 ← MATCH
+  Día 13: BI=   764  User=   762  Diff=    +2 ← MATCH
+  Día 14: BI=   764  User=   762  Diff=    +2 ← MATCH
+  Día 15: BI=   764  User=   762  Diff=    +2 ← MATCH
+  Día 16: BI=   868  User=   865  Diff=    +3 ← MATCH
+
+================================================================================
+FIN CALIBRACIÓN PARTE 3
+================================================================================

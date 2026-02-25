@@ -1,0 +1,159 @@
+================================================================================
+ANÁLISIS PROFUNDO: RESERVAS vs CONTRATOS (Feb 2026)
+Fecha de análisis: 2026-02-17 17:54:00
+================================================================================
+
+────────────────────────────────────────────────────────────
+FUENTE 1: assetplan_rentas (Base cruda / producción)
+────────────────────────────────────────────────────────────
+
+1. Total Reservas Brutas (Feb 1-17): 1071
+2. Desglose Reservas:
+   - Brutas: 1071
+   - Caídas: 2
+   - Netas (sin caídas): 1069
+
+3. Reservas Netas (activos + coordinador): 921
+   ↑ ESTE es el número que muestra el dashboard actual (daily_stats)
+
+4. Reservas Netas (TODOS los corredores): 1069
+
+────────────────────────────────────────────────────────────
+FUENTE 2: bi_assetplan (Base BI procesada)
+────────────────────────────────────────────────────────────
+
+5. Total Contratos BI (bi_DimContratos): 1323
+6. Desglose Contratos BI:
+   - Total: 1323
+   - Vigentes: 1313
+   - No Vigentes: 10
+
+7. Total Reservas BI (bi_DimReservas): 1059
+8. Desglose Reservas BI:
+   - Total filas: 1059
+   - Con reserva (flag): 1059
+   - Sin contrato y no caída: 243
+
+9. Top 10 Corredores por Contratos (BI):
+   Vivao (Nicole Jones): 50
+   Henry Colina (Rumirent): 47
+   Arriendos Kodu: 22
+   Henry Rodriguez: 21
+   Ejecutivo Assetplan: 19
+   Johanna Hernandez: 19
+   Paola Malave: 17
+   Elkis Daza: 17
+   Rosangela Cirelli: 16
+   Adriana Ollarves: 16
+
+10. Contratos SIN corredor asignado: 453
+11. Contratos CON corredor asignado: 870
+
+12. Contratos por Tipo de Renovación:
+   Nuevo: 1145
+   Renovacion Web: 178
+
+13. Contratos Heredados vs Nuevos:
+   Nuevo: 1279
+   Heredado: 44
+
+────────────────────────────────────────────────────────────
+COMPARATIVA Y CONCLUSIONES
+────────────────────────────────────────────────────────────
+
+Dashboard actual (reservas netas activos):     921
+Reservas BI (bi_DimReservas):                  1059
+Contratos BI (bi_DimContratos):                1323
+Contratos vigentes BI:                         1313
+
+META MENSUAL CONTRATOS:                        2.066
+META MENSUAL RESERVAS:                         2.174
+
+% Avance Real Contratos (vigentes):            63.6%
+% Avance Dashboard actual (reservas proxy):    44.6%
+DIFERENCIA:                                    +19.0 puntos porcentuales
+
+14. Comparativa por Corredor (Reservas Raw vs Contratos BI):
+Corredor                             Res.Netas  Contratos     Diff
+----------------------------------------------------------------------
+Corredor Reservas Adicionales              146          0     -146
+Henry Colina (Rumirent)                     52         47       -5
+Vivao (Nicole Jones)                        51         50       -1
+Henry Rodriguez                             27         21       -6
+Elkis Daza                                  24         17       -7
+Arriendos Kodu                              22         22       +0
+Adriana Ollarves                            21         16       -5
+Isadora Zepeda                              20         15       -5
+Johanna Hernandez                           20         19       -1
+Rosangela Cirelli                           20         16       -4
+Confianza Inmobiliaria (Raul Mena)          19         14       -5
+Camila Fuenzalida                           17         13       -4
+Paola Malave                                17         17       +0
+Luis Pernalete                              14         11       -3
+Dutglas Delmoral                            13         15       +2
+
+================================================================================
+FIN DEL ANÁLISIS
+================================================================================
+
+
+================================================================================
+ANÁLISIS COMPLEMENTARIO: ¿Por qué Contratos > Reservas?
+================================================================================
+
+1. Contratos por presencia de Lead:
+   Sin Lead: 490
+   Con Lead: 833
+
+2. Contratos: Tipo × Corredor:
+   Tipo                      Corredor Status         Total
+   -------------------------------------------------------
+   Nuevo                     Con Corredor              870
+   Nuevo                     Sin Corredor              275
+   Renovacion Web            Sin Corredor              178
+
+3. Contratos NUEVOS con corredor asignado: 870
+   ↑ ESTOS son los contratos que deberían contar para el Ranking
+
+4. Distribución Diaria (Feb 2026):
+   Fecha         Reservas BI   Contratos BI  Ratio C/R
+   --------------------------------------------------
+   2026-02-02             90            158       1.76
+   2026-02-03             95            145       1.53
+   2026-02-04             81            123       1.52
+   2026-02-05             85            112       1.32
+   2026-02-06             79            127       1.61
+   2026-02-07             45              1       0.02
+   2026-02-09             90            124       1.38
+   2026-02-10             71            109       1.54
+   2026-02-11             90            105       1.17
+   2026-02-12             75             93       1.24
+   2026-02-13             80             81       1.01
+   2026-02-14             54              7       0.13
+   2026-02-16             71            138       1.94
+
+5. Estado de Reservas BI:
+   Total reservas:                    1059
+   Sin contrato y no caída (pend.):   243
+   Ya convertidas o caídas:           816
+
+
+────────────────────────────────────────────────────────────
+CONCLUSIÓN ESTRATÉGICA
+────────────────────────────────────────────────────────────
+
+La META de 2.066 es de CONTRATOS (no reservas).
+Los 1.323 contratos totales incluyen:
+  - 1.145 Nuevos (contratos de arriendo nuevos)
+  - 178 Renovaciones Web (no vienen de reservas de corredor)
+
+Para el RANKING de corredores, lo relevante son los
+contratos NUEVOS con corredor asignado: 870
+
+Para el avance ESTRATÉGICO de la empresa, lo relevante
+son los 1.323 contratos totales (o 1.313 vigentes).
+
+RECOMENDACIÓN:
+  - Header Operativo: Seguir usando Reservas (operación diaria)
+  - Header Estratégico: Usar Contratos TOTALES vigentes de BI
+  - Ranking individual: Usar contratos NUEVOS con corredor

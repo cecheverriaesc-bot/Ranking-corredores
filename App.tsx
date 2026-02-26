@@ -9,6 +9,7 @@ import {
     Lock, LogOut
 } from 'lucide-react';
 import { ComposedChart, AreaChart, Area, Line, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 import { MONTHLY_DATA, TEAMS, HISTORY_2025, NAMES_WITH_AGENDA, LAST_DB_UPDATE } from './constants';
 
 import { SquadStats, DashboardStats, CorredorData, DailyStat, MonthData, BrokerGoalData } from './types';
@@ -1375,6 +1376,7 @@ const App: React.FC = () => {
                     isEditing={!!brokerGoals[selectedBrokerForGoal.name]?.personal_goal}
                 />
             )}
+            <SpeedInsights />
         </div >
     );
 };

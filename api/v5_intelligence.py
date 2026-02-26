@@ -311,7 +311,7 @@ def fetch_squad_intelligence_v5(coordinador_email="carlos.echeverria", filter_re
                      l.leads_descartados_sin_gestion, l.prospectos_descartados, l.contacto_24h,
                      l.accion_24h, t.tiempo_prom_resolucion, t.tickets_severidad_ponderada, t.prospectos_demora
             ORDER BY contratos_mes DESC, c.reserva DESC
-        ''', (CURRENT_YEAR, CURRENT_MONTH, CURRENT_YEAR, CURRENT_MONTH, CURRENT_YEAR, CURRENT_MONTH, CURRENT_YEAR, CURRENT_MONTH, CURRENT_YEAR, CURRENT_MONTH, coordinador_email))
+        ''', (CURRENT_YEAR, CURRENT_MONTH, CURRENT_YEAR, CURRENT_MONTH, CURRENT_YEAR, CURRENT_MONTH, CURRENT_YEAR, CURRENT_MONTH, coordinador_email))
         
         corredores_data = cursor.fetchall()
         

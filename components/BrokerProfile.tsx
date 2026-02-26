@@ -68,22 +68,19 @@ function estimateCommission(reservas: number): string {
 const AVG_CANON_CLP = 580000;
 const COMMISSION_RATE = 0.30;
 
-// Simple heatmap data derived from broker activity
-function buildHeatmapData(broker: BrokerIntelligence, view: 'reservas' | 'agenda' | 'leads') {
-    const reservasBase = { lunes: 0.8, martes: 1.4, miercoles: 2.0, jueves: 1.7, viernes: 3.5, sabado: 0.6, domingo: 0.0 };
-    const agendaBase = { lunes: 1.2, martes: 2.5, miercoles: 3.1, jueves: 2.8, viernes: 4.7, sabado: 1.0, domingo: 0.0 };
-    const leadsBase = { lunes: 2.1, martes: 3.0, miercoles: 3.8, jueves: 3.2, viernes: 4.1, sabado: 1.2, domingo: 0.0 };
-
-    // Scale by broker volume vs average (avg 12 reservas / month baseline)
-    const scale = Math.max(0.3, broker.reservas / 12);
-    const data = view === 'reservas' ? reservasBase : view === 'agenda' ? agendaBase : leadsBase;
-
-    return Object.fromEntries(Object.entries(data).map(([k, v]) => [k, parseFloat((v * scale).toFixed(1))]))
+interface ActivityWeek {
+    week: string;    // e.g. "2026-W05"
+    date: string;    // e.g. "2026-01-27"
+    agenda: number;
+    visitadas: number;
+    canceladas: number;
+    leads: number;
+    reservas: number;
 }
 
 const DAYS = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo'] as const;
-const DAY_LABELS = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie 🔥', 'Sáb', 'Dom'];
-const FRANJA_MODS: Record<string, number> = { 'Mañana': 0.6, 'Tarde': 1.0, 'Noche': 0.3 };
+const DAY_LABELS = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
+
 
 // ============================================================
 // SUB-COMPONENTS
@@ -144,9 +141,32 @@ function heatmapCellClass(val: number, max: number): string {
 // ============================================================
 
 const BrokerProfile: React.FC<BrokerProfileProps> = ({ broker, onBack, selectedMonth }) => {
-    const [heatmapView, setHeatmapView] = useState<'reservas' | 'agenda' | 'leads'>('reservas');
+    const [heatmapView, setHeatmapView] = useState<'reservas' | 'agenda' | 'leads'>('agenda');
+    const [heatmapData, setHeatmapData] = useState<ActivityWeek[]>([]);
+    const [heatmapLoading, setHeatmapLoading] = useState(true);
+    const [heatmapError, setHeatmapError] = useState<string | null>(null);
     const category = getScoreCategory(broker.score);
     const initials = getInitials(broker.name);
+
+    // Fetch real heatmap data from v6_broker_activity
+    useEffect(() => {
+        const fetchActivity = async () => {
+            setHeatmapLoading(true);
+            setHeatmapError(null);
+            try {
+                const encodedName = encodeURIComponent(broker.name);
+                const res = await fetch(`/api/v6_broker_activity?broker_name=${encodedName}&weeks_back=16`);
+                if (!res.ok) throw new Error(`Error ${res.status}`);
+                const json = await res.json();
+                setHeatmapData(json.weeks || []);
+            } catch (err) {
+                setHeatmapError('Sin datos de actividad histórica aún');
+            } finally {
+                setHeatmapLoading(false);
+            }
+        };
+        fetchActivity();
+    }, [broker.name]);
 
     // Meta de reservas personal (desde broker.meta_personal)
     const metaReservas = broker.meta_personal > 0 ? broker.meta_personal : 7;
@@ -163,13 +183,20 @@ const BrokerProfile: React.FC<BrokerProfileProps> = ({ broker, onBack, selectedM
         ? `$${(commisionActual / 1000000).toFixed(1)}M`
         : `$${(commisionActual / 1000).toFixed(0)}K`;
 
-    // Heatmap data
-    const heatmapDayData = buildHeatmapData(broker, heatmapView);
-    const heatmapRows = Object.entries(FRANJA_MODS).map(([franja, mod]) => ({
-        franja,
-        cells: DAYS.map(d => parseFloat((heatmapDayData[d] * mod).toFixed(1)))
-    }));
-    const heatmapMax = Math.max(...heatmapRows.flatMap(r => r.cells), 0.1);
+    // Derived heatmap values from API data
+    const getWeekValue = (week: ActivityWeek) =>
+        heatmapView === 'reservas' ? week.reservas
+            : heatmapView === 'agenda' ? week.agenda
+                : week.leads;
+
+    const heatmapMax = Math.max(...heatmapData.map(getWeekValue), 1);
+
+    // Chunk weeks into rows of 8 (max 2 months visible at once)
+    const COLS = 8;
+    const heatmapRows: ActivityWeek[][] = [];
+    for (let i = 0; i < heatmapData.length; i += COLS) {
+        heatmapRows.push(heatmapData.slice(i, i + COLS));
+    }
 
     // Phone WhatsApp link
     const phoneHref = broker.telefono
@@ -533,10 +560,12 @@ const BrokerProfile: React.FC<BrokerProfileProps> = ({ broker, onBack, selectedM
                                 <Activity size={18} className="text-pink-400" />
                                 Activity Heatmap
                             </h2>
-                            <p className="text-xs text-slate-500 font-semibold mt-1">Patrones estimados por día y franja horaria</p>
+                            <p className="text-xs text-slate-500 font-semibold mt-1">
+                                Datos reales · últimas 16 semanas
+                            </p>
                         </div>
                         <div className="flex gap-2">
-                            {(['reservas', 'agenda', 'leads'] as const).map(v => (
+                            {(['agenda', 'reservas', 'leads'] as const).map(v => (
                                 <button
                                     key={v}
                                     onClick={() => setHeatmapView(v)}
@@ -550,43 +579,49 @@ const BrokerProfile: React.FC<BrokerProfileProps> = ({ broker, onBack, selectedM
                         </div>
                     </div>
 
-                    <div className="overflow-x-auto">
-                        <div className="min-w-[520px]">
-                            {/* Day headers */}
-                            <div className="grid grid-cols-8 gap-2 mb-2">
-                                <div className="text-[9px] text-slate-700 font-bold uppercase text-right pr-2">Franja</div>
-                                {DAY_LABELS.map(d => (
-                                    <div key={d} className="text-[9px] text-slate-500 font-bold uppercase text-center">{d}</div>
-                                ))}
-                            </div>
-
-                            {/* Rows */}
-                            <div className="space-y-2">
-                                {heatmapRows.map(({ franja, cells }) => (
-                                    <div key={franja} className="grid grid-cols-8 gap-2">
-                                        <div className="text-[9px] text-slate-500 font-bold uppercase flex items-center justify-end pr-2">{franja}</div>
-                                        {cells.map((val, i) => (
+                    {heatmapLoading ? (
+                        <div className="flex items-center justify-center h-24 text-slate-500 text-xs font-bold uppercase tracking-widest">
+                            <Clock size={14} className="mr-2 animate-spin" /> Cargando actividad real...
+                        </div>
+                    ) : heatmapError || heatmapData.length === 0 ? (
+                        <div className="flex items-center justify-center h-24 text-slate-600 text-xs font-bold uppercase tracking-widest gap-2">
+                            <XCircle size={14} />
+                            {heatmapError || 'Sin actividad en las últimas 16 semanas'}
+                        </div>
+                    ) : (
+                        <div className="space-y-3">
+                            {heatmapRows.map((row, rowIdx) => (
+                                <div key={rowIdx} className="flex gap-2">
+                                    {row.map((week) => {
+                                        const val = getWeekValue(week);
+                                        const shortDate = week.date.slice(5); // MM-DD
+                                        return (
                                             <div
-                                                key={i}
-                                                title={`${franja} ${DAY_LABELS[i]}: ${val}`}
-                                                className={`h-11 rounded-xl border flex items-center justify-center text-sm transition-all duration-200 ${heatmapCellClass(val, heatmapMax)}`}
+                                                key={week.week}
+                                                title={`${week.week} (${week.date})\nAgenda: ${week.agenda} | Leads: ${week.leads} | Reservas: ${week.reservas}`}
+                                                className={`flex-1 h-14 rounded-xl border flex flex-col items-center justify-center text-xs transition-all duration-200 ${heatmapCellClass(val, heatmapMax)}`}
                                             >
-                                                {val > 0 ? val : '–'}
+                                                <span className="text-[9px] font-bold opacity-60">{shortDate}</span>
+                                                <span className="text-base font-black">{val > 0 ? val : '–'}</span>
                                             </div>
-                                        ))}
-                                    </div>
+                                        );
+                                    })}
+                                </div>
+                            ))}
+
+                            {/* Legend */}
+                            <div className="flex items-center gap-3 mt-4 text-[10px]">
+                                <span className="text-slate-500 font-bold uppercase">Intensidad:</span>
+                                {[15, 30, 50, 70, 100].map(p => (
+                                    <div key={p} className="w-5 h-5 rounded-lg" style={{ background: `rgba(39,102,236,${p / 100})`, border: `1px solid rgba(39,102,236,${p / 80})` }} />
                                 ))}
+                                <span className="text-slate-600 font-bold">Bajo → Alto</span>
+                                <span className="ml-auto text-slate-600 font-bold">
+                                    {heatmapData.length} semanas · {heatmapData[0]?.date} → {heatmapData[heatmapData.length - 1]?.date}
+                                </span>
                             </div>
                         </div>
-                    </div>
-
-                    <div className="flex items-center gap-3 mt-5 text-[10px]">
-                        <span className="text-slate-500 font-bold uppercase">Intensidad:</span>
-                        {[15, 30, 50, 70, 100].map(p => (
-                            <div key={p} className="w-5 h-5 rounded-lg" style={{ background: `rgba(39,102,236,${p / 100})`, border: `1px solid rgba(39,102,236,${p / 80})` }} />
-                        ))}
-                        <span className="text-slate-600 font-bold">Bajo → Alto</span>
-                    </div>
+                    )}
                 </section>
 
                 {/* ============================================================ */}

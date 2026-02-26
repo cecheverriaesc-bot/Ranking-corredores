@@ -1,5 +1,6 @@
 from http.server import BaseHTTPRequestHandler
 import json
+import statistics
 
 class handler(BaseHTTPRequestHandler):
     def do_GET(self):
@@ -8,10 +9,19 @@ class handler(BaseHTTPRequestHandler):
         self.send_header('Access-Control-Allow-Origin', '*')
         self.end_headers()
         
-        response = {
-            "status": "OK",
-            "message": "Minimal v2 works!"
-        }
+        try:
+            mean_val = statistics.mean([1, 2, 3])
+            response = {
+                "status": "OK",
+                "message": "Minimal v2 with statistics works!",
+                "mean": mean_val
+            }
+        except Exception as e:
+            response = {
+                "status": "ERROR",
+                "error": str(e)
+            }
+        
         self.wfile.write(json.dumps(response).encode())
 
     def do_OPTIONS(self):

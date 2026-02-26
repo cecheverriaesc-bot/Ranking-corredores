@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html class="dark" lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Broker Performance Profile — Laboratorio Estratégico</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800;900&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+
+  <!-- Tailwind CDN v3 -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Manrope', 'sans-serif'] },
+          colors: {
+            primary: '#2766ec',
+            'background-dark': '#101622',
+            'surface-dark': '#1e2433',
+            'surface-highlight': '#2a3142',
+            'accent-gold': '#d4af37',
+            'accent-emerald': '#10b981',
+          },
+          animation: {
+            'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Manrope', sans-serif;
+    }
+
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      line-height: 1;
+      vertical-align: middle;
+    }
+
+    .material-symbols-outlined.filled {
+      font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+
+    /* Heatmap cell transitions */
+    .heatmap-cell {
+      transition: all 0.3s ease;
+    }
+
+    /* Chart bars */
+    .chart-bar {
+      transition: height 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+      transform-origin: bottom;
+    }
+
+    /* Progress bar fill animation */
+    @keyframes fillBar {
+      from {
+        width: 0%;
+      }
+
+      to {
+        width: var(--bar-target);
+      }
+    }
+
+    .progress-fill {
+      animation: fillBar 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+
+    /* Gradient border card */
+    .gradient-border {
+      background: linear-gradient(135deg, #1e2433, #1a2035);
+      border: 1px solid rgba(39, 102, 236, 0.3);
+    }
+
+    /* Score ring */
+    .score-ring {
+      background: conic-gradient(#2766ec 0%, #10b981 60%, #d4af37 80%, #2a3142 80%);
+      border-radius: 50%;
+    }
+
+    /* Tooltip */
+    .tooltip-container {
+      position: relative;
+    }
+
+    .tooltip-container:hover .tooltip-box {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .tooltip-box {
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%);
+      white-space: nowrap;
+      z-index: 50;
+    }
+
+    /* Chip filter active state */
+    .chip-btn {
+      transition: all 0.25s ease;
+    }
+
+    .chip-btn.active {
+      background: rgba(39, 102, 236, 0.3) !important;
+      border-color: rgba(39, 102, 236, 0.8) !important;
+      color: #fff !important;
+    }
+  </style>
+</head>
+
+<body class="bg-background-dark text-slate-200 min-h-screen antialiased pb-20">
+
+  <!-- ===================== BACKGROUND GLOW ===================== -->
+  <div aria-hidden="true" class="fixed inset-0 pointer-events-none overflow-hidden">
+    <div class="absolute top-[-15%] left-[-10%] w-[600px] h-[600px] bg-primary/10 rounded-full blur-[140px]"></div>
+    <div class="absolute top-[30%] right-[-10%] w-[400px] h-[400px] bg-accent-emerald/8 rounded-full blur-[120px]">
+    </div>
+  </div>
+
+  <!-- ===================== HEADER ===================== -->
+  <header class="relative z-10 border-b border-slate-800 bg-surface-dark/70 backdrop-blur-md sticky top-0">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-4">
+      <!-- Breadcrumbs -->
+      <nav class="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-slate-500">
+        <span class="material-symbols-outlined text-primary text-lg">science</span>
+        <span>Laboratorio Estratégico</span>
+        <span class="material-symbols-outlined text-base">chevron_right</span>
+        <span class="text-white">Ana Martínez</span>
+      </nav>
+      <!-- Back button -->
+      <button onclick="history.back()"
+        class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-bold text-slate-400 hover:text-white transition-all">
+        <span class="material-symbols-outlined text-base">arrow_back</span>
+        Volver
+      </button>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-8 relative z-10">
+
+    <!-- ===================== HERO CARD ===================== -->
+    <section class="bg-surface-dark rounded-3xl border border-slate-800 overflow-hidden shadow-2xl">
+      <div class="bg-gradient-to-r from-primary/20 via-transparent to-accent-emerald/10 p-8">
+        <div class="flex flex-col md:flex-row items-start md:items-center gap-6">
+          <!-- Avatar -->
+          <div class="relative flex-shrink-0">
+            <div
+              class="w-24 h-24 rounded-full bg-gradient-to-br from-primary to-accent-emerald flex items-center justify-center text-3xl font-black text-white shadow-2xl border-4 border-surface-dark">
+              AM</div>
+            <div
+              class="absolute -bottom-1 -right-1 bg-accent-emerald w-7 h-7 rounded-full flex items-center justify-center border-2 border-surface-dark">
+              <span class="material-symbols-outlined filled text-white text-sm">verified</span>
+            </div>
+          </div>
+
+          <!-- Info -->
+          <div class="flex-1">
+            <div class="flex flex-wrap items-start justify-between gap-4">
+              <div>
+                <h1 class="text-3xl font-black text-white tracking-tight">Ana Martínez</h1>
+                <p class="text-sm text-slate-400 font-semibold mt-1">Corredora Senior · Squad Carlos Echeverría</p>
+                <div class="flex flex-wrap items-center gap-3 mt-3">
+                  <span
+                    class="inline-flex items-center gap-1.5 bg-accent-emerald/20 text-accent-emerald border border-accent-emerald/40 px-3 py-1 rounded-full text-xs font-black uppercase tracking-widest">
+                    <span class="material-symbols-outlined filled text-sm">military_tech</span>ELITE
+                  </span>
+                  <span
+                    class="inline-flex items-center gap-1.5 bg-accent-gold/10 text-accent-gold border border-accent-gold/30 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest">
+                    <span class="material-symbols-outlined text-sm">leaderboard</span>Percentil 94.2°
+                  </span>
+                  <span
+                    class="inline-flex items-center gap-1.5 bg-slate-700/50 text-slate-300 border border-slate-700 px-3 py-1 rounded-full text-xs font-bold">
+                    <span class="material-symbols-outlined text-sm">calendar_month</span>Feb 2026
+                  </span>
+                </div>
+              </div>
+
+              <!-- Score Display -->
+              <div class="text-right">
+                <div class="text-7xl font-black text-white tracking-tighter leading-none"
+                  style="text-shadow: 0 0 40px rgba(39,102,236,0.5);">87.4</div>
+                <p class="text-xs text-slate-500 uppercase font-bold tracking-widest mt-1">Score Total</p>
+                <div class="flex items-center justify-end gap-1.5 mt-2">
+                  <span class="material-symbols-outlined text-accent-emerald text-lg">trending_up</span>
+                  <span class="text-accent-emerald font-black text-sm">+22.4% YoY</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Score Breakdown Bar -->
+      <div class="px-8 py-4 border-t border-slate-800 grid grid-cols-3 gap-4">
+        <div>
+          <div class="flex justify-between text-xs font-bold uppercase tracking-widest mb-1.5">
+            <span class="text-indigo-400">Engagement</span>
+            <span class="text-white">32.1 / 35</span>
+          </div>
+          <div class="h-2 bg-slate-800 rounded-full overflow-hidden">
+            <div class="h-full bg-gradient-to-r from-indigo-600 to-indigo-400 rounded-full progress-fill"
+              style="--bar-target:91.7%; width:0%"></div>
+          </div>
+        </div>
+        <div>
+          <div class="flex justify-between text-xs font-bold uppercase tracking-widest mb-1.5">
+            <span class="text-primary">Rendimiento</span>
+            <span class="text-white">36.8 / 40</span>
+          </div>
+          <div class="h-2 bg-slate-800 rounded-full overflow-hidden">
+            <div class="h-full bg-gradient-to-r from-primary to-blue-400 rounded-full progress-fill"
+              style="--bar-target:92%; width:0%"></div>
+          </div>
+        </div>
+        <div>
+          <div class="flex justify-between text-xs font-bold uppercase tracking-widest mb-1.5">
+            <span class="text-accent-emerald">Eficiencia</span>
+            <span class="text-white">18.5 / 25</span>
+          </div>
+          <div class="h-2 bg-slate-800 rounded-full overflow-hidden">
+            <div class="h-full bg-gradient-to-r from-accent-emerald to-emerald-400 rounded-full progress-fill"
+              style="--bar-target:74%; width:0%"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== META PERSONAL TRACKER ===================== -->
+    <section class="bg-surface-dark rounded-3xl border border-amber-500/30 shadow-2xl overflow-hidden relative">
+      <!-- Alert strip -->
+      <div class="bg-amber-500/10 border-b border-amber-500/30 px-6 py-3 flex items-center gap-3">
+        <span class="material-symbols-outlined filled text-amber-400 text-xl">warning</span>
+        <p class="text-xs font-bold text-amber-300 tracking-wide">
+          Riesgo de incumplimiento — Faltan <strong>3 reservas</strong> en 12 días. Al ritmo actual alcanzaría 13.
+          Recomendado: reasignar 2 leads calientes al cierre de semana.
+        </p>
+        <button
+          class="ml-auto flex items-center gap-1.5 px-4 py-2 bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/50 text-amber-300 rounded-xl text-xs font-black uppercase transition-all whitespace-nowrap flex-shrink-0">
+          <span class="material-symbols-outlined text-base">bolt</span>Revisar Plan
+        </button>
+      </div>
+
+      <div class="p-8">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="p-3 bg-amber-500/20 rounded-2xl border border-amber-500/30">
+            <span class="material-symbols-outlined filled text-amber-400 text-2xl">gps_fixed</span>
+          </div>
+          <div>
+            <h2 class="text-lg font-black text-white uppercase tracking-widest">Meta Personal · Reservas</h2>
+            <p class="text-xs text-slate-500 font-semibold mt-0.5">Objetivo mensual comprometido • Feb 2026</p>
+          </div>
+          <div class="ml-auto text-right">
+            <div class="text-3xl font-black text-white">15 <span
+                class="text-lg text-slate-400 font-bold">reservas</span></div>
+            <p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Objetivo del mes</p>
+          </div>
+        </div>
+
+        <!-- Progress bar -->
+        <div class="mb-6">
+          <div class="flex justify-between items-end mb-2">
+            <div>
+              <span class="text-4xl font-black text-white">12</span>
+              <span class="text-slate-500 text-lg font-bold ml-2">/ 15 reservas</span>
+            </div>
+            <div class="text-right">
+              <span class="text-3xl font-black text-primary">80%</span>
+              <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Cumplido</p>
+            </div>
+          </div>
+          <div class="h-5 bg-slate-900 rounded-full overflow-hidden border border-slate-800 relative">
+            <!-- Projected mark -->
+            <div class="absolute top-0 bottom-0 w-0.5 bg-amber-400/80 z-10" style="left: 86.6%">
+              <span
+                class="absolute -top-6 left-1/2 -translate-x-1/2 bg-amber-500/20 border border-amber-500/50 text-amber-300 text-[9px] font-bold px-1.5 py-0.5 rounded whitespace-nowrap">Proyección:
+                13 reservas</span>
+            </div>
+            <!-- Real fill -->
+            <div
+              class="h-full bg-gradient-to-r from-primary via-blue-400 to-primary/80 progress-fill relative shadow-[0_0_20px_rgba(39,102,236,0.4)]"
+              style="--bar-target:80%; width:0%">
+              <div class="absolute inset-0 bg-white/10 animate-pulse-slow"></div>
+            </div>
+          </div>
+          <div class="flex justify-between text-[10px] font-bold text-slate-600 uppercase tracking-widest mt-1.5">
+            <span>0</span>
+            <span>12 días restantes</span>
+            <span>15 reservas</span>
+          </div>
+        </div>
+
+        <!-- Rhythm Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+
+          <!-- Ritmo de reservas -->
+          <div class="bg-accent-emerald/10 border border-accent-emerald/30 rounded-2xl p-5 flex items-center gap-4">
+            <div class="p-3 bg-accent-emerald/20 rounded-xl">
+              <span class="material-symbols-outlined filled text-accent-emerald text-2xl">trending_up</span>
+            </div>
+            <div>
+              <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Ritmo Actual</p>
+              <p class="text-2xl font-black text-accent-emerald">0.67<span class="text-sm font-bold text-slate-400">
+                  res/día</span></p>
+              <p class="text-[10px] text-slate-500 font-semibold mt-0.5">→ proyecta 13 al mes</p>
+            </div>
+          </div>
+
+          <!-- Ritmo necesario -->
+          <div class="bg-amber-500/10 border border-amber-500/30 rounded-2xl p-5 flex items-center gap-4">
+            <div class="p-3 bg-amber-500/20 rounded-xl">
+              <span class="material-symbols-outlined filled text-amber-400 text-2xl">target</span>
+            </div>
+            <div>
+              <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Ritmo Necesario</p>
+              <p class="text-2xl font-black text-amber-400">0.83<span class="text-sm font-bold text-slate-400">
+                  res/día</span></p>
+              <p class="text-[10px] text-red-400 font-bold mt-0.5">↑ +0.16 res/día para cerrar la meta</p>
+            </div>
+          </div>
+
+          <!-- Comisión estimada (30% cañon) -->
+          <div class="bg-primary/10 border border-primary/30 rounded-2xl p-5 flex items-center gap-4">
+            <div class="p-3 bg-primary/20 rounded-xl">
+              <span class="material-symbols-outlined filled text-primary text-2xl">payments</span>
+            </div>
+            <div>
+              <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Comisión Estimada</p>
+              <p class="text-2xl font-black text-primary">~$2.1M<span class="text-sm font-bold text-slate-400">
+                  CLP</span></p>
+              <p class="text-[10px] text-slate-500 font-semibold mt-0.5">30% cañon · 12 reservas activas</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== KPI CARDS ===================== -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <!-- Card 1 -->
+      <div
+        class="bg-surface-dark border border-slate-800 rounded-2xl p-5 hover:border-primary/50 transition-colors group">
+        <div class="flex justify-between items-start mb-4">
+          <div
+            class="p-2.5 rounded-xl bg-primary/10 border border-primary/20 group-hover:bg-primary/20 transition-colors">
+            <span class="material-symbols-outlined filled text-primary text-xl">paid</span>
+          </div>
+          <div
+            class="flex items-center gap-1 bg-accent-emerald/10 border border-accent-emerald/20 px-2 py-0.5 rounded-full">
+            <span class="material-symbols-outlined text-accent-emerald text-sm">trending_up</span>
+            <span class="text-accent-emerald text-[10px] font-black">+18.4%</span>
+          </div>
+        </div>
+        <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Venta Total (mes)</p>
+        <p class="text-3xl font-black text-white mt-1">$842K</p>
+        <p class="text-[10px] text-slate-600 font-semibold mt-1">vs $711K mes anterior</p>
+      </div>
+
+      <!-- Card 2 -->
+      <div
+        class="bg-surface-dark border border-slate-800 rounded-2xl p-5 hover:border-accent-emerald/50 transition-colors group">
+        <div class="flex justify-between items-start mb-4">
+          <div
+            class="p-2.5 rounded-xl bg-accent-emerald/10 border border-accent-emerald/20 group-hover:bg-accent-emerald/20 transition-colors">
+            <span class="material-symbols-outlined filled text-accent-emerald text-xl">real_estate_agent</span>
+          </div>
+          <div
+            class="flex items-center gap-1 bg-accent-emerald/10 border border-accent-emerald/20 px-2 py-0.5 rounded-full">
+            <span class="material-symbols-outlined text-accent-emerald text-sm">trending_up</span>
+            <span class="text-accent-emerald text-[10px] font-black">+3</span>
+          </div>
+        </div>
+        <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Reservas Activas</p>
+        <p class="text-3xl font-black text-white mt-1">12</p>
+        <p class="text-[10px] text-slate-600 font-semibold mt-1">vs 9 mes anterior</p>
+      </div>
+
+      <!-- Card 3 -->
+      <div
+        class="bg-surface-dark border border-slate-800 rounded-2xl p-5 hover:border-yellow-500/50 transition-colors group">
+        <div class="flex justify-between items-start mb-4">
+          <div
+            class="p-2.5 rounded-xl bg-yellow-500/10 border border-yellow-500/20 group-hover:bg-yellow-500/20 transition-colors">
+            <span class="material-symbols-outlined filled text-yellow-400 text-xl">schedule</span>
+          </div>
+          <div
+            class="flex items-center gap-1 bg-accent-emerald/10 border border-accent-emerald/20 px-2 py-0.5 rounded-full">
+            <span class="material-symbols-outlined text-accent-emerald text-sm">trending_down</span>
+            <span class="text-accent-emerald text-[10px] font-black">-6 días</span>
+          </div>
+        </div>
+        <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Días Prom. Cierre</p>
+        <p class="text-3xl font-black text-white mt-1">22d</p>
+        <p class="text-[10px] text-slate-600 font-semibold mt-1">vs 28d mes anterior</p>
+      </div>
+
+      <!-- Card 4 -->
+      <div
+        class="bg-surface-dark border border-slate-800 rounded-2xl p-5 hover:border-pink-500/50 transition-colors group">
+        <div class="flex justify-between items-start mb-4">
+          <div
+            class="p-2.5 rounded-xl bg-pink-500/10 border border-pink-500/20 group-hover:bg-pink-500/20 transition-colors">
+            <span class="material-symbols-outlined filled text-pink-400 text-xl">favorite</span>
+          </div>
+          <div
+            class="flex items-center gap-1 bg-accent-emerald/10 border border-accent-emerald/20 px-2 py-0.5 rounded-full">
+            <span class="material-symbols-outlined text-accent-emerald text-sm">trending_up</span>
+            <span class="text-accent-emerald text-[10px] font-black">+0.3</span>
+          </div>
+        </div>
+        <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Satisfacción Cliente</p>
+        <p class="text-3xl font-black text-white mt-1">4.8★</p>
+        <p class="text-[10px] text-slate-600 font-semibold mt-1">vs 4.5★ mes anterior</p>
+      </div>
+    </div>
+
+    <!-- ===================== TREND CHART + YoY ===================== -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+      <!-- 4-Week Trend -->
+      <div class="lg:col-span-2 bg-surface-dark rounded-3xl border border-slate-800 p-8 shadow-xl">
+        <div class="flex items-center justify-between mb-6">
+          <div>
+            <h2 class="text-lg font-black text-white uppercase tracking-widest flex items-center gap-2">
+              <span class="material-symbols-outlined text-primary text-xl">bar_chart</span>
+              Tendencia 4 Semanas
+            </h2>
+            <p class="text-xs text-slate-500 font-semibold mt-1">Reservas concretadas por semana</p>
+          </div>
+          <div class="flex items-center gap-4 text-[10px] font-bold uppercase tracking-widest">
+            <div class="flex items-center gap-1.5">
+              <div class="w-3 h-3 rounded-sm bg-primary"></div><span class="text-slate-400">Este Mes</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <div class="w-3 h-3 rounded-sm bg-slate-700"></div><span class="text-slate-500">Mes Anterior</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Chart -->
+        <div class="flex items-end justify-around gap-4 h-40 mb-4">
+          <!-- Week 1 -->
+          <div class="flex flex-col items-center gap-2 flex-1 tooltip-container">
+            <div class="tooltip-box">
+              <div class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-[11px] font-bold shadow-2xl">
+                <p class="text-white">Semana 1</p>
+                <p class="text-primary">Actual: 2 reservas</p>
+                <p class="text-slate-500">Anterior: 1 reserva</p>
+              </div>
+            </div>
+            <div class="w-full flex items-end gap-1.5 justify-center h-32">
+              <div class="w-6 bg-slate-700 rounded-t-lg chart-bar" style="height: 30%"></div>
+              <div
+                class="w-6 bg-gradient-to-t from-primary to-blue-400 rounded-t-lg chart-bar shadow-[0_0_10px_rgba(39,102,236,0.4)]"
+                style="height: 40%"></div>
+            </div>
+            <span class="text-[10px] text-slate-500 font-bold uppercase">Sem 1</span>
+          </div>
+
+          <!-- Week 2 -->
+          <div class="flex flex-col items-center gap-2 flex-1 tooltip-container">
+            <div class="tooltip-box">
+              <div class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-[11px] font-bold shadow-2xl">
+                <p class="text-white">Semana 2</p>
+                <p class="text-primary">Actual: 3 reservas</p>
+                <p class="text-slate-500">Anterior: 2 reservas</p>
+              </div>
+            </div>
+            <div class="w-full flex items-end gap-1.5 justify-center h-32">
+              <div class="w-6 bg-slate-700 rounded-t-lg chart-bar" style="height: 45%"></div>
+              <div
+                class="w-6 bg-gradient-to-t from-primary to-blue-400 rounded-t-lg chart-bar shadow-[0_0_10px_rgba(39,102,236,0.4)]"
+                style="height: 60%"></div>
+            </div>
+            <span class="text-[10px] text-slate-500 font-bold uppercase">Sem 2</span>
+          </div>
+
+          <!-- Week 3 -->
+          <div class="flex flex-col items-center gap-2 flex-1 tooltip-container">
+            <div class="tooltip-box">
+              <div class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-[11px] font-bold shadow-2xl">
+                <p class="text-white">Semana 3</p>
+                <p class="text-primary">Actual: 3 reservas</p>
+                <p class="text-slate-500">Anterior: 3 reservas</p>
+              </div>
+            </div>
+            <div class="w-full flex items-end gap-1.5 justify-center h-32">
+              <div class="w-6 bg-slate-700 rounded-t-lg chart-bar" style="height: 60%"></div>
+              <div
+                class="w-6 bg-gradient-to-t from-primary to-blue-400 rounded-t-lg chart-bar shadow-[0_0_10px_rgba(39,102,236,0.4)]"
+                style="height: 65%"></div>
+            </div>
+            <span class="text-[10px] text-slate-500 font-bold uppercase">Sem 3</span>
+          </div>
+
+          <!-- Week 4 -->
+          <div class="flex flex-col items-center gap-2 flex-1 tooltip-container">
+            <div class="tooltip-box">
+              <div class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-[11px] font-bold shadow-2xl">
+                <p class="text-white">Semana 4 🔥</p>
+                <p class="text-accent-emerald">Actual: 5 reservas (+35%)</p>
+                <p class="text-slate-500">Anterior: 2 reservas</p>
+              </div>
+            </div>
+            <div class="w-full flex items-end gap-1.5 justify-center h-32">
+              <div class="w-6 bg-slate-700 rounded-t-lg chart-bar" style="height: 45%"></div>
+              <div
+                class="w-6 bg-gradient-to-t from-accent-emerald to-emerald-400 rounded-t-lg chart-bar shadow-[0_0_15px_rgba(16,185,129,0.5)]"
+                style="height: 100%"></div>
+            </div>
+            <span class="text-[10px] text-slate-500 font-bold uppercase">Sem 4</span>
+          </div>
+        </div>
+
+        <!-- Insight -->
+        <div class="flex items-center gap-3 bg-accent-emerald/10 border border-accent-emerald/20 rounded-2xl px-4 py-3">
+          <span class="material-symbols-outlined filled text-accent-emerald text-xl">insights</span>
+          <p class="text-xs text-slate-300 font-semibold">
+            Ana cerró <strong class="text-accent-emerald">5 reservas altas en Semana 4</strong>, <strong
+              class="text-white">+35%</strong> vs su promedio mensual. Patrón: jueves y viernes tarde son sus días de
+            mayor efectividad.
+          </p>
+        </div>
+      </div>
+
+      <!-- YoY Card -->
+      <div
+        class="bg-gradient-to-br from-primary via-blue-700 to-indigo-900 rounded-3xl border border-primary/50 p-8 shadow-2xl relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-48 h-48 bg-white/5 rounded-full blur-2xl pointer-events-none"></div>
+        <div class="relative z-10">
+          <div class="flex items-center gap-2 mb-6">
+            <span class="material-symbols-outlined filled text-white text-xl">compare_arrows</span>
+            <h2 class="text-sm font-black text-white/70 uppercase tracking-widest">Comparación YoY</h2>
+          </div>
+
+          <div class="text-6xl font-black text-white tracking-tighter leading-none mb-1">+22.4%</div>
+          <p class="text-white/60 text-sm font-bold mb-6">Score global vs año anterior</p>
+
+          <!-- Simple SVG line chart -->
+          <svg viewBox="0 0 200 60" class="w-full h-16 mb-6" fill="none">
+            <polyline points="0,55 25,50 50,45 75,35 100,30 125,20 150,18 175,10 200,8" stroke="rgba(255,255,255,0.4)"
+              stroke-width="1" fill="none" stroke-dasharray="4 3" />
+            <polyline points="0,45 25,40 50,32 75,25 100,18 125,14 150,10 175,6 200,4" stroke="white" stroke-width="2.5"
+              fill="none" stroke-linecap="round" />
+            <circle cx="200" cy="4" r="4" fill="white" />
+          </svg>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div class="bg-white/10 rounded-2xl p-4 border border-white/10 text-center">
+              <p class="text-white/60 text-[10px] font-bold uppercase tracking-widest mb-1">2025</p>
+              <p class="text-2xl font-black text-white">65.0</p>
+              <p class="text-white/50 text-[10px] font-semibold">Score prom.</p>
+            </div>
+            <div class="bg-white/20 rounded-2xl p-4 border border-white/20 text-center ring-1 ring-white/30">
+              <p class="text-white/60 text-[10px] font-bold uppercase tracking-widest mb-1">2026</p>
+              <p class="text-2xl font-black text-white">87.4</p>
+              <p class="text-accent-emerald text-[10px] font-black">↑ Elite</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================== HEATMAP ===================== -->
+    <section id="heatmap-section" class="bg-surface-dark rounded-3xl border border-slate-800 p-8 shadow-xl">
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+        <div>
+          <h2 class="text-lg font-black text-white uppercase tracking-widest flex items-center gap-2">
+            <span class="material-symbols-outlined text-pink-400 text-xl">grid_on</span>
+            Activity Heatmap
+          </h2>
+          <p class="text-xs text-slate-500 font-semibold mt-1">Patrones de actividad por día y franja horaria</p>
+        </div>
+
+        <!-- Chips -->
+        <div class="flex gap-2">
+          <button onclick="setHeatmapView('reservas', this)"
+            class="chip-btn active flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 text-xs font-black uppercase tracking-widest">
+            <span class="material-symbols-outlined text-sm">home</span>Reservas
+          </button>
+          <button onclick="setHeatmapView('agenda', this)"
+            class="chip-btn flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 text-xs font-black uppercase tracking-widest">
+            <span class="material-symbols-outlined text-sm">event</span>Agenda
+          </button>
+          <button onclick="setHeatmapView('leads', this)"
+            class="chip-btn flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 text-xs font-black uppercase tracking-widest">
+            <span class="material-symbols-outlined text-sm">person_add</span>Leads
+          </button>
+        </div>
+      </div>
+
+      <!-- Heatmap Grid -->
+      <div class="overflow-x-auto">
+        <div class="min-w-[600px]">
+          <!-- Day headers -->
+          <div class="grid grid-cols-8 gap-2 mb-2">
+            <div class="text-[10px] text-slate-600 font-bold uppercase tracking-widest text-right pr-2">Franja</div>
+            <div class="text-[10px] text-slate-500 font-bold uppercase tracking-widest text-center">Lun</div>
+            <div class="text-[10px] text-slate-500 font-bold uppercase tracking-widest text-center">Mar</div>
+            <div class="text-[10px] text-slate-500 font-bold uppercase tracking-widest text-center">Mié</div>
+            <div class="text-[10px] text-slate-500 font-bold uppercase tracking-widest text-center">Jue</div>
+            <div class="text-[10px] text-slate-400 font-black uppercase tracking-widest text-center">Vie 🔥</div>
+            <div class="text-[10px] text-slate-500 font-bold uppercase tracking-widest text-center">Sáb</div>
+            <div class="text-[10px] text-slate-600 font-bold uppercase tracking-widest text-center">Dom</div>
+          </div>
+
+          <!-- Rows -->
+          <div id="heatmap-grid" class="space-y-2"></div>
+        </div>
+      </div>
+
+      <!-- Legend -->
+      <div class="flex items-center gap-4 mt-6">
+        <span class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Intensidad:</span>
+        <div class="flex items-center gap-1.5">
+          <div class="w-6 h-6 rounded-lg bg-slate-800 border border-slate-700"></div>
+          <div class="w-6 h-6 rounded-lg bg-primary/20 border border-primary/20"></div>
+          <div class="w-6 h-6 rounded-lg bg-primary/40 border border-primary/30"></div>
+          <div class="w-6 h-6 rounded-lg bg-primary/60 border border-primary/40"></div>
+          <div class="w-6 h-6 rounded-lg bg-primary/80 border border-primary/50"></div>
+          <div class="w-6 h-6 rounded-lg bg-primary border border-primary shadow-[0_0_10px_rgba(39,102,236,0.5)]"></div>
+        </div>
+        <span class="text-[10px] text-slate-500 font-bold">Bajo → Alto</span>
+        <span class="text-[10px] text-slate-600 font-semibold italic ml-2" id="heatmap-legend-text">Reservas: promedio
+          confirmadas/día por franja horaria.</span>
+      </div>
+    </section>
+
+    <!-- ===================== SMART ALERTS ===================== -->
+    <section class="bg-surface-dark rounded-3xl border border-slate-800 p-8 shadow-xl">
+      <h2 class="text-lg font-black text-white uppercase tracking-widest flex items-center gap-2 mb-6">
+        <span class="material-symbols-outlined filled text-primary text-xl">notifications_active</span>
+        Alertas Inteligentes
+      </h2>
+      <div class="space-y-4">
+        <!-- Alert 1: Opportunity -->
+        <div
+          class="flex items-start gap-4 bg-accent-emerald/5 border border-accent-emerald/20 rounded-2xl p-5 hover:border-accent-emerald/40 transition-colors">
+          <div class="p-2.5 bg-accent-emerald/20 rounded-xl flex-shrink-0">
+            <span class="material-symbols-outlined filled text-accent-emerald text-xl">verified</span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center justify-between gap-2 mb-1">
+              <p class="text-sm font-black text-accent-emerald uppercase tracking-wide">High Potential Opportunity</p>
+              <span class="text-[10px] text-slate-600 font-bold flex-shrink-0">Hace 1h</span>
+            </div>
+            <p class="text-xs text-slate-300 font-semibold">Ana tiene 3 prospectos en etapa avanzada con visita
+              realizada. Históricamente, cierra el 72% de estos en los próximos 3 días. <strong
+                class="text-accent-emerald">Acción: priorizar seguimiento esta tarde.</strong></p>
+          </div>
+        </div>
+
+        <!-- Alert 2: Warning -->
+        <div
+          class="flex items-start gap-4 bg-amber-500/5 border border-amber-500/20 rounded-2xl p-5 hover:border-amber-500/40 transition-colors">
+          <div class="p-2.5 bg-amber-500/20 rounded-xl flex-shrink-0">
+            <span class="material-symbols-outlined filled text-amber-400 text-xl">warning</span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center justify-between gap-2 mb-1">
+              <p class="text-sm font-black text-amber-400 uppercase tracking-wide">Consistency Warning</p>
+              <span class="text-[10px] text-slate-600 font-bold flex-shrink-0">Hace 4h</span>
+            </div>
+            <p class="text-xs text-slate-300 font-semibold">Su ritmo de contacto tiene una brecha de <strong
+                class="text-amber-400">-$13.1K/día</strong> respecto al necesario para cumplir la meta. Lleva 3 días por
+              debajo del ritmo mínimo. <strong class="text-amber-400">Acción: reasignar leads calientes viernes
+                AM.</strong></p>
+          </div>
+        </div>
+
+        <!-- Alert 3: Market Insight -->
+        <div
+          class="flex items-start gap-4 bg-primary/5 border border-primary/20 rounded-2xl p-5 hover:border-primary/40 transition-colors">
+          <div class="p-2.5 bg-primary/20 rounded-xl flex-shrink-0">
+            <span class="material-symbols-outlined filled text-primary text-xl">lightbulb</span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center justify-between gap-2 mb-1">
+              <p class="text-sm font-black text-primary uppercase tracking-wide">Market Insight</p>
+              <span class="text-[10px] text-slate-600 font-bold flex-shrink-0">Hace 8h</span>
+            </div>
+            <p class="text-xs text-slate-300 font-semibold">En el squad, los mejores cierres de febrero ocurren los
+              jueves y viernes. Ana ya lidera ese hábito. <strong class="text-slate-200">Reforzar bloques de seguimiento
+                activo en esos días</strong> puede elevar su Percentil de 94 → 97+.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== NEXT STEPS ===================== -->
+    <section>
+      <h2 class="text-lg font-black text-white uppercase tracking-widest flex items-center gap-2 mb-6">
+        <span class="material-symbols-outlined text-indigo-400 text-xl">rocket_launch</span>
+        Próximos Pasos Sugeridos
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <!-- Coaching -->
+        <div
+          class="bg-surface-dark border border-primary/30 rounded-2xl p-6 hover:border-primary/60 transition-all group relative overflow-hidden">
+          <div class="absolute top-0 right-0 w-24 h-24 bg-primary/10 rounded-full blur-2xl pointer-events-none"></div>
+          <div class="relative z-10">
+            <div
+              class="p-3 bg-primary/20 rounded-xl w-fit mb-4 border border-primary/30 group-hover:bg-primary/30 transition-colors">
+              <span class="material-symbols-outlined filled text-primary text-2xl">school</span>
+            </div>
+            <h3 class="text-base font-black text-white mb-2">Sesión de Coaching</h3>
+            <p class="text-xs text-slate-400 font-semibold mb-4 leading-relaxed">Revisar estrategia de cierre y fórmula
+              de seguimiento en etapa prospecto → reserva. Enfoque en ritmo de semana final.</p>
+            <button
+              class="flex items-center gap-1.5 text-primary text-xs font-black uppercase tracking-widest hover:gap-3 transition-all">
+              Agendar sesión <span class="material-symbols-outlined text-base">arrow_forward</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Recognition -->
+        <div
+          class="bg-surface-dark border border-accent-emerald/30 rounded-2xl p-6 hover:border-accent-emerald/60 transition-all group relative overflow-hidden">
+          <div class="absolute top-0 right-0 w-24 h-24 bg-accent-emerald/10 rounded-full blur-2xl pointer-events-none">
+          </div>
+          <div class="relative z-10">
+            <div
+              class="p-3 bg-accent-emerald/20 rounded-xl w-fit mb-4 border border-accent-emerald/30 group-hover:bg-accent-emerald/30 transition-colors">
+              <span class="material-symbols-outlined filled text-accent-emerald text-2xl">emoji_events</span>
+            </div>
+            <h3 class="text-base font-black text-white mb-2">Reconocimiento Elite</h3>
+            <p class="text-xs text-slate-400 font-semibold mb-4 leading-relaxed">Ana alcanzó percentil 94.2°, el más
+              alto de su histórico personal. Compartir logro en reunión de equipo para reforzar cultura de alto
+              rendimiento.</p>
+            <button
+              class="flex items-center gap-1.5 text-accent-emerald text-xs font-black uppercase tracking-widest hover:gap-3 transition-all">
+              Publicar logro <span class="material-symbols-outlined text-base">arrow_forward</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Optimization -->
+        <div
+          class="bg-surface-dark border border-purple-500/30 rounded-2xl p-6 hover:border-purple-500/60 transition-all group relative overflow-hidden">
+          <div class="absolute top-0 right-0 w-24 h-24 bg-purple-500/10 rounded-full blur-2xl pointer-events-none">
+          </div>
+          <div class="relative z-10">
+            <div
+              class="p-3 bg-purple-500/20 rounded-xl w-fit mb-4 border border-purple-500/30 group-hover:bg-purple-500/30 transition-colors">
+              <span class="material-symbols-outlined filled text-purple-400 text-2xl">tune</span>
+            </div>
+            <h3 class="text-base font-black text-white mb-2">Optimización de Pipeline</h3>
+            <p class="text-xs text-slate-400 font-semibold mb-4 leading-relaxed">Reasignar 2 leads calientes
+              (Providencia y Las Condes) a Ana para viernes AM, maximizando su ventana de alta efectividad comprobada.
+            </p>
+            <button
+              class="flex items-center gap-1.5 text-purple-400 text-xs font-black uppercase tracking-widest hover:gap-3 transition-all">
+              Asignar leads <span class="material-symbols-outlined text-base">arrow_forward</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ===================== JS DATA + HEATMAP LOGIC ===================== -->
+  <script>
+    /**
+     * Datos del corredor (simulados para demo)
+     * En producción, estos vendrian del API /api/v5_intelligence
+     */
+    const BROKER_DATA = {
+      name: "Ana Martínez",
+      score: 87.4,
+      percentile: 94.2,
+      category: "Elite",
+
+      // === META POR RESERVAS (unidad principal) ===
+      meta_reservas: 15,           // Meta mensual acordada
+      reservas_cumplidas: 12,      // Reservas concretadas hasta hoy
+      proyeccion_reservas: 13,     // Proyección al ritmo actual
+      ritmo_actual_res_dia: 0.67,  // Reservas/día últimos 7 días
+      ritmo_necesario_res_dia: 0.83,// Reservas/día necesarias para cumplir
+
+      // === COMISIÓN ESTIMADA (30% del cañón de arriendo) ===
+      // Cañon prom. de contratos de Ana: ~$580K CLP/mes
+      // Comisión = 30% × cañon × nro reservas firmadas
+      comision_estimada_clp: 2100000, // 30% × ~580K × 12 reservas
+      comision_por_reserva: 174000,   // Aprox. 30% del cañon promedio
+
+      dias_restantes: 12,
+      yoy_score_delta: 22.4,
+      trend_slope_4w: 2.1,
+
+      // Heatmap data per day
+      agendaPerDay: { lunes: 1.2, martes: 2.5, miercoles: 3.1, jueves: 2.8, viernes: 4.7, sabado: 1.0, domingo: 0.0 },
+      reservasPerDay: { lunes: 0.8, martes: 1.4, miercoles: 2.0, jueves: 1.7, viernes: 3.5, sabado: 0.6, domingo: 0.0 },
+      leadsPerDay: { lunes: 2.1, martes: 3.0, miercoles: 3.8, jueves: 3.2, viernes: 4.1, sabado: 1.2, domingo: 0.0 }
+    };
+
+    // Heatmap: franja modifiers (Mañana: 60%, Tarde: 100%, Noche: 30%)
+    const FRANJA_MODS = { "Mañana": 0.6, "Tarde": 1.0, "Noche": 0.3 };
+    const DAYS = ["lunes", "martes", "miercoles", "jueves", "viernes", "sabado", "domingo"];
+    const DAY_LABELS = ["Lun", "Mar", "Mié", "Jue", "Vie 🔥", "Sáb", "Dom"];
+    const LEGENDS = {
+      reservas: "Reservas: promedio de reservas confirmadas por día y franja horaria.",
+      agenda: "Agenda: promedio de visitas agendadas (realizadas) por día y franja.",
+      leads: "Leads: promedio de leads tomados y contactados por día y franja."
+    };
+
+    let currentView = 'reservas';
+
+    function getCellData(view) {
+      const dataSet = BROKER_DATA[view + "PerDay"];
+      const rows = [];
+      for (const [franja, mod] of Object.entries(FRANJA_MODS)) {
+        const cells = DAYS.map(day => parseFloat((dataSet[day] * mod).toFixed(1)));
+        rows.push({ franja, cells });
+      }
+      return rows;
+    }
+
+    function getIntensityClass(val, max) {
+      if (val === 0) return 'bg-slate-900 border-slate-800 text-slate-700';
+      const ratio = val / max;
+      if (ratio < 0.2) return 'bg-primary/15 border-primary/15 text-primary/50';
+      if (ratio < 0.4) return 'bg-primary/30 border-primary/25 text-primary/70';
+      if (ratio < 0.6) return 'bg-primary/50 border-primary/40 text-white/80';
+      if (ratio < 0.8) return 'bg-primary/70 border-primary/60 text-white font-black';
+      return 'bg-primary border-primary text-white font-black shadow-[0_0_12px_rgba(39,102,236,0.6)]';
+    }
+
+    function renderHeatmap(view) {
+      const rows = getCellData(view);
+      const allVals = rows.flatMap(r => r.cells);
+      const max = Math.max(...allVals, 0.1);
+      const grid = document.getElementById('heatmap-grid');
+      grid.innerHTML = '';
+
+      rows.forEach(({ franja, cells }) => {
+        const row = document.createElement('div');
+        row.className = 'grid grid-cols-8 gap-2';
+
+        // Franja label
+        const label = document.createElement('div');
+        label.className = 'text-[10px] text-slate-500 font-bold uppercase tracking-widest flex items-center justify-end pr-2';
+        label.textContent = franja;
+        row.appendChild(label);
+
+        cells.forEach((val, i) => {
+          const cell = document.createElement('div');
+          const cls = getIntensityClass(val, max);
+          cell.className = `heatmap-cell h-12 rounded-xl border flex flex-col items-center justify-center ${cls} cursor-default`;
+          cell.title = `${franja} ${DAY_LABELS[i]}: ${val}`;
+          cell.innerHTML = `<span class="text-sm font-bold">${val > 0 ? val : '–'}</span>`;
+          row.appendChild(cell);
+        });
+
+        grid.appendChild(row);
+      });
+
+      document.getElementById('heatmap-legend-text').textContent = LEGENDS[view];
+    }
+
+    function setHeatmapView(view, btnEl) {
+      currentView = view;
+      document.querySelectorAll('.chip-btn').forEach(b => b.classList.remove('active'));
+      if (btnEl) btnEl.classList.add('active');
+      renderHeatmap(view);
+    }
+
+    // Init on load
+    document.addEventListener('DOMContentLoaded', () => {
+      renderHeatmap('reservas');
+    });
+  </script>
+</body>
+
+</html>

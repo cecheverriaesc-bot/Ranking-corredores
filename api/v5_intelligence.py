@@ -354,28 +354,24 @@ def fetch_squad_intelligence_v5(coordinador_email="carlos.echeverria", filter_re
             no_contesto = int(visit_data.get('no_contesto', 0) or 0)
             
             # === ENGAGEMENT METRICS (RAW) - Pilar 1 (35%) ===
-            # % visitas realizadas / agendadas
-            tasa_visitas = visitas_realizadas / total_agendas if total_agendas > 0 else 0
-            # % visitas canceladas (penaliza - inversa)
-            tasa_cancelacion = visitas_canceladas / total_agendas if total_agendas > 0 else 0
-            # % leads descartados por no gestión
-            tasa_descarte_leads = leads_descartados / leads_mes if leads_mes > 0 else 0
-            # % prospectos descartados por no gestión
-            tasa_descarte_prospectos = prospectos_descartados / prospectos_mes if prospectos_mes > 0 else 0
-            # % leads con al menos 1 acción dentro de 24h
-            tasa_accion_24h = accion_24h / leads_mes if leads_mes > 0 else 0
+            # Aplicando Suavizado de Laplace (+15 al denominador) para evitar inflado artificial por poco volumen
+            tasa_visitas = visitas_realizadas / (total_agendas + 15) if total_agendas > 0 else 0
+            tasa_cancelacion = visitas_canceladas / (total_agendas + 15) if total_agendas > 0 else 0
+            tasa_descarte_leads = leads_descartados / (leads_mes + 15) if leads_mes > 0 else 0
+            tasa_descarte_prospectos = prospectos_descartados / (prospectos_mes + 15) if prospectos_mes > 0 else 0
+            tasa_accion_24h = accion_24h / (leads_mes + 15) if leads_mes > 0 else 0
             
             # === RENDIMIENTO METRICS (RAW) - Pilar 2 (40%) ===
-            # Eficacia
-            conv_prospecto_contrato = contratos_mes / prospectos_mes if prospectos_mes > 0 else 0
-            conv_lead_contrato = contratos_mes / leads_mes if leads_mes > 0 else 0
+            # Eficacia (Con suavizado de Laplace)
+            conv_prospecto_contrato = contratos_mes / (prospectos_mes + 15) if prospectos_mes > 0 else 0
+            conv_lead_contrato = contratos_mes / (leads_mes + 15) if leads_mes > 0 else 0
             # Capacidad productiva (valores absolutos y tasas)
             contratos_absolutos = contratos_mes  # Valor absoluto
             leads_por_visita = leads_mes / visitas_realizadas if visitas_realizadas > 0 else 0
             
             # === EFICIENCIA OPERATIVA (RAW) - Pilar 3 (25%) ===
-            # % prospectos con demora (inversa - menor es mejor)
-            tasa_demora = prospectos_demora / prospectos_mes if prospectos_mes > 0 else 0
+            # % prospectos con demora (inversa - menor es mejor, también suavizado)
+            tasa_demora = prospectos_demora / (prospectos_mes + 15) if prospectos_mes > 0 else 0
             # Tiempo promedio de resolución (inverso - menor es mejor)
             # Normalizar a horas, asumir max 72h como peor caso
             tiempo_normalizado = min(tiempo_prom_resolucion / 72, 1) if tiempo_prom_resolucion > 0 else 0

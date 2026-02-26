@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import {
     Shield, Target, Zap, Users, Map, Brain, AlertTriangle,
     ArrowRight, ChevronLeft, TrendingUp, Activity, Search, MessageSquare, Award,
-    Trophy
+    Trophy, BarChart3
 } from 'lucide-react';
 import { TEAMS, MONTHLY_DATA } from '../constants';
 import { CorredorData, BrokerGoalData } from '../types';
@@ -60,10 +60,10 @@ const MonthSelector = ({ selected, onChange }: { selected: string; onChange: (m:
                                 onClick={() => onChange(monthKey)}
                                 disabled={isFuture}
                                 className={`relative flex items-center justify-center w-9 h-9 rounded-xl text-xs font-black uppercase transition-all duration-300 ${isSelected
-                                        ? 'bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/30 scale-110'
-                                        : isCompleted
-                                            ? 'bg-slate-700 text-slate-300 hover:bg-slate-600 hover:text-white hover:scale-105'
-                                            : 'bg-slate-800/50 text-slate-600 cursor-not-allowed'
+                                    ? 'bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/30 scale-110'
+                                    : isCompleted
+                                        ? 'bg-slate-700 text-slate-300 hover:bg-slate-600 hover:text-white hover:scale-105'
+                                        : 'bg-slate-800/50 text-slate-600 cursor-not-allowed'
                                     }`}
                                 title={monthName}
                             >
@@ -78,11 +78,11 @@ const MonthSelector = ({ selected, onChange }: { selected: string; onChange: (m:
 
                             {index < allMonths.length - 1 && (
                                 <div className={`w-1 h-0.5 transition-colors duration-300 ${isCompleted && allMonths[index + 1] && (
-                                        MONTHLY_DATA[`${currentYear}-${allMonths[index + 1]}`] ||
-                                        parseInt(allMonths[index + 1], 10) <= lastAvailableMonthNum
-                                    )
-                                        ? 'bg-slate-600'
-                                        : 'bg-slate-800'
+                                    MONTHLY_DATA[`${currentYear}-${allMonths[index + 1]}`] ||
+                                    parseInt(allMonths[index + 1], 10) <= lastAvailableMonthNum
+                                )
+                                    ? 'bg-slate-600'
+                                    : 'bg-slate-800'
                                     }`}></div>
                             )}
                         </React.Fragment>
@@ -93,8 +93,8 @@ const MonthSelector = ({ selected, onChange }: { selected: string; onChange: (m:
             <button
                 onClick={() => onChange('total-year')}
                 className={`flex flex-col items-center gap-1 px-4 py-2 rounded-xl border transition-all duration-300 ${isTotalYear
-                        ? 'bg-gradient-to-br from-emerald-500 to-emerald-600 border-emerald-400/50 text-white shadow-lg shadow-emerald-500/30'
-                        : 'bg-slate-800/50 border-slate-700 text-slate-400 hover:bg-slate-700 hover:text-white'
+                    ? 'bg-gradient-to-br from-emerald-500 to-emerald-600 border-emerald-400/50 text-white shadow-lg shadow-emerald-500/30'
+                    : 'bg-slate-800/50 border-slate-700 text-slate-400 hover:bg-slate-700 hover:text-white'
                     }`}
             >
                 <Trophy size={16} className={isTotalYear ? 'fill-white' : ''} />
@@ -302,55 +302,75 @@ const SquadLaboratory: React.FC<SquadLaboratoryProps> = ({
                     <section className="bg-slate-900/50 rounded-3xl p-8 border border-slate-800 shadow-2xl relative overflow-hidden">
                         <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/5 rounded-full blur-3xl pointer-events-none"></div>
                         <h3 className="text-lg font-bold text-white uppercase tracking-widest mb-6 flex items-center gap-2">
-                            <Zap size={18} className="text-yellow-400" /> Matriz de Asignación Inteligente
+                            <Zap size={18} className="text-yellow-400" /> Análisis de Rendimiento Operativo
                         </h3>
 
-                        {/* Score Methodology Legend - DETAILED */}
-                        <div className="mb-6 p-5 bg-gradient-to-br from-amber-950/30 to-slate-950/50 border border-amber-500/30 rounded-2xl">
-                            <div className="flex items-start gap-3 mb-4">
-                                <div className="p-2 bg-amber-500/10 rounded-lg">
-                                    <span className="text-2xl">📊</span>
+                        {/* Score Methodology Legend - REDISEÑADO PREMIUM */}
+                        <div className="mb-8 p-6 bg-gradient-to-br from-slate-950 to-slate-900 border border-slate-700/50 rounded-3xl shadow-inner">
+                            <div className="flex items-center gap-4 mb-8">
+                                <div className="p-3 bg-amber-500/20 rounded-2xl border border-amber-500/30">
+                                    <BarChart3 className="text-amber-400 w-6 h-6" />
                                 </div>
-                                <div className="flex-1">
-                                    <h4 className="text-xs font-black text-amber-400 uppercase tracking-wider mb-1">Composición del Score (75/100)</h4>
-                                    <p className="text-[9px] text-slate-500 italic">Hover sobre el score de cada corredor para ver desglose individual</p>
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-4 text-[10px]">
-                                {/* Pilar 1 */}
-                                <div className="p-3 bg-slate-950/50 rounded-xl border border-emerald-500/20">
-                                    <div className="flex items-center gap-2 mb-2">
-                                        <div className="w-3 h-3 bg-emerald-500 rounded-full"></div>
-                                        <span className="text-emerald-400 font-black">35% Engagement & Gestión</span>
-                                    </div>
-                                    <div className="space-y-1 text-slate-400 pl-5">
-                                        <div>• 30% Visitas realizadas</div>
-                                        <div>• 25% No cancela visitas</div>
-                                        <div>• 25% Respuesta &lt;24h</div>
-                                        <div>• 10% Gestión activa</div>
-                                        <div>• 10% No descarta leads</div>
-                                    </div>
-                                </div>
-
-                                {/* Pilar 2 */}
-                                <div className="p-3 bg-slate-950/50 rounded-xl border border-blue-500/20">
-                                    <div className="flex items-center gap-2 mb-2">
-                                        <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                                        <span className="text-blue-400 font-black">40% Rendimiento & Conversión</span>
-                                    </div>
-                                    <div className="space-y-1 text-slate-400 pl-5">
-                                        <div>• 35% Prospecto → Reserva</div>
-                                        <div>• 30% Reservas absolutas</div>
-                                        <div>• 20% Leads/Visita eficiencia</div>
-                                        <div>• 15% Lead → Contrato</div>
-                                    </div>
+                                <div>
+                                    <h4 className="text-lg font-black text-white uppercase tracking-wider">
+                                        Arquitectura del Scoring <span className="text-amber-400 ml-2">(75/100 PTS)</span>
+                                    </h4>
+                                    <p className="text-xs text-slate-500 font-medium">
+                                        Fase 1: Enfoque en Gestión Comercial y Conversión
+                                    </p>
                                 </div>
                             </div>
 
-                            <div className="mt-3 p-2 bg-slate-800/30 rounded-lg border border-slate-700/30">
-                                <p className="text-[8px] text-slate-600 text-center">
-                                    <span className="text-yellow-500 font-bold">Pilar 3: Eficiencia Operativa (25%)</span> — Pendiente: Tiempos de resolución y tickets de soporte
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                {/* Pilar 1: Engagement */}
+                                <div className="p-5 bg-slate-800/20 rounded-2xl border border-emerald-500/10 hover:border-emerald-500/30 transition-all">
+                                    <div className="flex justify-between items-start mb-4">
+                                        <div className="flex items-center gap-2">
+                                            <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
+                                            <span className="text-emerald-400 font-black uppercase text-xs tracking-wider">Engagement & Gestión</span>
+                                        </div>
+                                        <span className="text-xl font-black text-white">35 Pts</span>
+                                    </div>
+                                    <div className="w-full h-1 bg-slate-800 rounded-full mb-4 overflow-hidden">
+                                        <div className="h-full bg-emerald-500" style={{ width: '46%' }}></div>
+                                    </div>
+                                    <ul className="grid grid-cols-2 gap-x-4 gap-y-2 text-[11px] text-slate-400">
+                                        <li className="flex items-center gap-1.5 font-medium">• Visitas Realizadas <span className="text-[10px] text-emerald-500/70">(10)</span></li>
+                                        <li className="flex items-center gap-1.5 font-medium">• No Cancela Visitas <span className="text-[10px] text-emerald-500/70">(8)</span></li>
+                                        <li className="flex items-center gap-1.5 font-medium">• Respuesta &lt;24h <span className="text-[10px] text-emerald-500/70">(5)</span></li>
+                                        <li className="flex items-center gap-1.5 font-medium">• Gestión Activa <span className="text-[10px] text-emerald-500/70">(7)</span></li>
+                                        <li className="flex items-center gap-1.5 font-medium col-span-2">• No Descarta Leads <span className="text-[10px] text-emerald-500/70">(5)</span></li>
+                                    </ul>
+                                </div>
+
+                                {/* Pilar 2: Rendimiento */}
+                                <div className="p-5 bg-slate-800/20 rounded-2xl border border-blue-500/10 hover:border-blue-500/30 transition-all">
+                                    <div className="flex justify-between items-start mb-4">
+                                        <div className="flex items-center gap-2">
+                                            <div className="w-2.5 h-2.5 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]"></div>
+                                            <span className="text-blue-400 font-black uppercase text-xs tracking-wider">Rendimiento & Conversión</span>
+                                        </div>
+                                        <span className="text-xl font-black text-white">40 Pts</span>
+                                    </div>
+                                    <div className="w-full h-1 bg-slate-800 rounded-full mb-4 overflow-hidden">
+                                        <div className="h-full bg-blue-500" style={{ width: '53%' }}></div>
+                                    </div>
+                                    <ul className="grid grid-cols-1 gap-2 text-[11px] text-slate-400">
+                                        <li className="flex items-center gap-1.5 font-medium">• Prospecto → Reserva <span className="text-[10px] text-blue-500/70">(15)</span></li>
+                                        <li className="flex items-center gap-1.5 font-medium">• Reservas Absolutas <span className="text-[10px] text-blue-500/70">(10)</span></li>
+                                        <li className="flex items-center gap-1.5 font-medium">• Leads/Visita Eficiencia <span className="text-[10px] text-blue-500/70">(10)</span></li>
+                                        <li className="flex items-center gap-1.5 font-medium">• Lead → Contrato <span className="text-[10px] text-blue-500/70">(5)</span></li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div className="mt-6 flex flex-col items-center gap-2">
+                                <div className="flex items-center gap-2 text-[10px] text-slate-500 font-medium">
+                                    <Activity size={12} className="text-indigo-500" />
+                                    <span>Pilar 3: <span className="text-slate-300">Eficiencia Operativa (25%)</span> — Próximamente: Resolución de Tickets</span>
+                                </div>
+                                <p className="text-[9px] text-slate-600 italic">
+                                    * Hover sobre el score de cada corredor para ver el desglose detallado
                                 </p>
                             </div>
                         </div>

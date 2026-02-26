@@ -9,8 +9,13 @@ from http.server import BaseHTTPRequestHandler
 import mysql.connector
 import json
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 from urllib.parse import parse_qs, urlparse
+
+# Import rate limiter y CORS
+import sys
+sys.path.append(os.path.dirname(__file__))
+from rate_limiter import check_rate_limit, APIRateLimits, send_cors_headers, validate_query_params
 
 # Load environment variables
 def load_env_vars():
@@ -264,38 +269,55 @@ class handler(BaseHTTPRequestHandler):
         GET /api/v4_goals?month=2026-02 (todas las metas del mes)
         GET /api/v4_goals/suggest?broker=Rosangela+Cirelli&month=2026-02
         """
-        from datetime import timedelta  # Import here to avoid circular import
+        # Rate limiting
+        if not check_rate_limit(self, APIRateLimits.DATA_API):
+            return
         
         parsed_path = urlparse(self.path)
         query_params = parse_qs(parsed_path.query)
         
+        # Validar parámetros
+        validators = {
+            'month': (str, None, None, False),
+            'broker': (str, None, None, False)
+        }
+        validated, error = validate_query_params(query_params, validators)
+        
+        if error and not parsed_path.path.endswith('/suggest'):
+            self.send_response(400)
+            self.send_header('Content-type', 'application/json')
+            send_cors_headers(self, self.headers.get('Origin', ''))
+            self.end_headers()
+            self.wfile.write(json.dumps({'error': error}).encode())
+            return
+        
         self.send_response(200)
         self.send_header('Content-type', 'application/json')
-        self.send_header('Access-Control-Allow-Origin', '*')
+        send_cors_headers(self, self.headers.get('Origin', ''))
         self.end_headers()
-        
+
         try:
             # Endpoint: Calcular meta sugerida
             if parsed_path.path.endswith('/suggest'):
                 broker_name = query_params.get('broker', [None])[0]
                 month = query_params.get('month', [None])[0]
-                
+
                 if not broker_name or not month:
                     response = {'error': 'broker y month son requeridos'}
                 else:
                     response = calculate_suggested_goal(broker_name, month)
-                
+
                 self.wfile.write(json.dumps(response).encode())
                 return
-            
+
             # Endpoint: Obtener metas
             month = query_params.get('month', [None])[0]
             broker = query_params.get('broker', [None])[0]
-            
+
             if not month:
                 # Usar mes actual por defecto
                 month = datetime.now().strftime('%Y-%m-01')
-            
+
             if broker:
                 # Meta de un corredor específico
                 result = get_broker_goal(broker, month)
@@ -307,9 +329,9 @@ class handler(BaseHTTPRequestHandler):
             else:
                 # Todas las metas del mes
                 response = get_all_broker_goals(month)
-            
+
             self.wfile.write(json.dumps(response).encode())
-            
+
         except Exception as e:
             error_response = {'error': str(e)}
             self.wfile.write(json.dumps(error_response).encode())
@@ -326,14 +348,16 @@ class handler(BaseHTTPRequestHandler):
             "calculation_method": "manual"
         }
         """
-        from datetime import timedelta  # Import here to avoid circular import
+        # Rate limiting para writes
+        if not check_rate_limit(self, APIRateLimits.WRITE_API):
+            return
         
         content_length = int(self.headers.get('Content-Length', 0))
         post_data = self.rfile.read(content_length)
-        
+
         try:
             data = json.loads(post_data.decode('utf-8'))
-            
+
             # Validaciones mínimas
             if not data.get('broker_name') or not data.get('goal_month'):
                 response = {
@@ -346,26 +370,26 @@ class handler(BaseHTTPRequestHandler):
                 if len(month_str) == 7:  # Formato YYYY-MM
                     month_str += '-01'
                 data['goal_month'] = month_str
-                
+
                 response = save_broker_goal(data)
-            
+
         except json.JSONDecodeError:
             response = {'success': False, 'message': 'Invalid JSON'}
         except Exception as e:
             response = {'success': False, 'message': str(e)}
-        
+
         self.send_response(200)
         self.send_header('Content-type', 'application/json')
-        self.send_header('Access-Control-Allow-Origin', '*')
+        send_cors_headers(self, self.headers.get('Origin', ''))
         self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
         self.send_header('Access-Control-Allow-Headers', 'Content-Type')
         self.end_headers()
         self.wfile.write(json.dumps(response).encode())
-    
+
     def do_OPTIONS(self):
         """CORS preflight"""
         self.send_response(200)
-        self.send_header('Access-Control-Allow-Origin', '*')
+        send_cors_headers(self, self.headers.get('Origin', ''))
         self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
         self.send_header('Access-Control-Allow-Headers', 'Content-Type')
         self.end_headers()

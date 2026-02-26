@@ -1,9 +1,7 @@
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
-    Search, TrendingUp, Users, Microscope, Calendar, Medal, Crown, Droplet,
-    GraduationCap, Flower2, Star, Target, Clock, RefreshCw, Brain, Shield,
-    UserMinus, BatteryMedium, Zap, Flame, LayoutDashboard, FlaskConical,
+    Search,
     ChevronDown, ChevronUp, AlertCircle, ArrowRight, Filter, Trophy,
     ChevronRight, ArrowUpRight, ArrowDownRight, CheckCircle2, Edit3, MessageSquare,
     Lock, LogOut
@@ -16,6 +14,8 @@ import SquadLaboratory from './components/SquadLaboratory';
 import StrategicLab from './components/StrategicLab';
 import GoalSettingModal from './components/GoalSettingModal';
 import Login from './components/Login';
+import { useAppStore, useAuth, useSelectedMonth, useView, useFilteredBrokers, useTopBrokers } from './stores/useAppStore';
+import BrokerProfile from './components/BrokerProfile';
 
 const IconMap: Record<string, React.FC<any>> = {
     Flame, Droplet, GraduationCap, Flower2, Star
@@ -80,10 +80,10 @@ const MonthSelector = ({ selected, onChange }: { selected: string; onChange: (m:
                                 onClick={() => onChange(monthKey)}
                                 disabled={isFuture}
                                 className={`relative flex items-center justify-center w-9 h-9 rounded-xl text-xs font-black uppercase transition-all duration-300 ${isSelected
-                                        ? 'bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/30 scale-110'
-                                        : isCompleted
-                                            ? 'bg-slate-700 text-slate-300 hover:bg-slate-600 hover:text-white hover:scale-105'
-                                            : 'bg-slate-800/50 text-slate-600 cursor-not-allowed'
+                                    ? 'bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/30 scale-110'
+                                    : isCompleted
+                                        ? 'bg-slate-700 text-slate-300 hover:bg-slate-600 hover:text-white hover:scale-105'
+                                        : 'bg-slate-800/50 text-slate-600 cursor-not-allowed'
                                     }`}
                                 title={monthName}
                             >
@@ -100,11 +100,11 @@ const MonthSelector = ({ selected, onChange }: { selected: string; onChange: (m:
                             {/* Connector Line */}
                             {index < allMonths.length - 1 && (
                                 <div className={`w-1 h-0.5 transition-colors duration-300 ${isCompleted && allMonths[index + 1] && (
-                                        MONTHLY_DATA[`${currentYear}-${allMonths[index + 1]}`] ||
-                                        parseInt(allMonths[index + 1], 10) <= lastAvailableMonthNum
-                                    )
-                                        ? 'bg-slate-600'
-                                        : 'bg-slate-800'
+                                    MONTHLY_DATA[`${currentYear}-${allMonths[index + 1]}`] ||
+                                    parseInt(allMonths[index + 1], 10) <= lastAvailableMonthNum
+                                )
+                                    ? 'bg-slate-600'
+                                    : 'bg-slate-800'
                                     }`}></div>
                             )}
                         </React.Fragment>
@@ -116,8 +116,8 @@ const MonthSelector = ({ selected, onChange }: { selected: string; onChange: (m:
             <button
                 onClick={() => onChange('total-year')}
                 className={`flex flex-col items-center gap-1 px-4 py-2 rounded-xl border transition-all duration-300 ${isTotalYear
-                        ? 'bg-gradient-to-br from-emerald-500 to-emerald-600 border-emerald-400/50 text-white shadow-lg shadow-emerald-500/30'
-                        : 'bg-slate-800/50 border-slate-700 text-slate-400 hover:bg-slate-700 hover:text-white'
+                    ? 'bg-gradient-to-br from-emerald-500 to-emerald-600 border-emerald-400/50 text-white shadow-lg shadow-emerald-500/30'
+                    : 'bg-slate-800/50 border-slate-700 text-slate-400 hover:bg-slate-700 hover:text-white'
                     }`}
             >
                 <Trophy size={16} className={isTotalYear ? 'fill-white' : ''} />
@@ -133,7 +133,8 @@ const App: React.FC = () => {
     const [userEmail, setUserEmail] = useState<string | null>(null);
 
     // --- State Management ---
-    const [view, setView] = useState<'dashboard' | 'laboratory' | 'strategic_lab'>('dashboard');
+    const [view, setView] = useState<'dashboard' | 'laboratory' | 'strategic_lab' | 'broker_profile'>('dashboard');
+    const [selectedBrokerProfile, setSelectedBrokerProfile] = useState<any | null>(null);
     const [selectedMonth, setSelectedMonth] = useState<string>('2026-02'); // Default to current month
     const [searchTerm, setSearchTerm] = useState('');
     const [isRefreshing, setIsRefreshing] = useState(false);
@@ -525,13 +526,8 @@ const App: React.FC = () => {
 
     // --- Laboratory Access ---
     const handleLabAccess = () => {
-        // Carlos tiene acceso directo al Strategic Lab
-        if (userEmail === 'carlos.echeverria@assetplan.cl') {
-            setView('strategic_lab');
-        } else {
-            // Otros usuarios necesitan código secreto para el laboratorio clásico
-            setShowSecretPrompt(true);
-        }
+        // Todos los usuarios necesitan código secreto
+        setShowSecretPrompt(true);
     };
 
     // --- Laboratory View ---
@@ -545,6 +541,18 @@ const App: React.FC = () => {
         />;
     }
 
+    // --- Broker Profile View ---
+    if (view === 'broker_profile' && selectedBrokerProfile) {
+        return <BrokerProfile
+            broker={selectedBrokerProfile}
+            onBack={() => {
+                setView('strategic_lab');
+                setSelectedBrokerProfile(null);
+            }}
+            selectedMonth={selectedMonth}
+        />;
+    }
+
     // --- Strategic Lab View (Carlos Only) ---
     if (view === 'strategic_lab') {
         return <StrategicLab
@@ -554,6 +562,10 @@ const App: React.FC = () => {
             userEmail={userEmail}
             selectedMonth={selectedMonth}
             onMonthChange={setSelectedMonth}
+            onBrokerClick={(broker: any) => {
+                setSelectedBrokerProfile(broker);
+                setView('broker_profile');
+            }}
         />;
     }
 
@@ -727,7 +739,10 @@ const App: React.FC = () => {
                                         setVerifiedLabAccess(true);
                                         setShowSecretPrompt(false);
                                         setSecretCodeInput('');
-                                        setView('laboratory');
+
+                                        if (userEmail === 'carlos.echeverria@assetplan.cl') {
+                                            setView('strategic_lab');
+                                        }
                                     }
                                 }}
                                 autoFocus
@@ -1296,7 +1311,7 @@ const App: React.FC = () => {
             {/* Botón de acceso al Strategic Lab (Solo Carlos) */}
             {userEmail === 'carlos.echeverria@assetplan.cl' && (
                 <button
-                    onClick={() => setView('strategic_lab')}
+                    onClick={handleLabAccess}
                     className="fixed bottom-8 right-8 z-50 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white p-4 rounded-2xl shadow-2xl border border-indigo-400/50 transition-all hover:scale-110 group"
                 >
                     <Brain size={28} className="group-hover:animate-pulse" />
@@ -1306,18 +1321,7 @@ const App: React.FC = () => {
                 </button>
             )}
 
-            {/* Botón de acceso al Laboratorio Clásico (Otros usuarios) */}
-            {userEmail && userEmail !== 'carlos.echeverria@assetplan.cl' && (
-                <button
-                    onClick={() => setShowSecretPrompt(true)}
-                    className="fixed bottom-8 right-8 z-50 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white p-4 rounded-2xl shadow-2xl border border-slate-600 transition-all hover:scale-110 group"
-                >
-                    <FlaskConical size={28} />
-                    <span className="absolute -top-10 right-0 bg-slate-900/90 text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
-                        Laboratorio
-                    </span>
-                </button>
-            )}
+            {/* Botón de acceso al Laboratorio Clásico eliminado para otros usuarios */}
 
             {/* Goal Setting Modal */}
             {selectedBrokerForGoal && (

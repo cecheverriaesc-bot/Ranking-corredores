@@ -14,6 +14,7 @@ interface SquadLaboratoryProps {
     userEmail: string | null;
     selectedMonth?: string;
     onMonthChange?: (month: string) => void;
+    onBrokerClick?: (broker: BrokerIntelligence) => void;
 }
 
 interface BrokerIntelligence {
@@ -110,10 +111,10 @@ const MonthSelector = ({ selected, onChange }: { selected: string; onChange: (m:
                                 onClick={() => onChange(monthKey)}
                                 disabled={isFuture}
                                 className={`relative flex items-center justify-center w-9 h-9 rounded-xl text-xs font-black uppercase transition-all duration-300 ${isSelected
-                                        ? 'bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/30 scale-110'
-                                        : isCompleted
-                                            ? 'bg-slate-700 text-slate-300 hover:bg-slate-600 hover:text-white hover:scale-105'
-                                            : 'bg-slate-800/50 text-slate-600 cursor-not-allowed'
+                                    ? 'bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/30 scale-110'
+                                    : isCompleted
+                                        ? 'bg-slate-700 text-slate-300 hover:bg-slate-600 hover:text-white hover:scale-105'
+                                        : 'bg-slate-800/50 text-slate-600 cursor-not-allowed'
                                     }`}
                                 title={monthName}
                             >
@@ -128,11 +129,11 @@ const MonthSelector = ({ selected, onChange }: { selected: string; onChange: (m:
 
                             {index < allMonths.length - 1 && (
                                 <div className={`w-1 h-0.5 transition-colors duration-300 ${isCompleted && allMonths[index + 1] && (
-                                        MONTHLY_DATA[`${currentYear}-${allMonths[index + 1]}`] ||
-                                        parseInt(allMonths[index + 1], 10) <= lastAvailableMonthNum
-                                    )
-                                        ? 'bg-slate-600'
-                                        : 'bg-slate-800'
+                                    MONTHLY_DATA[`${currentYear}-${allMonths[index + 1]}`] ||
+                                    parseInt(allMonths[index + 1], 10) <= lastAvailableMonthNum
+                                )
+                                    ? 'bg-slate-600'
+                                    : 'bg-slate-800'
                                     }`}></div>
                             )}
                         </React.Fragment>
@@ -143,8 +144,8 @@ const MonthSelector = ({ selected, onChange }: { selected: string; onChange: (m:
             <button
                 onClick={() => onChange('total-year')}
                 className={`flex flex-col items-center gap-1 px-4 py-2 rounded-xl border transition-all duration-300 ${isTotalYear
-                        ? 'bg-gradient-to-br from-emerald-500 to-emerald-600 border-emerald-400/50 text-white shadow-lg shadow-emerald-500/30'
-                        : 'bg-slate-800/50 border-slate-700 text-slate-400 hover:bg-slate-700 hover:text-white'
+                    ? 'bg-gradient-to-br from-emerald-500 to-emerald-600 border-emerald-400/50 text-white shadow-lg shadow-emerald-500/30'
+                    : 'bg-slate-800/50 border-slate-700 text-slate-400 hover:bg-slate-700 hover:text-white'
                     }`}
             >
                 <Trophy size={16} className={isTotalYear ? 'fill-white' : ''} />
@@ -160,7 +161,8 @@ const StrategicLab: React.FC<SquadLaboratoryProps> = ({
     monthlyGoal,
     userEmail,
     selectedMonth: parentSelectedMonth,
-    onMonthChange
+    onMonthChange,
+    onBrokerClick
 }) => {
     // Month Selection State - use parent value if provided, otherwise local
     const [localSelectedMonth, setLocalSelectedMonth] = useState<string>('2026-02');
@@ -422,7 +424,7 @@ const StrategicLab: React.FC<SquadLaboratoryProps> = ({
                                     ? 'text-amber-400'
                                     : 'text-red-400'
                                 }`}>
-                                ðŸŽ¯ {intelligenceData.squad_summary.contratos_actuales} / {intelligenceData.squad_summary.meta_equipo} ({((intelligenceData.squad_summary.contratos_actuales / intelligenceData.squad_summary.meta_equipo) * 100).toFixed(1)}%)
+                                🎯 {intelligenceData.squad_summary.contratos_actuales} / {intelligenceData.squad_summary.meta_equipo} ({((intelligenceData.squad_summary.contratos_actuales / intelligenceData.squad_summary.meta_equipo) * 100).toFixed(1)}%)
                             </span>
                         </div>
                     </div>
@@ -494,7 +496,7 @@ const StrategicLab: React.FC<SquadLaboratoryProps> = ({
                                     <div className="flex items-center gap-2">
                                         <Award className="w-4 h-4 text-blue-400" />
                                         <span className="text-blue-400 font-black">
-                                            Percentil: {intelligenceData.leader.percentile}Â°
+                                            Percentil: {intelligenceData.leader.percentile}°
                                         </span>
                                     </div>
                                 </div>
@@ -587,79 +589,90 @@ const StrategicLab: React.FC<SquadLaboratoryProps> = ({
                     <section className="bg-slate-900/50 rounded-3xl p-8 border border-slate-800 shadow-2xl relative overflow-hidden">
                         <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/5 rounded-full blur-3xl pointer-events-none"></div>
                         <h3 className="text-lg font-bold text-white uppercase tracking-widest mb-6 flex items-center gap-2">
-                            <Zap size={18} className="text-yellow-400" /> Matriz de Asignación Inteligente
+                            <Zap size={18} className="text-yellow-400" /> Análisis de Rendimiento Operativo
                         </h3>
 
-                        {/* Score Methodology Legend */}
-                        <div className="mb-6 p-5 bg-gradient-to-br from-amber-950/30 to-slate-950/50 border border-amber-500/30 rounded-2xl">
-                            <div className="flex items-start gap-3 mb-4">
-                                <div className="p-2 bg-amber-500/10 rounded-lg">
-                                    <span className="text-2xl">ðŸ“Š</span>
+                        {/* Score Methodology Legend - REDISEÑADO PARA MEJOR LEGIBILIDAD */}
+                        <div className="mb-8 p-6 bg-gradient-to-br from-slate-950 to-slate-900 border border-slate-700/50 rounded-3xl shadow-inner">
+                            <div className="flex items-center gap-4 mb-8">
+                                <div className="p-3 bg-amber-500/20 rounded-2xl border border-amber-500/30">
+                                    <BarChart3 className="text-amber-400 w-6 h-6" />
                                 </div>
-                                <div className="flex-1">
-                                    <h4 className="text-xs font-black text-amber-400 uppercase tracking-wider mb-1">
-                                        Composición del Score ({intelligenceData?.squad_summary?.scoring_methodology?.total_possible || 100}/100)
+                                <div>
+                                    <h4 className="text-lg font-black text-white uppercase tracking-wider">
+                                        Arquitectura del Scoring <span className="text-amber-400 ml-2">({intelligenceData?.squad_summary?.scoring_methodology?.total_possible || 100}/100)</span>
                                     </h4>
-                                    <p className="text-[9px] text-slate-500 italic">
-                                        Scoring estadístico robusto con 3 pilares fundamentales
+                                    <p className="text-xs text-slate-500 font-medium">
+                                        Modelo estadístico de alto rendimiento basado en 3 dimensiones clave
                                     </p>
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-3 gap-3 text-[9px]">
-                                {/* Pilar 1 */}
-                                <div className="p-3 bg-slate-950/50 rounded-xl border border-emerald-500/20">
-                                    <div className="flex items-center gap-2 mb-2">
-                                        <div className="w-3 h-3 bg-emerald-500 rounded-full"></div>
-                                        <span className="text-emerald-400 font-black">
-                                            {intelligenceData?.squad_summary?.scoring_methodology?.pilar_1_engagement?.weight || 35}% Engagement
-                                        </span>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                {/* Dimensión 1: Engagement */}
+                                <div className="relative group p-5 bg-slate-800/20 rounded-2xl border border-emerald-500/10 hover:border-emerald-500/30 transition-all">
+                                    <div className="flex justify-between items-start mb-4">
+                                        <div className="flex items-center gap-2">
+                                            <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
+                                            <span className="text-emerald-400 font-black uppercase text-xs tracking-wider">Engagement</span>
+                                        </div>
+                                        <span className="text-xl font-black text-white">{intelligenceData?.squad_summary?.scoring_methodology?.pilar_1_engagement?.weight || 35}%</span>
                                     </div>
-                                    <div className="space-y-0.5 text-slate-400 pl-5">
-                                        <div>• Visitas realizadas</div>
-                                        <div>• No cancela visitas</div>
-                                        <div>• No descarta leads</div>
-                                        <div>• No descarta prospectos</div>
-                                        <div>• Acción &lt;24h</div>
+                                    <div className="w-full h-1 bg-slate-800 rounded-full mb-4 overflow-hidden">
+                                        <div className="h-full bg-emerald-500" style={{ width: '35%' }}></div>
                                     </div>
+                                    <ul className="space-y-2 text-[11px] text-slate-400">
+                                        <li className="flex items-center gap-2">• Visitas realizadas</li>
+                                        <li className="flex items-center gap-2">• No cancela visitas</li>
+                                        <li className="flex items-center gap-2">• No descarta leads</li>
+                                        <li className="flex items-center gap-2">• No descarta prospectos</li>
+                                        <li className="flex items-center gap-2">• Acción &lt;24h</li>
+                                    </ul>
                                 </div>
 
-                                {/* Pilar 2 */}
-                                <div className="p-3 bg-slate-950/50 rounded-xl border border-blue-500/20">
-                                    <div className="flex items-center gap-2 mb-2">
-                                        <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                                        <span className="text-blue-400 font-black">
-                                            {intelligenceData?.squad_summary?.scoring_methodology?.pilar_2_rendimiento?.weight || 40}% Rendimiento
-                                        </span>
+                                {/* Dimensión 2: Rendimiento */}
+                                <div className="relative group p-5 bg-slate-800/20 rounded-2xl border border-blue-500/10 hover:border-blue-500/30 transition-all">
+                                    <div className="flex justify-between items-start mb-4">
+                                        <div className="flex items-center gap-2">
+                                            <div className="w-2.5 h-2.5 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]"></div>
+                                            <span className="text-blue-400 font-black uppercase text-xs tracking-wider">Rendimiento</span>
+                                        </div>
+                                        <span className="text-xl font-black text-white">{intelligenceData?.squad_summary?.scoring_methodology?.pilar_2_rendimiento?.weight || 40}%</span>
                                     </div>
-                                    <div className="space-y-0.5 text-slate-400 pl-5">
-                                        <div>• Conv. Prospectoâ†’Contrato</div>
-                                        <div>• Conv. Leadâ†’Contrato</div>
-                                        <div>• Contratos absolutos</div>
-                                        <div>• Leads/Visita</div>
+                                    <div className="w-full h-1 bg-slate-800 rounded-full mb-4 overflow-hidden">
+                                        <div className="h-full bg-blue-500" style={{ width: '40%' }}></div>
                                     </div>
+                                    <ul className="space-y-2 text-[11px] text-slate-400">
+                                        <li className="flex items-center gap-2">• Conv. Prospecto → Contrato</li>
+                                        <li className="flex items-center gap-2">• Conv. Lead → Contrato</li>
+                                        <li className="flex items-center gap-2">• Contratos absolutos</li>
+                                        <li className="flex items-center gap-2">• Leads / Visita</li>
+                                    </ul>
                                 </div>
 
-                                {/* Pilar 3 */}
-                                <div className="p-3 bg-slate-950/50 rounded-xl border border-purple-500/20">
-                                    <div className="flex items-center gap-2 mb-2">
-                                        <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
-                                        <span className="text-purple-400 font-black">
-                                            {intelligenceData?.squad_summary?.scoring_methodology?.pilar_3_eficiencia?.weight || 25}% Eficiencia
-                                        </span>
+                                {/* Dimensión 3: Eficiencia */}
+                                <div className="relative group p-5 bg-slate-800/20 rounded-2xl border border-purple-500/10 hover:border-purple-500/30 transition-all">
+                                    <div className="flex justify-between items-start mb-4">
+                                        <div className="flex items-center gap-2">
+                                            <div className="w-2.5 h-2.5 rounded-full bg-purple-500 shadow-[0_0_8px_rgba(168,85,247,0.5)]"></div>
+                                            <span className="text-purple-400 font-black uppercase text-xs tracking-wider">Eficiencia</span>
+                                        </div>
+                                        <span className="text-xl font-black text-white">{intelligenceData?.squad_summary?.scoring_methodology?.pilar_3_eficiencia?.weight || 25}%</span>
                                     </div>
-                                    <div className="space-y-0.5 text-slate-400 pl-5">
-                                        <div>• Sin demora procesos</div>
-                                        <div>• Tiempo resolución</div>
-                                        <div>• Tickets severidad</div>
+                                    <div className="w-full h-1 bg-slate-800 rounded-full mb-4 overflow-hidden">
+                                        <div className="h-full bg-purple-500" style={{ width: '25%' }}></div>
                                     </div>
+                                    <ul className="space-y-2 text-[11px] text-slate-400">
+                                        <li className="flex items-center gap-2">• Sin demora en procesos</li>
+                                        <li className="flex items-center gap-2">• Tiempo de resolución</li>
+                                        <li className="flex items-center gap-2">• Tickets severidad</li>
+                                    </ul>
                                 </div>
                             </div>
 
-                            <div className="mt-3 p-2 bg-slate-800/30 rounded-lg border border-slate-700/30">
-                                <p className="text-[8px] text-slate-600 text-center">
-                                    <span className="text-yellow-500 font-bold">Nota:</span> Normalización Z-Score robusta con IQR truncation para evitar outliers
-                                </p>
+                            <div className="mt-6 flex items-center justify-center gap-2 text-[10px] text-slate-500 font-medium">
+                                <Activity size={12} className="text-indigo-500" />
+                                <span>Normalización robusta mediante <span className="text-slate-300 font-bold italic">Robust Z-Score</span> y truncamiento de outliers (IQR)</span>
                             </div>
                         </div>
 
@@ -716,7 +729,11 @@ const StrategicLab: React.FC<SquadLaboratoryProps> = ({
                                         );
 
                                         return (
-                                            <tr key={broker.name} className="border-b border-slate-800/50 hover:bg-white/5 transition-colors group">
+                                            <tr
+                                                key={broker.name}
+                                                onClick={() => onBrokerClick && onBrokerClick(broker)}
+                                                className={`border-b border-slate-800/50 hover:bg-white/5 transition-colors group ${onBrokerClick ? 'cursor-pointer' : ''}`}
+                                            >
                                                 <td className="py-4">
                                                     <div className="flex items-center gap-2">
                                                         {index === 0 && <Trophy size={16} className="text-amber-400" />}
@@ -727,8 +744,15 @@ const StrategicLab: React.FC<SquadLaboratoryProps> = ({
                                                         </span>
                                                     </div>
                                                 </td>
-                                                <td className="py-4 font-bold text-slate-300">
-                                                    {broker.name}
+                                                <td className="py-4">
+                                                    <div className="space-y-0.5">
+                                                        <p className="font-bold text-slate-300 group-hover:text-white transition-colors">{broker.name}</p>
+                                                        {onBrokerClick && (
+                                                            <p className="text-[9px] text-blue-400 font-black uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
+                                                                <ArrowRight size={9} /> Ver Perfil
+                                                            </p>
+                                                        )}
+                                                    </div>
                                                 </td>
                                                 <td className="py-4 text-center">
                                                     {getRegionBadge(broker.region_type)}
@@ -781,7 +805,7 @@ const StrategicLab: React.FC<SquadLaboratoryProps> = ({
                                                             ></div>
                                                         </div>
                                                         <span className="text-xs font-black text-indigo-400">
-                                                            {broker.percentile.toFixed(0)}Â°
+                                                            {broker.percentile.toFixed(0)}°
                                                         </span>
                                                     </div>
                                                 </td>

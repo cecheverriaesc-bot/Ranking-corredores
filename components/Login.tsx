@@ -2,17 +2,8 @@ import React, { useState } from 'react';
 import { Mail, Lock, LogIn, AlertCircle, Crown } from 'lucide-react';
 
 interface LoginProps {
-    onLogin: (email: string) => void;
+    onLogin: (email: string, token: string, user: any) => void;
 }
-
-const VALID_COORDINATORS = [
-    'carlos.echeverria@assetplan.cl',
-    'luis.gomez@assetplan.cl',
-    'nataly.venegas@assetplan.cl',
-    'angely.perez@assetplan.cl'
-];
-
-const ADMIN_PASSWORD = 'Soymimejorversion';
 
 const Login: React.FC<LoginProps> = ({ onLogin }) => {
     const [email, setEmail] = useState('');
@@ -38,35 +29,54 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
             return;
         }
 
-        // Validar contraseña fija
-        if (password !== ADMIN_PASSWORD) {
-            setError('Contraseña incorrecta');
-            setIsLoading(false);
-            return;
-        }
-
         // Validar email (debe ser @assetplan.cl o @arriendos-assetplan.cl)
         const emailLower = email.toLowerCase().trim();
         const isValidAssetplan = emailLower.includes('@assetplan.cl') || emailLower.includes('@arriendos-assetplan.cl');
-        
+
         if (!isValidAssetplan) {
             setError('Debes usar tu email corporativo (@assetplan.cl o @arriendos-assetplan.cl)');
             setIsLoading(false);
             return;
         }
 
-        // Simular validación contra DB (en producción esto sería una llamada API)
-        // Por ahora aceptamos cualquier email @assetplan.cl o @arriendos-assetplan.cl
-        // Se puede validar contra la DB si es necesario
-        
         try {
-            // Pequeño delay para UX
-            await new Promise(resolve => setTimeout(resolve, 800));
+            // Llamar a la API de autenticación
+            const response = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email: emailLower, password }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok || !data.success) {
+                // Manejar rate limiting
+                if (response.status === 429) {
+                    setError('Demasiados intentos. Por favor espera 5 minutos e intenta nuevamente.');
+                } else if (response.status === 403) {
+                    setError('Email no autorizado. Usa tu correo corporativo.');
+                } else if (response.status === 401) {
+                    setError(data.error || 'Contraseña incorrecta');
+                } else {
+                    setError(data.error || 'Error al iniciar sesión. Intenta nuevamente.');
+                }
+                setIsLoading(false);
+                return;
+            }
+
+            // Login exitoso - guardar token
+            localStorage.setItem('auth_token', data.token);
             
+            // Pequeño delay para UX
+            await new Promise(resolve => setTimeout(resolve, 500));
+
             // Login exitoso
-            onLogin(emailLower);
+            onLogin(emailLower, data.token, data.user);
         } catch (err) {
-            setError('Error al iniciar sesión. Intenta nuevamente.');
+            console.error('Login error:', err);
+            setError('Error de conexión. Verifica tu internet e intenta nuevamente.');
         } finally {
             setIsLoading(false);
         }

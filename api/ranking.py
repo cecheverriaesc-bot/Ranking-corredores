@@ -11,6 +11,11 @@ import os
 from datetime import datetime, timedelta
 from urllib.parse import parse_qs, urlparse
 
+# Import rate limiter y CORS
+import sys
+sys.path.append(os.path.dirname(__file__))
+from rate_limiter import check_rate_limit, APIRateLimits, send_cors_headers, validate_query_params
+
 # Load environment variables
 def load_env_vars():
     env_vars = {}
@@ -320,14 +325,33 @@ class handler(BaseHTTPRequestHandler):
         GET /api/ranking?year=2026&month=2
         Obtiene datos completos del ranking para un mes específico
         """
+        # Rate limiting
+        if not check_rate_limit(self, APIRateLimits.DATA_API):
+            return
+        
         parsed_path = urlparse(self.path)
         query_params = parse_qs(parsed_path.query)
         
+        # Validar parámetros
+        validators = {
+            'year': (int, 2020, 2030, False),
+            'month': (int, 1, 12, False)
+        }
+        validated, error = validate_query_params(query_params, validators)
+        
+        if error:
+            self.send_response(400)
+            self.send_header('Content-type', 'application/json')
+            send_cors_headers(self, self.headers.get('Origin', ''))
+            self.end_headers()
+            self.wfile.write(json.dumps({'error': error}).encode())
+            return
+        
         self.send_response(200)
         self.send_header('Content-type', 'application/json')
-        self.send_header('Access-Control-Allow-Origin', '*')
+        send_cors_headers(self, self.headers.get('Origin', ''))
         self.end_headers()
-        
+
         try:
             # Obtener año y mes de los query params
             year = int(query_params.get('year', [datetime.now().year])[0])
@@ -364,7 +388,5 @@ class handler(BaseHTTPRequestHandler):
     def do_OPTIONS(self):
         """CORS preflight"""
         self.send_response(200)
-        self.send_header('Access-Control-Allow-Origin', '*')
-        self.send_header('Access-Control-Allow-Methods', 'GET, OPTIONS')
-        self.send_header('Access-Control-Allow-Headers', 'Content-Type')
+        send_cors_headers(self, self.headers.get('Origin', ''))
         self.end_headers()

@@ -64,7 +64,7 @@ REGIONES_COMUNAS = {
 }
 
 def get_db_connection():
-    """Get database connection with environment variables"""
+    """Get database connection with environment variables (BI)"""
     return mysql.connector.connect(
         host=os.environ.get('DB_HOST') or os.getenv('DB_HOST'),
         user=os.environ.get('DB_USER') or os.getenv('DB_USER'),
@@ -72,6 +72,46 @@ def get_db_connection():
         port=int(os.environ.get('DB_PORT', 3306) or os.getenv('DB_PORT', 3306)),
         database='bi_assetplan'
     )
+
+def get_rentas_connection():
+    """Get database connection for operational data (assetplan_rentas)"""
+    return mysql.connector.connect(
+        host=os.environ.get('DB_HOST') or os.getenv('DB_HOST'),
+        user=os.environ.get('DB_USER') or os.getenv('DB_USER'),
+        password=os.environ.get('DB_PASSWORD') or os.getenv('DB_PASSWORD'),
+        port=int(os.environ.get('DB_PORT', 3306) or os.getenv('DB_PORT', 3306)),
+        database='assetplan_rentas'
+    )
+
+def clean_phone_for_whatsapp(phone):
+    """Sanitize phone for WhatsApp links (digits only)"""
+    if not phone:
+        return None
+    # Filter digits only
+    cleaned = "".join(filter(str.isdigit, str(phone)))
+    # Add prefix if missing (Chilean default 56)
+    if len(cleaned) == 9:
+        cleaned = "56" + cleaned
+    return cleaned
+
+def fetch_broker_phones_map():
+    """Returns a map of {full_name: cleaned_phone} from operational DB"""
+    phones_map = {}
+    conn = None
+    try:
+        conn = get_rentas_connection()
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT nombre, apellido, telefono, celular FROM corredores WHERE activo = 1")
+        for row in cursor.fetchall():
+            full_name = f"{row['nombre']} {row['apellido']}".strip()
+            # Prefer celular over telefono
+            phone = row['celular'] or row['telefono']
+            if phone:
+                phones_map[full_name] = clean_phone_for_whatsapp(phone)
+        conn.close()
+    except Exception:
+        if conn: conn.close()
+    return phones_map
 
 def calculate_dias_restantes():
     """Calcular días hábiles restantes del mes"""
@@ -211,6 +251,9 @@ def fetch_squad_intelligence_v5(coordinador_email="carlos.echeverria", filter_re
         conn = get_db_connection()
         cursor = conn.cursor(dictionary=True)
         debug_log.append("Connected.")
+        
+        # New: Get real phones map from Rentas
+        phones_map = fetch_broker_phones_map()
         
         # ================================================================
         # PASO 1: Participación Histórica & Meta Equipo
@@ -399,7 +442,7 @@ def fetch_squad_intelligence_v5(coordinador_email="carlos.echeverria", filter_re
                 'visitas_canceladas': visitas_canceladas,
                 'no_contesto': no_contesto,
                 'leads_diarios_necesarios': leads_diarios_necesarios,
-                'telefono': corredor.get('telefono'),  # Teléfono desde bi_DimLeads
+                'telefono': phones_map.get(corredor['nombre_corredor']), # Teléfono real desde Rentas
                 # Métricas RAW Engagement (Pilar 1)
                 'tasa_visitas': tasa_visitas,
                 'tasa_cancelacion': tasa_cancelacion,

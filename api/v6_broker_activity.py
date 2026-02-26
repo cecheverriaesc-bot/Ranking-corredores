@@ -33,6 +33,71 @@ def get_db_connection():
         database='bi_assetplan'
     )
 
+def get_rentas_connection():
+    return mysql.connector.connect(
+        host=os.environ.get('DB_HOST'),
+        user=os.environ.get('DB_USER'),
+        password=os.environ.get('DB_PASSWORD'),
+        port=int(os.environ.get('DB_PORT', 3306)),
+        database='assetplan_rentas'
+    )
+
+# ===================================================================
+# CANON PROMEDIO REAL (assetplan_rentas)
+# ===================================================================
+AVG_CANON_FALLBACK = 580000  # CLP, fallback si no hay datos en BD
+
+CANON_CANDIDATE_COLS = [
+    'precio_arriendo', 'canon_arriendo', 'canon', 'precio', 'monto',
+    'arriendo', 'valor_arriendo', 'rental_price'
+]
+
+def fetch_avg_canon(broker_name: str) -> int:
+    """
+    Intenta obtener el canon promedio real del corredor desde assetplan_rentas.
+    Prueba varias columnas candidatas y retorna el primero que funcione.
+    Fallback: AVG_CANON_FALLBACK si nada funciona.
+    """
+    conn = None
+    try:
+        conn = get_rentas_connection()
+        cursor = conn.cursor()
+
+        # Obtener columnas de la tabla reservas dinámicamente
+        cursor.execute("DESCRIBE reservas")
+        cols = {row[0].lower() for row in cursor.fetchall()}
+
+        # Buscar la primera columna candidata que exista
+        canon_col = next(
+            (c for c in CANON_CANDIDATE_COLS if c in cols),
+            None
+        )
+
+        if not canon_col:
+            return AVG_CANON_FALLBACK
+
+        # Query: canon promedio de los últimos 12 meses para el corredor
+        cursor.execute(f"""
+            SELECT AVG(r.{canon_col}) as avg_canon
+            FROM reservas r
+            JOIN corredores c ON r.corredor_id = c.id
+            WHERE CONCAT(c.nombre, ' ', c.apellido) = %s
+              AND r.fecha >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)
+              AND r.{canon_col} > 0
+        """, (broker_name,))
+        row = cursor.fetchone()
+        avg = row[0] if row and row[0] else None
+        return int(avg) if avg and avg > 50000 else AVG_CANON_FALLBACK
+
+    except Exception:
+        return AVG_CANON_FALLBACK
+    finally:
+        if conn:
+            try:
+                conn.close()
+            except Exception:
+                pass
+
 # ===================================================================
 # FETCH ACTIVIDAD SEMANAL REAL POR CORREDOR
 # ===================================================================
@@ -146,11 +211,15 @@ def fetch_broker_activity(broker_name: str, weeks_back: int = 16):
                 "reservas": int(reservas_by_week.get(wk, 0))
             })
 
+        avg_canon = fetch_avg_canon(broker_name)
+
         return {
             "broker": broker_name,
             "weeks": weeks_output,
             "weeks_queried": weeks_back,
-            "data_from": str(start_date)
+            "data_from": str(start_date),
+            "avg_canon_clp": avg_canon,
+            "commission_rate": 0.30
         }
 
     except Exception as e:

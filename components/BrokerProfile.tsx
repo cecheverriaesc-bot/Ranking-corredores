@@ -145,10 +145,11 @@ const BrokerProfile: React.FC<BrokerProfileProps> = ({ broker, onBack, selectedM
     const [heatmapData, setHeatmapData] = useState<ActivityWeek[]>([]);
     const [heatmapLoading, setHeatmapLoading] = useState(true);
     const [heatmapError, setHeatmapError] = useState<string | null>(null);
+    const [avgCanon, setAvgCanon] = useState<number>(AVG_CANON_CLP); // fallback mientras carga
     const category = getScoreCategory(broker.score);
     const initials = getInitials(broker.name);
 
-    // Fetch real heatmap data from v6_broker_activity
+    // Fetch real heatmap data + avg canon from v6_broker_activity
     useEffect(() => {
         const fetchActivity = async () => {
             setHeatmapLoading(true);
@@ -159,6 +160,10 @@ const BrokerProfile: React.FC<BrokerProfileProps> = ({ broker, onBack, selectedM
                 if (!res.ok) throw new Error(`Error ${res.status}`);
                 const json = await res.json();
                 setHeatmapData(json.weeks || []);
+                // Canon real del corredor (o fallback desde el API)
+                if (json.avg_canon_clp && json.avg_canon_clp > 0) {
+                    setAvgCanon(json.avg_canon_clp);
+                }
             } catch (err) {
                 setHeatmapError('Sin datos de actividad histórica aún');
             } finally {
@@ -177,8 +182,8 @@ const BrokerProfile: React.FC<BrokerProfileProps> = ({ broker, onBack, selectedM
     const ritmoNec = parseFloat(((metaReservas - reservasCumplidas) / Math.max(1, diasRestantes)).toFixed(2));
     const atRisk = reservasCumplidas < metaReservas && ritmoActual < ritmoNec;
 
-    // Commission
-    const commisionActual = Math.round(reservasCumplidas * AVG_CANON_CLP * COMMISSION_RATE);
+    // Commission — usa el canon real del corredor (si está disponible) o el fallback
+    const commisionActual = Math.round(reservasCumplidas * avgCanon * COMMISSION_RATE);
     const commisionFmt = commisionActual >= 1000000
         ? `$${(commisionActual / 1000000).toFixed(1)}M`
         : `$${(commisionActual / 1000).toFixed(0)}K`;

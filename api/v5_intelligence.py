@@ -257,18 +257,11 @@ def fetch_squad_intelligence_v5(coordinador_email="carlos.echeverria", filter_re
                 COALESCE(l.prospectos_descartados, 0) as prospectos_descartados,
                 COALESCE(l.contacto_24h, 0) as contacto_24h,
                 COALESCE(l.accion_24h, 0) as accion_24h,
-                COALESCE(t.tiempo_prom_resolucion, 0) as tiempo_prom_resolucion,
-                COALESCE(t.tickets_severidad_ponderada, 0) as tickets_severidad,
-                COALESCE(t.prospectos_demora, 0) as prospectos_demora,
+                0 as tiempo_prom_resolucion,
+                0 as tickets_severidad,
+                0 as prospectos_demora,
                 GROUP_CONCAT(DISTINCT a.comuna) as comunas,
-                -- Obtener teléfono desde bi_dimzendesksc (último ticket del mes)
-                (SELECT z.telefono 
-                 FROM bi_dimzendesksc z 
-                 WHERE z.corredor_id = c.corredor_id 
-                   AND YEAR(z.fecha_apertura) = %s
-                   AND MONTH(z.fecha_apertura) = %s
-                   AND z.telefono IS NOT NULL 
-                 LIMIT 1) as telefono
+                NULL as telefono
             FROM bi_DimCorredores c
             LEFT JOIN (
                 SELECT
@@ -285,22 +278,6 @@ def fetch_squad_intelligence_v5(coordinador_email="carlos.echeverria", filter_re
                   AND MONTH(fecha_tomado) = %s
                 GROUP BY corredor_id
             ) l ON c.corredor_id = l.corredor_id
-            LEFT JOIN (
-                SELECT
-                    corredor_id,
-                    AVG(tiempo_resolucion_horas) as tiempo_prom_resolucion,
-                    SUM(CASE
-                        WHEN severidad = 'alta' THEN 3
-                        WHEN severidad = 'media' THEN 2
-                        WHEN severidad = 'baja' THEN 1
-                        ELSE 0
-                    END) as tickets_severidad_ponderada,
-                    SUM(CASE WHEN demora_ingreso = 1 OR demora_observacion = 1 OR demora_aprobacion = 1 THEN 1 ELSE 0 END) as prospectos_demora
-                FROM bi_dimzendesksc
-                WHERE YEAR(fecha_apertura) = %s
-                  AND MONTH(fecha_apertura) = %s
-                GROUP BY corredor_id
-            ) t ON c.corredor_id = t.corredor_id
             LEFT JOIN bi_DimAgendas a ON c.corredor_id = a.corredor_id
                 AND YEAR(a.agenda_fecha) = %s
                 AND MONTH(a.agenda_fecha) = %s
@@ -309,9 +286,9 @@ def fetch_squad_intelligence_v5(coordinador_email="carlos.echeverria", filter_re
             GROUP BY c.corredor_id, c.nombre_corredor, c.reserva,
                      l.contratos_mes, l.leads_tomados_mes, l.prospectos_mes,
                      l.leads_descartados_sin_gestion, l.prospectos_descartados, l.contacto_24h,
-                     l.accion_24h, t.tiempo_prom_resolucion, t.tickets_severidad_ponderada, t.prospectos_demora
+                     l.accion_24h
             ORDER BY contratos_mes DESC, c.reserva DESC
-        ''', (CURRENT_YEAR, CURRENT_MONTH, CURRENT_YEAR, CURRENT_MONTH, CURRENT_YEAR, CURRENT_MONTH, CURRENT_YEAR, CURRENT_MONTH, coordinador_email))
+        ''', (CURRENT_YEAR, CURRENT_MONTH, CURRENT_YEAR, CURRENT_MONTH, coordinador_email))
         
         corredores_data = cursor.fetchall()
         

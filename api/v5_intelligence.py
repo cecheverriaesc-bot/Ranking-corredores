@@ -2,26 +2,33 @@ from http.server import BaseHTTPRequestHandler
 import json
 import mysql.connector
 import os
-from dotenv import load_dotenv
 from datetime import datetime, date
 import calendar
 import statistics
 import math
 
 # Load environment variables
-script_dir = os.path.dirname(os.path.abspath(__file__))
-env_options = [
-    os.path.join(script_dir, "..", "..", ".env"),
-    os.path.join(script_dir, "..", ".env"),
-    os.path.join(os.getcwd(), ".env")
-]
-for path in env_options:
-    if os.path.exists(path):
-        load_dotenv(path)
-        print(f"INFO: Loaded .env from {path}")
-        break
-else:
-    load_dotenv()
+def load_env_vars():
+    env_vars = {}
+    
+    # Try to load from .env file for local development
+    env_file_path = os.path.join(os.path.dirname(__file__), "..", "..", ".env")
+    if os.path.exists(env_file_path):
+        with open(env_file_path, 'r', encoding='utf-8') as f:
+            for line in f:
+                line = line.strip()
+                if not line or line.startswith('#'):
+                    continue
+                if '=' in line:
+                    key, value = line.split('=', 1)
+                    env_vars[key.strip()] = value.strip()
+                    
+    # Push to os.environ so existing os.environ.get() calls work
+    for k, v in env_vars.items():
+        if k not in os.environ:
+            os.environ[k] = v
+
+load_env_vars()
 
 # ===================================================================
 # CONSTANTES GLOBALES

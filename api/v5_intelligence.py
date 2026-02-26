@@ -260,7 +260,7 @@ def fetch_squad_intelligence_v5(coordinador_email="carlos.echeverria", filter_re
                 0 as tiempo_prom_resolucion,
                 0 as tickets_severidad,
                 0 as prospectos_demora,
-                GROUP_CONCAT(DISTINCT a.comuna) as comunas,
+                NULL as comunas,
                 NULL as telefono
             FROM bi_DimCorredores c
             LEFT JOIN (

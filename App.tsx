@@ -1,7 +1,9 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
 import {
-    Search,
+    Search, TrendingUp, Users, Microscope, Calendar, Medal, Crown, Droplet,
+    GraduationCap, Flower2, Star, Target, Clock, RefreshCw, Brain, Shield,
+    UserMinus, BatteryMedium, Zap, Flame, LayoutDashboard, FlaskConical,
     ChevronDown, ChevronUp, AlertCircle, ArrowRight, Filter, Trophy,
     ChevronRight, ArrowUpRight, ArrowDownRight, CheckCircle2, Edit3, MessageSquare,
     Lock, LogOut
@@ -14,8 +16,8 @@ import SquadLaboratory from './components/SquadLaboratory';
 import StrategicLab from './components/StrategicLab';
 import GoalSettingModal from './components/GoalSettingModal';
 import Login from './components/Login';
-import { useAppStore, useAuth, useSelectedMonth, useView, useFilteredBrokers, useTopBrokers } from './stores/useAppStore';
 import BrokerProfile from './components/BrokerProfile';
+import { useAppStore, useAuth, useSelectedMonth, useView, useFilteredBrokers, useTopBrokers } from './stores/useAppStore';
 
 const IconMap: Record<string, React.FC<any>> = {
     Flame, Droplet, GraduationCap, Flower2, Star
@@ -512,17 +514,50 @@ const App: React.FC = () => {
     // AUTHENTICATION FUNCTIONS
     // ============================================
 
-    const handleLogin = (email: string) => {
+    const handleLogin = (email: string, token: string, user: any) => {
         setUserEmail(email);
         setIsAuthenticated(true);
+        // Guardar información adicional del usuario si es necesario
+        if (user) {
+            // Se puede extender para guardar role, squad, etc.
+        }
     };
 
     const handleLogout = () => {
+        // Limpiar token
+        localStorage.removeItem('auth_token');
         setIsAuthenticated(false);
         setUserEmail(null);
         setView('dashboard');
         setVerifiedLabAccess(false);
     };
+
+    // Verificar autenticación al cargar
+    useEffect(() => {
+        const verifyAuth = async () => {
+            const token = localStorage.getItem('auth_token');
+            if (token) {
+                try {
+                    const response = await fetch('/api/auth/verify', {
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                        },
+                    });
+                    const data = await response.json();
+                    if (!data.valid) {
+                        localStorage.removeItem('auth_token');
+                        setIsAuthenticated(false);
+                        setUserEmail(null);
+                    }
+                } catch {
+                    localStorage.removeItem('auth_token');
+                    setIsAuthenticated(false);
+                    setUserEmail(null);
+                }
+            }
+        };
+        verifyAuth();
+    }, []);
 
     // --- Laboratory Access ---
     const handleLabAccess = () => {

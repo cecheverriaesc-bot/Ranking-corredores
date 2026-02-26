@@ -195,7 +195,7 @@ const StrategicLab: React.FC<SquadLaboratoryProps> = ({
             try {
                 setIsLoading(true);
 
-                // Fetch intelligence v5 con filtro de regiÃ³n
+                // Fetch intelligence v5 con filtro de región
                 const intelligenceResponse = await fetch(`/api/v5_intelligence?region=${regionFilter}`);
                 if (!intelligenceResponse.ok) throw new Error('Failed to fetch intelligence data');
                 const intelligenceData = await intelligenceResponse.json();
@@ -308,7 +308,7 @@ const StrategicLab: React.FC<SquadLaboratoryProps> = ({
         if (action.includes('Coaching')) {
             return 'bg-red-500/20 text-red-400 border-red-500/30';
         }
-        if (action.includes('leads/dÃ­a')) {
+        if (action.includes('leads/día')) {
             return 'bg-blue-500/20 text-blue-400 border-blue-500/30';
         }
         return 'bg-slate-500/20 text-slate-400 border-slate-500/30';
@@ -395,7 +395,7 @@ const StrategicLab: React.FC<SquadLaboratoryProps> = ({
                         <p className="text-xl font-black text-white">{stats.totalContracts}</p>
                     </div>
                     <div className="text-right">
-                        <p className="text-[10px] font-bold text-slate-500 uppercase">ProyecciÃ³n</p>
+                        <p className="text-[10px] font-bold text-slate-500 uppercase">Proyección</p>
                         <p className="text-xl font-black text-blue-400">{stats.projection}</p>
                     </div>
                     <div className="text-right pl-4 border-l border-slate-800">
@@ -446,14 +446,14 @@ const StrategicLab: React.FC<SquadLaboratoryProps> = ({
                                     ? 'text-amber-500/70'
                                     : 'text-red-500/70'
                         }>
-                            {intelligenceData.squad_summary.dias_restantes} dÃ­as restantes
+                            {intelligenceData.squad_summary.dias_restantes} días restantes
                         </span>
                         <span>Meta: {intelligenceData.squad_summary.meta_equipo}</span>
                     </div>
                 </section>
             )}
 
-            {/* LÃ­der de Performance Total */}
+            {/* Líder de Performance Total */}
             {intelligenceData?.leader && (
                 <section className="mb-10 bg-gradient-to-r from-amber-900/20 to-yellow-900/20 rounded-3xl p-8 border-2 border-amber-500/40 shadow-2xl relative overflow-hidden">
                     <div className="absolute top-0 right-0 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
@@ -461,7 +461,7 @@ const StrategicLab: React.FC<SquadLaboratoryProps> = ({
                         <div className="flex items-center gap-2 mb-4">
                             <Trophy className="w-6 h-6 text-amber-400" />
                             <h2 className="text-lg font-black text-amber-400 uppercase tracking-widest">
-                                ðŸ† LÃ­der de Performance Total
+                                ðŸ† Líder de Performance Total
                             </h2>
                         </div>
                         <div className="flex items-center gap-6">
@@ -553,7 +553,7 @@ const StrategicLab: React.FC<SquadLaboratoryProps> = ({
 
                 <div className="flex items-center gap-3 bg-slate-900/50 rounded-xl px-4 py-2 border border-slate-800">
                     <Filter size={16} className="text-slate-500" />
-                    <span className="text-xs font-bold text-slate-400">Score mÃ­n:</span>
+                    <span className="text-xs font-bold text-slate-400">Score mín:</span>
                     <input
                         type="range"
                         min="0"
@@ -587,7 +587,7 @@ const StrategicLab: React.FC<SquadLaboratoryProps> = ({
                     <section className="bg-slate-900/50 rounded-3xl p-8 border border-slate-800 shadow-2xl relative overflow-hidden">
                         <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/5 rounded-full blur-3xl pointer-events-none"></div>
                         <h3 className="text-lg font-bold text-white uppercase tracking-widest mb-6 flex items-center gap-2">
-                            <Zap size={18} className="text-yellow-400" /> Matriz de AsignaciÃ³n Inteligente
+                            <Zap size={18} className="text-yellow-400" /> Matriz de Asignación Inteligente
                         </h3>
 
                         {/* Score Methodology Legend */}
@@ -598,10 +598,10 @@ const StrategicLab: React.FC<SquadLaboratoryProps> = ({
                                 </div>
                                 <div className="flex-1">
                                     <h4 className="text-xs font-black text-amber-400 uppercase tracking-wider mb-1">
-                                        ComposiciÃ³n del Score ({intelligenceData?.squad_summary?.scoring_methodology?.total_possible || 100}/100)
+                                        Composición del Score ({intelligenceData?.squad_summary?.scoring_methodology?.total_possible || 100}/100)
                                     </h4>
                                     <p className="text-[9px] text-slate-500 italic">
-                                        Scoring estadÃ­stico robusto con 3 pilares fundamentales
+                                        Scoring estadístico robusto con 3 pilares fundamentales
                                     </p>
                                 </div>
                             </div>
@@ -616,11 +616,11 @@ const StrategicLab: React.FC<SquadLaboratoryProps> = ({
                                         </span>
                                     </div>
                                     <div className="space-y-0.5 text-slate-400 pl-5">
-                                        <div>â€¢ Visitas realizadas</div>
-                                        <div>â€¢ No cancela visitas</div>
-                                        <div>â€¢ No descarta leads</div>
-                                        <div>â€¢ No descarta prospectos</div>
-                                        <div>â€¢ AcciÃ³n &lt;24h</div>
+                                        <div>• Visitas realizadas</div>
+                                        <div>• No cancela visitas</div>
+                                        <div>• No descarta leads</div>
+                                        <div>• No descarta prospectos</div>
+                                        <div>• Acción &lt;24h</div>
                                     </div>
                                 </div>
 
@@ -633,10 +633,10 @@ const StrategicLab: React.FC<SquadLaboratoryProps> = ({
                                         </span>
                                     </div>
                                     <div className="space-y-0.5 text-slate-400 pl-5">
-                                        <div>â€¢ Conv. Prospectoâ†’Contrato</div>
-                                        <div>â€¢ Conv. Leadâ†’Contrato</div>
-                                        <div>â€¢ Contratos absolutos</div>
-                                        <div>â€¢ Leads/Visita</div>
+                                        <div>• Conv. Prospectoâ†’Contrato</div>
+                                        <div>• Conv. Leadâ†’Contrato</div>
+                                        <div>• Contratos absolutos</div>
+                                        <div>• Leads/Visita</div>
                                     </div>
                                 </div>
 
@@ -649,16 +649,16 @@ const StrategicLab: React.FC<SquadLaboratoryProps> = ({
                                         </span>
                                     </div>
                                     <div className="space-y-0.5 text-slate-400 pl-5">
-                                        <div>â€¢ Sin demora procesos</div>
-                                        <div>â€¢ Tiempo resoluciÃ³n</div>
-                                        <div>â€¢ Tickets severidad</div>
+                                        <div>• Sin demora procesos</div>
+                                        <div>• Tiempo resolución</div>
+                                        <div>• Tickets severidad</div>
                                     </div>
                                 </div>
                             </div>
 
                             <div className="mt-3 p-2 bg-slate-800/30 rounded-lg border border-slate-700/30">
                                 <p className="text-[8px] text-slate-600 text-center">
-                                    <span className="text-yellow-500 font-bold">Nota:</span> NormalizaciÃ³n Z-Score robusta con IQR truncation para evitar outliers
+                                    <span className="text-yellow-500 font-bold">Nota:</span> Normalización Z-Score robusta con IQR truncation para evitar outliers
                                 </p>
                             </div>
                         </div>
@@ -670,7 +670,7 @@ const StrategicLab: React.FC<SquadLaboratoryProps> = ({
                                     <tr className="text-[10px] font-black text-slate-500 uppercase tracking-wider border-b border-slate-800">
                                         <th className="py-4">Pos</th>
                                         <th className="py-4">Corredor</th>
-                                        <th className="py-4 text-center">RegiÃ³n</th>
+                                        <th className="py-4 text-center">Región</th>
                                         <th className="py-4 text-center">Reservas</th>
                                         <th className="py-4 text-center text-emerald-400">Contratos</th>
                                         <th className="py-4 text-center">Conv. %</th>
@@ -699,7 +699,7 @@ const StrategicLab: React.FC<SquadLaboratoryProps> = ({
                                         <th className="py-4 text-center text-amber-400">Score</th>
                                         <th className="py-4 text-center text-indigo-400">Percentil</th>
                                         <th className="py-4 text-center">Meta</th>
-                                        <th className="py-4 text-center">AcciÃ³n</th>
+                                        <th className="py-4 text-center">Acción</th>
                                         <th className="py-4 text-center text-emerald-400">WhatsApp</th>
                                     </tr>
                                 </thead>
@@ -945,7 +945,7 @@ const StrategicLab: React.FC<SquadLaboratoryProps> = ({
 
                             <div className="p-4 bg-slate-800/50 rounded-xl border border-slate-700">
                                 <div className="flex items-center justify-between mb-2">
-                                    <span className="text-[10px] font-bold text-slate-500 uppercase">DÃ­as Restantes</span>
+                                    <span className="text-[10px] font-bold text-slate-500 uppercase">Días Restantes</span>
                                     <Activity size={14} className="text-purple-400" />
                                 </div>
                                 <p className="text-2xl font-black text-purple-400">
@@ -955,10 +955,10 @@ const StrategicLab: React.FC<SquadLaboratoryProps> = ({
                         </div>
                     </section>
 
-                    {/* DistribuciÃ³n por RegiÃ³n */}
+                    {/* Distribución por Región */}
                     <section className="bg-slate-900/50 rounded-3xl p-6 border border-slate-800 shadow-2xl">
                         <h3 className="text-sm font-bold text-white uppercase tracking-widest mb-6 flex items-center gap-2">
-                            <PieChart size={16} className="text-blue-400" /> DistribuciÃ³n
+                            <PieChart size={16} className="text-blue-400" /> Distribución
                         </h3>
 
                         <div className="space-y-4">
@@ -1004,7 +1004,7 @@ const StrategicLab: React.FC<SquadLaboratoryProps> = ({
                             <div className="space-y-3">
                                 {efficiencyAlerts.leadsSinGestion > 0 && (
                                     <div className="p-3 bg-red-500/20 rounded-lg border border-red-500/30">
-                                        <p className="text-[10px] font-bold text-red-400 uppercase mb-1">Leads sin GestiÃ³n</p>
+                                        <p className="text-[10px] font-bold text-red-400 uppercase mb-1">Leads sin Gestión</p>
                                         <p className="text-xl font-black text-white">{efficiencyAlerts.leadsSinGestion}</p>
                                     </div>
                                 )}

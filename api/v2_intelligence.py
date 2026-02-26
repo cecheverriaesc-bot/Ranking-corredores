@@ -136,7 +136,7 @@ def fetch_squad_intelligence(coordinador_email="carlos.echeverria"):
             SELECT 
                 c.corredor_id,
                 c.nombre_corredor,
-                c.reserva as reservas_historicas,
+                COALESCE(NULLIF(c.reserva, 0), 7) as reservas_historicas,
                 COALESCE(l.contratos_mes, 0) as contratos_mes,
                 COALESCE(l.leads_tomados_mes, 0) as leads_tomados_mes,
                 COALESCE(l.prospectos_mes, 0) as prospectos_mes,

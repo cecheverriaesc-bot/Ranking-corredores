@@ -21,27 +21,107 @@ const IconMap: Record<string, React.FC<any>> = {
     Flame, Droplet, GraduationCap, Flower2, Star
 };
 
-// --- Month Selector Component ---
+// --- Month Selector Component (Timeline Style) ---
+const MONTH_NAMES: Record<string, string> = {
+    '01': 'Ene',
+    '02': 'Feb',
+    '03': 'Mar',
+    '04': 'Abr',
+    '05': 'May',
+    '06': 'Jun',
+    '07': 'Jul',
+    '08': 'Ago',
+    '09': 'Sep',
+    '10': 'Oct',
+    '11': 'Nov',
+    '12': 'Dic'
+};
+
 const MonthSelector = ({ selected, onChange }: { selected: string; onChange: (m: string) => void }) => {
+    // Get available months from MONTHLY_DATA
+    const availableMonths = Object.keys(MONTHLY_DATA).sort();
+
+    // Current year (default to 2026 or first available)
+    const currentYear = availableMonths.some(m => m.startsWith('2026')) ? '2026' : availableMonths[0]?.split('-')[0] || '2026';
+
+    // All 12 months for the year
+    const allMonths = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
+
+    // Find the last available month to determine which are "completed"
+    const lastAvailableMonth = availableMonths.length > 0 ? availableMonths[availableMonths.length - 1] : null;
+    const lastAvailableMonthNum = lastAvailableMonth ? parseInt(lastAvailableMonth.split('-')[1], 10) : 0;
+    const isTotalYear = selected === 'total-year';
+
     return (
-        <div className="flex bg-slate-800/50 p-1 rounded-lg border border-slate-700 w-fit">
+        <div className="flex items-center gap-3">
+            {/* Year Label */}
+            <div className="flex flex-col items-center">
+                <span className="text-2xl font-black text-white tracking-tight">2026</span>
+            </div>
+
+            {/* Timeline Container */}
+            <div className="flex items-center gap-1 bg-slate-800/30 px-4 py-3 rounded-2xl border border-slate-700/50">
+                {allMonths.map((monthNum, index) => {
+                    const monthKey = `${currentYear}-${monthNum}`;
+                    const monthName = MONTH_NAMES[monthNum];
+                    const hasData = MONTHLY_DATA[monthKey];
+                    const isSelected = selected === monthKey;
+                    const isTotalYear = selected === 'total-year';
+
+                    // Check if this month is "completed" (has data or is before last available)
+                    const monthIndex = parseInt(monthNum, 10);
+                    const isCompleted = hasData || (lastAvailableMonthNum > 0 && monthIndex <= lastAvailableMonthNum);
+                    const isFuture = !hasData && monthIndex > lastAvailableMonthNum;
+
+                    return (
+                        <React.Fragment key={monthKey}>
+                            {/* Month Button */}
+                            <button
+                                onClick={() => onChange(monthKey)}
+                                disabled={isFuture}
+                                className={`relative flex items-center justify-center w-9 h-9 rounded-xl text-xs font-black uppercase transition-all duration-300 ${isSelected
+                                        ? 'bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/30 scale-110'
+                                        : isCompleted
+                                            ? 'bg-slate-700 text-slate-300 hover:bg-slate-600 hover:text-white hover:scale-105'
+                                            : 'bg-slate-800/50 text-slate-600 cursor-not-allowed'
+                                    }`}
+                                title={monthName}
+                            >
+                                {monthName}
+                                {/* Data indicator dot */}
+                                {hasData && !isSelected && (
+                                    <span className="absolute -bottom-0.5 w-1 h-1 bg-emerald-400 rounded-full"></span>
+                                )}
+                                {isSelected && (
+                                    <span className="absolute -bottom-0.5 w-1 h-1 bg-white rounded-full animate-pulse"></span>
+                                )}
+                            </button>
+
+                            {/* Connector Line */}
+                            {index < allMonths.length - 1 && (
+                                <div className={`w-1 h-0.5 transition-colors duration-300 ${isCompleted && allMonths[index + 1] && (
+                                        MONTHLY_DATA[`${currentYear}-${allMonths[index + 1]}`] ||
+                                        parseInt(allMonths[index + 1], 10) <= lastAvailableMonthNum
+                                    )
+                                        ? 'bg-slate-600'
+                                        : 'bg-slate-800'
+                                    }`}></div>
+                            )}
+                        </React.Fragment>
+                    );
+                })}
+            </div>
+
+            {/* Total Año Button */}
             <button
-                onClick={() => onChange('2026-01')}
-                className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${selected === '2026-01'
-                    ? 'bg-slate-600 text-white shadow-sm'
-                    : 'text-slate-400 hover:text-white hover:bg-slate-700'
+                onClick={() => onChange('total-year')}
+                className={`flex flex-col items-center gap-1 px-4 py-2 rounded-xl border transition-all duration-300 ${isTotalYear
+                        ? 'bg-gradient-to-br from-emerald-500 to-emerald-600 border-emerald-400/50 text-white shadow-lg shadow-emerald-500/30'
+                        : 'bg-slate-800/50 border-slate-700 text-slate-400 hover:bg-slate-700 hover:text-white'
                     }`}
             >
-                ENE
-            </button>
-            <button
-                onClick={() => onChange('2026-02')}
-                className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${selected === '2026-02'
-                    ? 'bg-blue-600 text-white shadow-sm shadow-blue-900/20'
-                    : 'text-slate-400 hover:text-white hover:bg-slate-700'
-                    }`}
-            >
-                FEB
+                <Trophy size={16} className={isTotalYear ? 'fill-white' : ''} />
+                <span className="text-[9px] font-black uppercase tracking-tight">Total</span>
             </button>
         </div>
     );
@@ -74,6 +154,73 @@ const App: React.FC = () => {
 
     // --- Data Derivation ---
     const currentMonthData: MonthData = useMemo(() => {
+        if (selectedMonth === 'total-year') {
+            // Aggregate all months data
+            const months = Object.keys(MONTHLY_DATA);
+            if (months.length === 0) return MONTHLY_DATA['2026-02'] || { goal: 0, ranking: [], others: [] };
+
+            // Combine all ranking data from all months
+            const aggregatedRanking: Record<string, CorredorData> = {};
+            let totalGoal = 0;
+            let totalReservationGoal = 0;
+            let totalContractGoal = 0;
+            let total2025Ytd = 0;
+
+            months.forEach(monthKey => {
+                const monthData = MONTHLY_DATA[monthKey];
+                totalGoal += monthData.goal || 0;
+                totalReservationGoal += monthData.reservation_goal || 0;
+                totalContractGoal += monthData.contract_goal || 0;
+                total2025Ytd += monthData.total_2025_ytd || 0;
+
+                // Aggregate ranking data
+                monthData.ranking?.forEach((broker: CorredorData) => {
+                    if (!aggregatedRanking[broker.name]) {
+                        aggregatedRanking[broker.name] = { ...broker };
+                    } else {
+                        aggregatedRanking[broker.name].val += broker.val;
+                        aggregatedRanking[broker.name].fallen += broker.fallen;
+                        aggregatedRanking[broker.name].leads += broker.leads || 0;
+                        aggregatedRanking[broker.name].agendas += broker.agendas || 0;
+                        aggregatedRanking[broker.name].contracts += broker.contracts || 0;
+                        // For personalMeta, use the max or sum? Let's use sum for yearly
+                        aggregatedRanking[broker.name].personalMeta = (aggregatedRanking[broker.name].personalMeta || 0) + (broker.personalMeta || 0);
+                    }
+                });
+
+                // Aggregate others data
+                monthData.others?.forEach((broker: CorredorData) => {
+                    if (!aggregatedRanking[broker.name]) {
+                        aggregatedRanking[broker.name] = { ...broker };
+                    } else {
+                        aggregatedRanking[broker.name].val += broker.val;
+                        aggregatedRanking[broker.name].fallen += broker.fallen;
+                        aggregatedRanking[broker.name].leads += broker.leads || 0;
+                        aggregatedRanking[broker.name].agendas += broker.agendas || 0;
+                        aggregatedRanking[broker.name].contracts += broker.contracts || 0;
+                    }
+                });
+            });
+
+            const combinedRanking = Object.values(aggregatedRanking);
+
+            // Get the last month data for reference to determine others
+            const lastMonthKey = months[months.length - 1];
+            const lastMonthData = MONTHLY_DATA[lastMonthKey];
+            const othersNames = new Set(lastMonthData.others?.map(o => o.name) || []);
+
+            return {
+                goal: totalGoal,
+                reservation_goal: totalReservationGoal,
+                contract_goal: totalContractGoal,
+                total_2025_ytd: total2025Ytd,
+                ranking: combinedRanking.filter(b => !othersNames.has(b.name)),
+                others: combinedRanking.filter(b => othersNames.has(b.name)),
+                daily_stats: [],
+                daily_goals: {}
+            };
+        }
+
         return MONTHLY_DATA[selectedMonth] || MONTHLY_DATA['2026-02'];
     }, [selectedMonth]);
 
@@ -185,45 +332,49 @@ const App: React.FC = () => {
         });
 
         // Daily Progress
-        const daysInMonth = (selectedMonth === '2026-02' || selectedMonth === '2025-02') ? 28 : 31;
+        const isTotalYear = selectedMonth === 'total-year';
+        const daysInMonth = isTotalYear ? 365 : (selectedMonth === '2026-02' || selectedMonth === '2025-02') ? 28 : 31;
         const now = new Date();
-        // If selected month is past, take all days. If current, take up to today.
-        // BUT for "Acc Meta to Today", we need to know what "Today" is relative to the selected month.
-        // If viewing Jan in Feb, "Today" is end of Jan?
-        // Let's assume if month < current month, today = last day of that month.
-        // If month = current month, today = now.getDate().
-        // If month > current month (future), today = 1?
 
-        // Precision logic for calculationDay (Sync with LAST_DB_UPDATE)
-        let calculationDay = daysInMonth;
-        const [updateDateStr, updateTimeStr] = LAST_DB_UPDATE.split(' ');
-        const [d, m, y_update] = updateDateStr.split('/').map(Number);
-        const [hh] = updateTimeStr.split(':').map(Number);
-
-        const selectedDate = new Date(`${selectedMonth}-01T00:00:00`);
-        const dataMonthStart = new Date(y_update, m - 1, 1);
-
-        if (selectedDate.getTime() === dataMonthStart.getTime()) {
-            // Margin of grace: if update < 8 AM, count only up to previous day
-            calculationDay = hh < 8 ? Math.max(1, d - 1) : d;
-        } else if (selectedDate > dataMonthStart) {
-            calculationDay = 1; // Future
-        }
-
+        // For Total Year view, use sum of all monthly goals
         let accMetaToToday = 0;
         let accRealToToday = 0;
         let accMetaContractsToToday = 0;
         let accRealContractsToToday = 0;
 
-        // Sum cumulative goals up to today
-        const monthlyGoals = currentMonthData.daily_goals || {};
-        for (let i = 1; i <= calculationDay; i++) {
-            accMetaToToday += (monthlyGoals[i] || 0);
-            // Approximation for contracts meta to today
-            accMetaContractsToToday += ((currentMonthData.contract_goal || 0) / daysInMonth);
+        if (isTotalYear) {
+            // For yearly view, use total goals from all months
+            accMetaToToday = currentMonthData.goal || 0;
+            accMetaContractsToToday = currentMonthData.contract_goal || 0;
+            accRealToToday = totalActual;
+            accRealContractsToToday = totalContracts;
+        } else {
+            // Precision logic for calculationDay (Sync with LAST_DB_UPDATE)
+            let calculationDay = daysInMonth;
+            const [updateDateStr, updateTimeStr] = LAST_DB_UPDATE.split(' ');
+            const [d, m, y_update] = updateDateStr.split('/').map(Number);
+            const [hh] = updateTimeStr.split(':').map(Number);
+
+            const selectedDate = new Date(`${selectedMonth}-01T00:00:00`);
+            const dataMonthStart = new Date(y_update, m - 1, 1);
+
+            if (selectedDate.getTime() === dataMonthStart.getTime()) {
+                // Margin of grace: if update < 8 AM, count only up to previous day
+                calculationDay = hh < 8 ? Math.max(1, d - 1) : d;
+            } else if (selectedDate > dataMonthStart) {
+                calculationDay = 1; // Future
+            }
+
+            // Sum cumulative goals up to today
+            const monthlyGoals = currentMonthData.daily_goals || {};
+            for (let i = 1; i <= calculationDay; i++) {
+                accMetaToToday += (monthlyGoals[i] || 0);
+                // Approximation for contracts meta to today
+                accMetaContractsToToday += ((currentMonthData.contract_goal || 0) / daysInMonth);
+            }
+            accRealToToday = totalActual;
+            accRealContractsToToday = totalContracts;
         }
-        accRealToToday = totalActual;
-        accRealContractsToToday = totalContracts;
 
         return {
             totalActual,
@@ -247,6 +398,14 @@ const App: React.FC = () => {
     // --- UI Helpers ---
     const daysRemaining = useMemo(() => {
         const now = new Date();
+
+        // For Total Year view, calculate days remaining in the year
+        if (selectedMonth === 'total-year') {
+            const yearEnd = new Date(now.getFullYear(), 11, 31);
+            const diff = yearEnd.getTime() - now.getTime();
+            return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
+        }
+
         const selectedDate = new Date(`${selectedMonth}-01T00:00:00`);
         const currentMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
 
@@ -266,12 +425,12 @@ const App: React.FC = () => {
         let data = CURRENT_RANKING.filter(item =>
             !item.hidden && item.name.toLowerCase().includes(searchTerm.toLowerCase())
         );
-        
+
         // Filter by squad if selected
         if (selectedSquad !== 'all') {
             data = data.filter(item => item.coord === selectedSquad);
         }
-        
+
         return data;
     }, [searchTerm, CURRENT_RANKING, selectedSquad]);
 
@@ -314,7 +473,7 @@ const App: React.FC = () => {
             try {
                 const response = await fetch(`/api/v4_goals?month=${selectedMonth}-01`);
                 const data = await response.json();
-                
+
                 if (Array.isArray(data)) {
                     const goalsMap: Record<string, BrokerGoalData> = {};
                     data.forEach((goal: BrokerGoalData) => {
@@ -377,12 +536,25 @@ const App: React.FC = () => {
 
     // --- Laboratory View ---
     if (view === 'laboratory') {
-        return <SquadLaboratory onBack={() => setView('dashboard')} rankingData={ALL_BROKERS} monthlyGoal={MONTHLY_GOAL} />;
+        return <SquadLaboratory
+            onBack={() => setView('dashboard')}
+            rankingData={ALL_BROKERS}
+            monthlyGoal={MONTHLY_GOAL}
+            selectedMonth={selectedMonth}
+            onMonthChange={setSelectedMonth}
+        />;
     }
 
     // --- Strategic Lab View (Carlos Only) ---
     if (view === 'strategic_lab') {
-        return <StrategicLab onBack={() => setView('dashboard')} rankingData={ALL_BROKERS} monthlyGoal={MONTHLY_GOAL} userEmail={userEmail} />;
+        return <StrategicLab
+            onBack={() => setView('dashboard')}
+            rankingData={ALL_BROKERS}
+            monthlyGoal={MONTHLY_GOAL}
+            userEmail={userEmail}
+            selectedMonth={selectedMonth}
+            onMonthChange={setSelectedMonth}
+        />;
     }
 
     // --- Login View ---
@@ -407,12 +579,15 @@ const App: React.FC = () => {
                                 <div className="h-12 w-px bg-[#324467]"></div>
                                 <div>
                                     <h1 className="text-white font-black uppercase text-base tracking-widest leading-none">Home Operativo</h1>
-                                    <h2 className="text-blue-400 font-bold uppercase text-xs tracking-widest flex items-center gap-2 mt-1">
-                                        Ranking {selectedMonth === '2026-01' ? 'Enero' : 'Febrero'} 2026
-                                    </h2>
+                                    <div className="flex items-center gap-3 mt-2">
+                                        <h2 className="text-blue-400 font-bold uppercase text-xs tracking-widest">
+                                            Ranking {selectedMonth === 'total-year' ? 'Total Año' : selectedMonth === '2026-01' ? 'Enero' : selectedMonth === '2026-02' ? 'Febrero' : selectedMonth === '2026-03' ? 'Marzo' : selectedMonth === '2026-04' ? 'Abril' : selectedMonth === '2026-05' ? 'Mayo' : selectedMonth === '2026-06' ? 'Junio' : selectedMonth === '2026-07' ? 'Julio' : selectedMonth === '2026-08' ? 'Agosto' : selectedMonth === '2026-09' ? 'Septiembre' : selectedMonth === '2026-10' ? 'Octubre' : selectedMonth === '2026-11' ? 'Noviembre' : selectedMonth === '2026-12' ? 'Diciembre' : '2026'} 2026
+                                        </h2>
+                                        <MonthSelector selected={selectedMonth} onChange={setSelectedMonth} />
+                                    </div>
                                 </div>
                             </div>
-                            
+
                             {/* User Info + Logout */}
                             <div className="flex items-center gap-4">
                                 <div className="text-right hidden lg:block">
@@ -649,7 +824,7 @@ const App: React.FC = () => {
                                         className="w-full bg-[#101622] text-slate-200 pl-12 pr-4 py-3 rounded-xl border border-[#324467] focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all"
                                     />
                                 </div>
-                                
+
                                 {/* Squad Filter */}
                                 <select
                                     value={selectedSquad}
@@ -664,7 +839,7 @@ const App: React.FC = () => {
                                     ))}
                                 </select>
                             </div>
-                            
+
                             <div className="flex gap-4">
                                 <div className="text-right">
                                     <p className="text-[10px] text-slate-500 font-bold uppercase">Corredores Activos</p>
@@ -849,7 +1024,7 @@ const App: React.FC = () => {
                                                     {(() => {
                                                         const existingGoal = brokerGoals[item.name];
                                                         const hasGoal = existingGoal && existingGoal.personal_goal > 0;
-                                                        
+
                                                         return (
                                                             <>
                                                                 <button

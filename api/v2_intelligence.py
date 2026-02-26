@@ -391,12 +391,12 @@ class handler(BaseHTTPRequestHandler):
         Endpoint: GET /api/v2_intelligence
         """
         try:
-            data = fetch_squad_intelligence("carlos.echeverria")
+            # data = fetch_squad_intelligence("carlos.echeverria")
+            data = {"status": "debug", "message": "Minimal v2_intelligence check works!"}
             
             self.send_response(200)
             self.send_header('Content-type', 'application/json')
             self.send_header('Access-Control-Allow-Origin', '*')
-            self.send_header('Cache-Control', 'no-cache, no-store, must-revalidate')
             self.end_headers()
             
             self.wfile.write(json.dumps(data, default=str).encode())

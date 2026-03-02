@@ -7,11 +7,7 @@ import {
 import { TEAMS, MONTHLY_DATA } from '../constants';
 import { CorredorData, BrokerGoalData } from '../types';
 
-interface SquadLaboratoryProps {
-    onBack: () => void;
-    rankingData: CorredorData[];
-    monthlyGoal: number;
-}
+
 
 // --- Month Selector Component (Timeline Style) ---
 const MONTH_NAMES: Record<string, string> = {
@@ -110,6 +106,7 @@ interface SquadLaboratoryProps {
     monthlyGoal: number;
     selectedMonth?: string;
     onMonthChange?: (month: string) => void;
+    onSetGoal?: (broker: any) => void; // Added onSetGoal to props
 }
 
 const SquadLaboratory: React.FC<SquadLaboratoryProps> = ({
@@ -117,7 +114,8 @@ const SquadLaboratory: React.FC<SquadLaboratoryProps> = ({
     rankingData,
     monthlyGoal,
     selectedMonth: parentSelectedMonth,
-    onMonthChange
+    onMonthChange,
+    onSetGoal // Destructured onSetGoal
 }) => {
     // Month Selection State - use parent value if provided, otherwise local
     const [localSelectedMonth, setLocalSelectedMonth] = useState<string>('2026-02');
@@ -141,7 +139,12 @@ const SquadLaboratory: React.FC<SquadLaboratoryProps> = ({
                 const queryParams = new URLSearchParams();
                 const capacityParams = new URLSearchParams();
 
-                if (selectedMonth && selectedMonth !== 'total-year') {
+                if (selectedMonth === 'total-year') {
+                    queryParams.append('year', '2026');
+                    queryParams.append('month', 'all');
+                    capacityParams.append('year', '2026');
+                    capacityParams.append('month', 'all');
+                } else if (selectedMonth) {
                     const [year, month] = selectedMonth.split('-');
                     if (year && month) {
                         queryParams.append('year', year);
@@ -425,23 +428,23 @@ const SquadLaboratory: React.FC<SquadLaboratoryProps> = ({
                                             <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.4)]"></div>
                                             <span className="text-emerald-400 font-black uppercase text-[10px] tracking-widest">Engagement</span>
                                         </div>
-                                        <span className="text-xl font-black text-white">35%</span>
+                                        <span className="text-xl font-black text-white">30%</span>
                                     </div>
                                     <div className="w-full h-1.5 bg-slate-800 rounded-full mb-6 overflow-hidden">
-                                        <div className="h-full bg-gradient-to-r from-emerald-600 to-emerald-400" style={{ width: '35%' }}></div>
+                                        <div className="h-full bg-gradient-to-r from-emerald-600 to-emerald-400" style={{ width: '30%' }}></div>
                                     </div>
                                     <div className="space-y-3">
                                         <div className="flex items-center justify-between text-[10px] text-slate-400 font-bold uppercase tracking-wider">
-                                            <span>Visitas</span>
-                                            <span className="text-emerald-500/70">10 Pts</span>
+                                            <span>Visitas / No Cancela</span>
+                                            <span className="text-emerald-500/70">12 Pts</span>
                                         </div>
                                         <div className="flex items-center justify-between text-[10px] text-slate-400 font-bold uppercase tracking-wider">
-                                            <span>No Cancela</span>
-                                            <span className="text-emerald-500/70">10 Pts</span>
+                                            <span>Gestión Leads</span>
+                                            <span className="text-emerald-500/70">12 Pts</span>
                                         </div>
                                         <div className="flex items-center justify-between text-[10px] text-slate-400 font-bold uppercase tracking-wider">
-                                            <span>Respuesta</span>
-                                            <span className="text-emerald-500/70">15 Pts</span>
+                                            <span>Respuesta 24h</span>
+                                            <span className="text-emerald-500/70">6 Pts</span>
                                         </div>
                                     </div>
                                 </div>
@@ -453,23 +456,23 @@ const SquadLaboratory: React.FC<SquadLaboratoryProps> = ({
                                             <div className="w-2.5 h-2.5 rounded-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.4)]"></div>
                                             <span className="text-blue-400 font-black uppercase text-[10px] tracking-widest">Rendimiento</span>
                                         </div>
-                                        <span className="text-xl font-black text-white">40%</span>
+                                        <span className="text-xl font-black text-white">55%</span>
                                     </div>
                                     <div className="w-full h-1.5 bg-slate-800 rounded-full mb-6 overflow-hidden">
-                                        <div className="h-full bg-gradient-to-r from-blue-600 to-blue-400" style={{ width: '40%' }}></div>
+                                        <div className="h-full bg-gradient-to-r from-blue-600 to-blue-400" style={{ width: '55%' }}></div>
                                     </div>
                                     <div className="space-y-3">
                                         <div className="flex items-center justify-between text-[10px] text-slate-400 font-bold uppercase tracking-wider">
-                                            <span>Conv. Reserva</span>
-                                            <span className="text-blue-500/70">15 Pts</span>
+                                            <span>Conv. Lead/Contrato</span>
+                                            <span className="text-blue-500/70">27.5 Pts</span>
                                         </div>
                                         <div className="flex items-center justify-between text-[10px] text-slate-400 font-bold uppercase tracking-wider">
-                                            <span>Reservas Abs</span>
-                                            <span className="text-blue-500/70">15 Pts</span>
+                                            <span>Contratos Absolutos</span>
+                                            <span className="text-blue-500/70">13.75 Pts</span>
                                         </div>
                                         <div className="flex items-center justify-between text-[10px] text-slate-400 font-bold uppercase tracking-wider">
-                                            <span>Conv. Contrato</span>
-                                            <span className="text-blue-500/70">10 Pts</span>
+                                            <span>Eficiencia Prospección</span>
+                                            <span className="text-blue-500/70">13.75 Pts</span>
                                         </div>
                                     </div>
                                 </div>
@@ -481,23 +484,23 @@ const SquadLaboratory: React.FC<SquadLaboratoryProps> = ({
                                             <div className="w-2.5 h-2.5 rounded-full bg-purple-500 shadow-[0_0_10px_rgba(168,85,247,0.4)]"></div>
                                             <span className="text-purple-400 font-black uppercase text-[10px] tracking-widest">Eficiencia</span>
                                         </div>
-                                        <span className="text-xl font-black text-white">25%</span>
+                                        <span className="text-xl font-black text-white">15%</span>
                                     </div>
                                     <div className="w-full h-1.5 bg-slate-800 rounded-full mb-6 overflow-hidden">
-                                        <div className="h-full bg-gradient-to-r from-purple-600 to-purple-400" style={{ width: '25%' }}></div>
+                                        <div className="h-full bg-gradient-to-r from-purple-600 to-purple-400" style={{ width: '15%' }}></div>
                                     </div>
                                     <div className="space-y-3">
                                         <div className="flex items-center justify-between text-[10px] text-slate-400 font-bold uppercase tracking-wider">
-                                            <span>Tickets Res.</span>
-                                            <span className="text-purple-500/70">10 Pts</span>
+                                            <span>Velocidad de Cierre</span>
+                                            <span className="text-purple-500/70">5 Pts</span>
                                         </div>
                                         <div className="flex items-center justify-between text-[10px] text-slate-400 font-bold uppercase tracking-wider">
-                                            <span>Calidad Ges.</span>
-                                            <span className="text-purple-500/70">15 Pts</span>
+                                            <span>Resolución Tickets</span>
+                                            <span className="text-purple-500/70">5 Pts</span>
                                         </div>
-                                        <div className="flex items-center justify-between text-[10px] text-slate-400 font-bold uppercase tracking-wider opacity-30">
-                                            <span>Próximamente</span>
-                                            <span>--</span>
+                                        <div className="flex items-center justify-between text-[10px] text-slate-400 font-bold uppercase tracking-wider">
+                                            <span>Calidad de Datos</span>
+                                            <span className="text-purple-500/70">5 Pts</span>
                                         </div>
                                     </div>
                                 </div>
@@ -572,10 +575,31 @@ const SquadLaboratory: React.FC<SquadLaboratoryProps> = ({
                                                     ) : '-'}
                                                 </td>
 
+                                                {/* Meta Reservas Column */}
                                                 <td className="py-4 text-center">
-                                                    <span className={`px-3 py-1 rounded-full font-bold text-xs ${broker.leadsNeeded > 20 ? 'bg-red-500/20 text-red-400' : 'bg-blue-500/20 text-blue-400'}`}>
-                                                        +{broker.leadsNeeded}
-                                                    </span>
+                                                    <div className="flex flex-col items-center">
+                                                        <span className="text-[9px] text-slate-500 font-bold uppercase mb-0.5">Meta Reservas</span>
+                                                        {broker.meta_personal ? ( // Changed personalMeta to meta_personal
+                                                            <span className="text-sm font-black text-white">{broker.meta_personal}</span> // Changed personalMeta to meta_personal
+                                                        ) : (
+                                                            <button
+                                                                onClick={() => onSetGoal && onSetGoal(broker)} // Updated onClick to use onSetGoal
+                                                                className="text-[9px] bg-slate-800 hover:bg-slate-700 text-slate-400 px-2 py-0.5 rounded-lg border border-slate-700 transition-colors uppercase font-black"
+                                                            >
+                                                                Definir
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                </td>
+
+                                                <td className="py-4 text-center">
+                                                    {isClosedMonth ? (
+                                                        <span className="text-[10px] text-slate-600 font-bold uppercase">Consolidado</span>
+                                                    ) : (
+                                                        <span className={`px-3 py-1 rounded-full font-bold text-xs ${broker.leadsNeeded > 20 ? 'bg-red-500/20 text-red-400' : 'bg-blue-500/20 text-blue-400'}`}>
+                                                            +{broker.leadsNeeded}
+                                                        </span>
+                                                    )}
                                                 </td>
 
                                                 {/* Meta Personal Column */}

@@ -54,15 +54,20 @@ def fetch_broker_capacity(coordinador_email='carlos.echeverria@assetplan.cl', ye
     conn = get_assetplan_rentas_connection()
     cursor = conn.cursor(dictionary=True)
     
-    if year and month:
-        time_filter_mes = f"YEAR(comments.created_at) = {int(year)} AND MONTH(comments.created_at) = {int(month)}"
-        # Para toma diaria en meses pasados, no tiene sentido el intervalo de 1 día actual
-        # pero si es el mes actual, permitimos ver el día de hoy
-        today = datetime.now()
-        if int(year) == today.year and int(month) == today.month:
-            time_filter_dia = "comments.created_at >= DATE_SUB(NOW(), INTERVAL 1 DAY)"
+    if year:
+        if month == 'all':
+            time_filter_mes = f"YEAR(comments.created_at) = {int(year)}"
+            time_filter_dia = "1=0" # No hay toma diaria acumulada para el año total
+        elif month:
+            time_filter_mes = f"YEAR(comments.created_at) = {int(year)} AND MONTH(comments.created_at) = {int(month)}"
+            today = datetime.now()
+            if int(year) == today.year and int(month) == today.month:
+                time_filter_dia = "comments.created_at >= DATE_SUB(NOW(), INTERVAL 1 DAY)"
+            else:
+                time_filter_dia = "1=0"
         else:
-            time_filter_dia = "1=0" # Filtro vacío para meses pasados
+            time_filter_mes = "comments.created_at >= DATE_SUB(NOW(), INTERVAL 1 MONTH)"
+            time_filter_dia = "comments.created_at >= DATE_SUB(NOW(), INTERVAL 1 DAY)"
     else:
         # Defaults si no hay filtros (tiempo real)
         time_filter_mes = "comments.created_at >= DATE_SUB(NOW(), INTERVAL 1 MONTH)"

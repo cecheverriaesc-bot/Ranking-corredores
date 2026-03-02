@@ -1,132 +1,25 @@
 
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, lazy, Suspense } from 'react';
 import {
-    Search, TrendingUp, Users, Microscope, Calendar, Medal, Crown, Droplet,
-    GraduationCap, Flower2, Star, Target, Clock, RefreshCw, Brain, Shield,
-    UserMinus, BatteryMedium, Zap, Flame, LayoutDashboard, FlaskConical,
-    ChevronDown, ChevronUp, AlertCircle, ArrowRight, Filter, Trophy,
-    ChevronRight, ArrowUpRight, ArrowDownRight, CheckCircle2, Edit3, MessageSquare,
-    Lock, LogOut
+    Search, TrendingUp, Users, Calendar, Medal, Crown, Droplet,
+    GraduationCap, Flower2, Star, Target, Clock, Brain, Zap, Flame,
+    Trophy, CheckCircle2, Edit3, LogOut, RefreshCw, MessageSquare, Shield
 } from 'lucide-react';
 import { ComposedChart, AreaChart, Area, Line, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
-import { MONTHLY_DATA, TEAMS, HISTORY_2025, NAMES_WITH_AGENDA, LAST_DB_UPDATE } from './constants';
+import { MONTHLY_DATA, TEAMS, HISTORY_2025, NAMES_WITH_AGENDA, LAST_DB_UPDATE } from './src/data';
 
 import { SquadStats, DashboardStats, CorredorData, DailyStat, MonthData, BrokerGoalData } from './types';
-import SquadLaboratory from './components/SquadLaboratory';
-import StrategicLab from './components/StrategicLab';
-import GoalSettingModal from './components/GoalSettingModal';
+import { MonthSelector, StatsCards, SquadFilter } from './src/components/dashboard';
+import { useRankingData } from './src/hooks/useRankingData';
 import Login from './components/Login';
-import BrokerProfile from './components/BrokerProfile';
-import { useAppStore, useAuth, useSelectedMonth, useView, useFilteredBrokers, useTopBrokers } from './stores/useAppStore';
+
+const SquadLaboratory = lazy(() => import('./components/SquadLaboratory'));
+const StrategicLab = lazy(() => import('./components/StrategicLab'));
+const GoalSettingModal = lazy(() => import('./components/GoalSettingModal'));
+const BrokerProfile = lazy(() => import('./components/BrokerProfile'));
 
 const IconMap: Record<string, React.FC<any>> = {
     Flame, Droplet, GraduationCap, Flower2, Star
-};
-
-// --- Month Selector Component (Timeline Style) ---
-const MONTH_NAMES: Record<string, string> = {
-    '01': 'Ene',
-    '02': 'Feb',
-    '03': 'Mar',
-    '04': 'Abr',
-    '05': 'May',
-    '06': 'Jun',
-    '07': 'Jul',
-    '08': 'Ago',
-    '09': 'Sep',
-    '10': 'Oct',
-    '11': 'Nov',
-    '12': 'Dic'
-};
-
-const MonthSelector = ({ selected, onChange }: { selected: string; onChange: (m: string) => void }) => {
-    // Get available months from MONTHLY_DATA
-    const availableMonths = Object.keys(MONTHLY_DATA).sort();
-
-    // Current year (default to 2026 or first available)
-    const currentYear = availableMonths.some(m => m.startsWith('2026')) ? '2026' : availableMonths[0]?.split('-')[0] || '2026';
-
-    // All 12 months for the year
-    const allMonths = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
-
-    // Find the last available month to determine which are "completed"
-    const lastAvailableMonth = availableMonths.length > 0 ? availableMonths[availableMonths.length - 1] : null;
-    const lastAvailableMonthNum = lastAvailableMonth ? parseInt(lastAvailableMonth.split('-')[1], 10) : 0;
-    const isTotalYear = selected === 'total-year';
-
-    return (
-        <div className="flex items-center gap-3">
-            {/* Year Label */}
-            <div className="flex flex-col items-center">
-                <span className="text-2xl font-black text-white tracking-tight">2026</span>
-            </div>
-
-            {/* Timeline Container */}
-            <div className="flex items-center gap-1 bg-slate-800/30 px-4 py-3 rounded-2xl border border-slate-700/50">
-                {allMonths.map((monthNum, index) => {
-                    const monthKey = `${currentYear}-${monthNum}`;
-                    const monthName = MONTH_NAMES[monthNum];
-                    const hasData = MONTHLY_DATA[monthKey];
-                    const isSelected = selected === monthKey;
-                    const isTotalYear = selected === 'total-year';
-
-                    // Check if this month is "completed" (has data or is before last available)
-                    const monthIndex = parseInt(monthNum, 10);
-                    const isCompleted = hasData || (lastAvailableMonthNum > 0 && monthIndex <= lastAvailableMonthNum);
-                    const isFuture = !hasData && monthIndex > lastAvailableMonthNum;
-
-                    return (
-                        <React.Fragment key={monthKey}>
-                            {/* Month Button */}
-                            <button
-                                onClick={() => onChange(monthKey)}
-                                disabled={isFuture}
-                                className={`relative flex items-center justify-center w-9 h-9 rounded-xl text-xs font-black uppercase transition-all duration-300 ${isSelected
-                                    ? 'bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/30 scale-110'
-                                    : isCompleted
-                                        ? 'bg-slate-700 text-slate-300 hover:bg-slate-600 hover:text-white hover:scale-105'
-                                        : 'bg-slate-800/50 text-slate-600 cursor-not-allowed'
-                                    }`}
-                                title={monthName}
-                            >
-                                {monthName}
-                                {/* Data indicator dot */}
-                                {hasData && !isSelected && (
-                                    <span className="absolute -bottom-0.5 w-1 h-1 bg-emerald-400 rounded-full"></span>
-                                )}
-                                {isSelected && (
-                                    <span className="absolute -bottom-0.5 w-1 h-1 bg-white rounded-full animate-pulse"></span>
-                                )}
-                            </button>
-
-                            {/* Connector Line */}
-                            {index < allMonths.length - 1 && (
-                                <div className={`w-1 h-0.5 transition-colors duration-300 ${isCompleted && allMonths[index + 1] && (
-                                    MONTHLY_DATA[`${currentYear}-${allMonths[index + 1]}`] ||
-                                    parseInt(allMonths[index + 1], 10) <= lastAvailableMonthNum
-                                )
-                                    ? 'bg-slate-600'
-                                    : 'bg-slate-800'
-                                    }`}></div>
-                            )}
-                        </React.Fragment>
-                    );
-                })}
-            </div>
-
-            {/* Total Año Button */}
-            <button
-                onClick={() => onChange('total-year')}
-                className={`flex flex-col items-center gap-1 px-4 py-2 rounded-xl border transition-all duration-300 ${isTotalYear
-                    ? 'bg-gradient-to-br from-emerald-500 to-emerald-600 border-emerald-400/50 text-white shadow-lg shadow-emerald-500/30'
-                    : 'bg-slate-800/50 border-slate-700 text-slate-400 hover:bg-slate-700 hover:text-white'
-                    }`}
-            >
-                <Trophy size={16} className={isTotalYear ? 'fill-white' : ''} />
-                <span className="text-[9px] font-black uppercase tracking-tight">Total</span>
-            </button>
-        </div>
-    );
 };
 
 const App: React.FC = () => {
@@ -137,7 +30,7 @@ const App: React.FC = () => {
     // --- State Management ---
     const [view, setView] = useState<'dashboard' | 'laboratory' | 'strategic_lab' | 'broker_profile'>('dashboard');
     const [selectedBrokerProfile, setSelectedBrokerProfile] = useState<any | null>(null);
-    const [selectedMonth, setSelectedMonth] = useState<string>('2026-02'); // Default to current month
+    const [selectedMonth, setSelectedMonth] = useState<string>('2026-03'); // Default to current month
     const [searchTerm, setSearchTerm] = useState('');
     const [isRefreshing, setIsRefreshing] = useState(false);
     const [selectedSquad, setSelectedSquad] = useState<string>('all'); // 'all' o email del coordinador
@@ -470,43 +363,45 @@ const App: React.FC = () => {
     // GOAL MANAGEMENT FUNCTIONS
     // ============================================
 
-    // Load broker goals when month changes
     React.useEffect(() => {
         const loadBrokerGoals = async () => {
             try {
                 const response = await fetch(`/api/v4_goals?month=${selectedMonth}-01`);
-                
-                // Validar respuesta HTTP
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                
+
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
                 const data = await response.json();
 
-                // Validar formato de datos
                 if (!Array.isArray(data)) {
-                    console.warn('Unexpected data format from v4_goals API:', data);
                     setBrokerGoals({});
                     return;
                 }
 
                 const goalsMap: Record<string, BrokerGoalData> = {};
                 data.forEach((goal: BrokerGoalData) => {
-                    // Validar campos requeridos
                     if (goal && goal.broker_name) {
                         goalsMap[goal.broker_name] = goal;
                     }
                 });
                 setBrokerGoals(goalsMap);
+
+                // Auto-prompt goal modal if entering laboratory and current month meta is missing
+                // Only for brokers (non-Carlos)
+                if (view === 'laboratory' && selectedMonth === '2026-03' && userEmail !== 'carlos.echeverria@assetplan.cl') {
+                    const myBroker = ALL_BROKERS.find(b => b.email === userEmail);
+                    if (myBroker && !goalsMap[myBroker.name]) {
+                        setSelectedBrokerForGoal(myBroker);
+                        setShowGoalModal(true);
+                    }
+                }
             } catch (error) {
                 console.error('Error loading broker goals:', error);
-                // No fallar silenciosamente - mantener estado anterior o mostrar advertencia
-                setBrokerGoals(prev => prev); // Mantener estado anterior
+                setBrokerGoals(prev => prev);
             }
         };
 
         loadBrokerGoals();
-    }, [selectedMonth]);
+    }, [selectedMonth, view, userEmail, ALL_BROKERS]);
 
     const handleOpenGoalModal = (broker: CorredorData) => {
         // Verificar si ya tiene meta configurada
@@ -583,41 +478,54 @@ const App: React.FC = () => {
 
     // --- Laboratory View ---
     if (view === 'laboratory') {
-        return <SquadLaboratory
-            onBack={() => setView('dashboard')}
-            rankingData={ALL_BROKERS}
-            monthlyGoal={MONTHLY_GOAL}
-            selectedMonth={selectedMonth}
-            onMonthChange={setSelectedMonth}
-        />;
+        return (
+            <Suspense fallback={<div className="min-h-screen bg-[#101622] flex items-center justify-center"><RefreshCw className="animate-spin text-blue-500" size={32} /></div>}>
+                <SquadLaboratory
+                    onBack={() => setView('dashboard')}
+                    rankingData={ALL_BROKERS}
+                    monthlyGoal={MONTHLY_GOAL}
+                    selectedMonth={selectedMonth}
+                    onMonthChange={setSelectedMonth}
+                    onSetGoal={handleOpenGoalModal}
+                />
+            </Suspense>
+        );
     }
 
     // --- Broker Profile View ---
     if (view === 'broker_profile' && selectedBrokerProfile) {
-        return <BrokerProfile
-            broker={selectedBrokerProfile}
-            onBack={() => {
-                setView('strategic_lab');
-                setSelectedBrokerProfile(null);
-            }}
-            selectedMonth={selectedMonth}
-        />;
+        return (
+            <Suspense fallback={<div className="min-h-screen bg-[#101622] flex items-center justify-center"><RefreshCw className="animate-spin text-blue-500" size={32} /></div>}>
+                <BrokerProfile
+                    broker={selectedBrokerProfile}
+                    onBack={() => {
+                        setView('strategic_lab');
+                        setSelectedBrokerProfile(null);
+                    }}
+                    selectedMonth={selectedMonth}
+                />
+            </Suspense>
+        );
     }
 
     // --- Strategic Lab View (Carlos Only) ---
     if (view === 'strategic_lab') {
-        return <StrategicLab
-            onBack={() => setView('dashboard')}
-            rankingData={ALL_BROKERS}
-            monthlyGoal={MONTHLY_GOAL}
-            userEmail={userEmail}
-            selectedMonth={selectedMonth}
-            onMonthChange={setSelectedMonth}
-            onBrokerClick={(broker: any) => {
-                setSelectedBrokerProfile(broker);
-                setView('broker_profile');
-            }}
-        />;
+        return (
+            <Suspense fallback={<div className="min-h-screen bg-[#101622] flex items-center justify-center"><RefreshCw className="animate-spin text-blue-500" size={32} /></div>}>
+                <StrategicLab
+                    onBack={() => setView('dashboard')}
+                    rankingData={ALL_BROKERS}
+                    monthlyGoal={MONTHLY_GOAL}
+                    userEmail={userEmail}
+                    selectedMonth={selectedMonth}
+                    onMonthChange={setSelectedMonth}
+                    onBrokerClick={(broker: any) => {
+                        setSelectedBrokerProfile(broker);
+                        setView('broker_profile');
+                    }}
+                />
+            </Suspense>
+        );
     }
 
     // --- Login View ---
@@ -680,7 +588,7 @@ const App: React.FC = () => {
                                         <div className="text-2xl font-bold text-slate-500 flex items-baseline gap-1.5">
                                             <span>/</span>
                                             <span>{(currentMonthData.reservation_goal || 2174).toLocaleString('es-CL')}</span>
-                                            <span className="text-xs uppercase opacity-60">Meta</span>
+                                            <span className="text-xs uppercase opacity-60 ml-1">Meta Reservas</span>
                                         </div>
                                         <div className={`text-base font-bold flex items-center gap-1 mt-1 ${trendDiff >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
                                             {trendDiff > 0 ? '+' : ''}{trendDiff} vs 2025
@@ -718,7 +626,7 @@ const App: React.FC = () => {
                                         <div className="text-2xl font-bold text-slate-500 flex items-baseline gap-1.5">
                                             <span>/</span>
                                             <span>{contractGoal.toLocaleString('es-CL')}</span>
-                                            <span className="text-xs uppercase opacity-60">Meta</span>
+                                            <span className="text-xs uppercase opacity-60 ml-1">Meta Contratos</span>
                                         </div>
                                         <div className="text-[10px] font-bold text-slate-400 mt-2 bg-slate-800/80 px-2 py-1 rounded border border-slate-700/50 uppercase tracking-widest">
                                             Real • Proy: {projectedContracts.toLocaleString('es-CL')}
@@ -783,7 +691,7 @@ const App: React.FC = () => {
                                 className="w-full bg-[#101622] text-white text-center text-2xl font-mono tracking-[0.5em] py-4 rounded-xl border border-[#324467] focus:border-indigo-500 outline-none mb-6"
                                 placeholder="••••"
                                 value={secretCodeInput}
-                                onChange={(e) => {
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                                     const val = e.target.value;
                                     setSecretCodeInput(val);
                                     if (val === '2183') {
@@ -1123,21 +1031,23 @@ const App: React.FC = () => {
 
                         {/* Legend / Motivational Footer */}
                         <div className="p-4 bg-[#162032] border-t border-[#324467] flex flex-wrap justify-center gap-6">
-                            <div className="flex items-center gap-2">
-                                <span className="bg-emerald-500/10 text-emerald-400 text-[10px] font-bold px-2 py-0.5 rounded border border-emerald-500/20">ELITE</span>
-                                <span className="text-[10px] text-slate-500 font-bold uppercase tracking-tight">≥ 100% Meta</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <span className="bg-blue-500/10 text-blue-400 text-[10px] font-bold px-2 py-0.5 rounded border border-blue-500/20">SÓLIDO</span>
-                                <span className="text-[10px] text-slate-500 font-bold uppercase tracking-tight">≥ 70% Meta</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <span className="bg-orange-500/10 text-orange-400 text-[10px] font-bold px-2 py-0.5 rounded border border-orange-500/20">E-PROCESO</span>
-                                <span className="text-[10px] text-slate-500 font-bold uppercase tracking-tight">≥ 40% Meta</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <span className="bg-red-500/10 text-red-400 text-[10px] font-bold px-2 py-0.5 rounded border border-red-500/20">ATENCIÓN</span>
-                                <span className="text-[10px] text-slate-500 font-bold uppercase tracking-tight">&lt; 40% Meta</span>
+                            <div className="flex items-center gap-6">
+                                <div className="flex items-center gap-2">
+                                    <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
+                                    <span className="text-[10px] text-slate-500 font-bold uppercase tracking-tight">≥ 100% Meta Reservas</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+                                    <span className="text-[10px] text-slate-500 font-bold uppercase tracking-tight">≥ 70% Meta Reservas</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <div className="w-2 h-2 rounded-full bg-yellow-500"></div>
+                                    <span className="text-[10px] text-slate-500 font-bold uppercase tracking-tight">≥ 40% Meta Reservas</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <div className="w-2 h-2 rounded-full bg-orange-500"></div>
+                                    <span className="text-[10px] text-slate-500 font-bold uppercase tracking-tight">&lt; 40% Meta Reservas</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1375,21 +1285,21 @@ const App: React.FC = () => {
             {/* Botón de acceso al Laboratorio Clásico eliminado para otros usuarios */}
 
             {/* Goal Setting Modal */}
-            {selectedBrokerForGoal && (
-                <GoalSettingModal
-                    isOpen={showGoalModal}
-                    onClose={() => {
-                        setShowGoalModal(false);
-                        setSelectedBrokerForGoal(null);
-                    }}
-                    brokerName={selectedBrokerForGoal.name}
-                    brokerEmail={selectedBrokerForGoal.coord}
-                    currentGoal={brokerGoals[selectedBrokerForGoal.name]?.personal_goal}
-                    currentReservas={selectedBrokerForGoal.val}
-                    selectedMonth={selectedMonth}
-                    onSave={handleSaveGoal}
-                    isEditing={!!brokerGoals[selectedBrokerForGoal.name]?.personal_goal}
-                />
+            {showGoalModal && selectedBrokerForGoal && (
+                <Suspense fallback={null}>
+                    <GoalSettingModal
+                        isOpen={showGoalModal}
+                        onClose={() => setShowGoalModal(false)}
+                        brokerName={selectedBrokerForGoal.name}
+                        brokerEmail={selectedBrokerForGoal.email}
+                        currentGoal={brokerGoals[selectedBrokerForGoal.name]?.personal_goal}
+                        currentReservas={selectedBrokerForGoal.val}
+                        selectedMonth={selectedMonth}
+                        onSave={handleSaveGoal}
+                        isEditing={!!brokerGoals[selectedBrokerForGoal.name]}
+                        isMandatory={view === 'laboratory' && selectedMonth === '2026-03' && !brokerGoals[selectedBrokerForGoal.name]}
+                    />
+                </Suspense>
             )}
         </div >
     );

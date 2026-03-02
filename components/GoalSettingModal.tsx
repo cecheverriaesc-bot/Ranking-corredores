@@ -15,6 +15,7 @@ interface GoalSettingModalProps {
     selectedMonth: string;  // Format: YYYY-MM
     onSave: (goalData: BrokerGoalData) => void;
     isEditing?: boolean;
+    isMandatory?: boolean;
 }
 
 const GoalSettingModal: React.FC<GoalSettingModalProps> = ({
@@ -26,7 +27,8 @@ const GoalSettingModal: React.FC<GoalSettingModalProps> = ({
     currentReservas,
     selectedMonth,
     onSave,
-    isEditing = false
+    isEditing = false,
+    isMandatory = false
 }) => {
     const [personalGoal, setPersonalGoal] = useState<number>(currentGoal || 0);
     const [commitmentComment, setCommitmentComment] = useState<string>('');
@@ -35,6 +37,19 @@ const GoalSettingModal: React.FC<GoalSettingModalProps> = ({
     const [isLoadingSuggestion, setIsLoadingSuggestion] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
     const [showConfetti, setShowConfetti] = useState(false);
+
+    // Identificar si el mes ya concluyó para bloquear edición
+    const isClosedMonth = React.useMemo(() => {
+        if (!selectedMonth) return false;
+        const [year, month] = selectedMonth.split('-').map(Number);
+        const today = new Date();
+        const currentYear = today.getFullYear();
+        const currentMonth = today.getMonth() + 1;
+
+        if (year < currentYear) return true;
+        if (year === currentYear && month < currentMonth) return true;
+        return false;
+    }, [selectedMonth]);
 
     // Month names
     const monthNames: Record<string, string> = {
@@ -59,7 +74,7 @@ const GoalSettingModal: React.FC<GoalSettingModalProps> = ({
             setCommitmentComment('');
             setBrokerEmail(initialBrokerEmail || '');
             setSuggestedGoal(null);
-            
+
             // Si ya tiene meta configurada, mostrar mensaje de solo lectura
             if (currentGoal && currentGoal > 0 && isEditing) {
                 // En modo edición, solo mostrar info
@@ -116,7 +131,7 @@ const GoalSettingModal: React.FC<GoalSettingModalProps> = ({
             });
 
             const result = await response.json();
-            
+
             if (result.success) {
                 setShowConfetti(true);
                 setTimeout(() => {
@@ -143,8 +158,8 @@ const GoalSettingModal: React.FC<GoalSettingModalProps> = ({
 
     if (!isOpen) return null;
 
-    const progressPercentage = currentReservas > 0 && personalGoal > 0 
-        ? Math.min((currentReservas / personalGoal) * 100, 150) 
+    const progressPercentage = currentReservas > 0 && personalGoal > 0
+        ? Math.min((currentReservas / personalGoal) * 100, 150)
         : 0;
 
     const isGoalAchieved = currentReservas >= personalGoal && personalGoal > 0;
@@ -181,19 +196,21 @@ const GoalSettingModal: React.FC<GoalSettingModalProps> = ({
                         </div>
                         <div>
                             <h2 className="text-xl font-black text-white uppercase tracking-widest">
-                                Configurar Meta Personal
+                                {isClosedMonth ? 'Resultado de Gestión' : 'Compromiso de Reservas'}
                             </h2>
                             <p className="text-xs text-slate-400 font-bold uppercase tracking-wide mt-0.5">
-                                {monthNames[selectedMonth] || selectedMonth}
+                                {monthNames[selectedMonth] || selectedMonth} {isClosedMonth && '(MES CONCLUIDO)'}
                             </p>
                         </div>
                     </div>
-                    <button
-                        onClick={onClose}
-                        className="p-2 hover:bg-slate-800 rounded-xl transition-colors text-slate-400 hover:text-white"
-                    >
-                        <X size={20} />
-                    </button>
+                    {!isMandatory && (
+                        <button
+                            onClick={onClose}
+                            className="p-2 hover:bg-slate-800 rounded-xl transition-colors text-slate-400 hover:text-white"
+                        >
+                            <X size={20} />
+                        </button>
+                    )}
                 </div>
 
                 {/* Content */}
@@ -231,13 +248,12 @@ const GoalSettingModal: React.FC<GoalSettingModalProps> = ({
                                         Meta Sugerida por IA
                                     </h3>
                                 </div>
-                                <span className={`px-2 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wide ${
-                                    suggestedGoal.confidence === 'high' 
+                                <span className={`px-2 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wide ${suggestedGoal.confidence === 'high'
                                         ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
                                         : suggestedGoal.confidence === 'medium'
-                                        ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
-                                        : 'bg-slate-500/20 text-slate-400 border border-slate-500/30'
-                                }`}>
+                                            ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
+                                            : 'bg-slate-500/20 text-slate-400 border border-slate-500/30'
+                                    }`}>
                                     Confianza: {suggestedGoal.confidence}
                                 </span>
                             </div>
@@ -275,10 +291,11 @@ const GoalSettingModal: React.FC<GoalSettingModalProps> = ({
 
                             <button
                                 onClick={useSuggestedGoal}
-                                className="w-full mt-4 py-3 bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/50 rounded-xl text-amber-400 font-bold text-sm uppercase tracking-widest transition-all flex items-center justify-center gap-2"
+                                disabled={isClosedMonth}
+                                className="w-full mt-4 py-3 bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/50 rounded-xl text-amber-400 font-bold text-sm uppercase tracking-widest transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 <ArrowUpRight size={16} />
-                                Usar Meta Sugerida ({suggestedGoal.suggested_goal} reservas)
+                                {isClosedMonth ? 'Sugerencia deshabilitada (Mes concluido)' : `Usar Meta Sugerida (${suggestedGoal.suggested_goal} reservas)`}
                             </button>
                         </div>
                     ) : null}
@@ -293,10 +310,11 @@ const GoalSettingModal: React.FC<GoalSettingModalProps> = ({
                                 type="number"
                                 value={personalGoal || ''}
                                 onChange={(e) => setPersonalGoal(parseInt(e.target.value) || 0)}
-                                placeholder="Ej: 45"
-                                className="w-full bg-[#101622] text-white text-3xl font-black px-6 py-4 rounded-2xl border border-[#324467] focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all text-center"
+                                disabled={isClosedMonth}
+                                placeholder={isClosedMonth ? 'Sin meta configurada' : 'Ej: 45'}
+                                className="w-full bg-[#101622] text-white text-3xl font-black px-6 py-4 rounded-2xl border border-[#324467] focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all text-center disabled:opacity-50 disabled:bg-slate-900/50"
                             />
-                            {personalGoal > 0 && (
+                            {personalGoal > 0 && !isClosedMonth && (
                                 <div className="absolute right-4 top-1/2 -translate-y-1/2">
                                     {isGoalAchieved ? (
                                         <CheckCircle2 className="text-emerald-400" size={24} />
@@ -318,13 +336,12 @@ const GoalSettingModal: React.FC<GoalSettingModalProps> = ({
                                 </div>
                                 <div className="h-3 w-full bg-[#101622] rounded-full overflow-hidden border border-[#324467]">
                                     <div
-                                        className={`h-full rounded-full transition-all duration-500 ${
-                                            isGoalAchieved 
-                                                ? 'bg-gradient-to-r from-emerald-600 to-emerald-400 shadow-[0_0_15px_rgba(52,211,153,0.5)]' 
+                                        className={`h-full rounded-full transition-all duration-500 ${isGoalAchieved
+                                                ? 'bg-gradient-to-r from-emerald-600 to-emerald-400 shadow-[0_0_15px_rgba(52,211,153,0.5)]'
                                                 : progressPercentage > 70
-                                                ? 'bg-gradient-to-r from-blue-600 to-blue-400'
-                                                : 'bg-gradient-to-r from-slate-600 to-slate-400'
-                                        }`}
+                                                    ? 'bg-gradient-to-r from-blue-600 to-blue-400'
+                                                    : 'bg-gradient-to-r from-slate-600 to-slate-400'
+                                            }`}
                                         style={{ width: `${progressPercentage}%` }}
                                     />
                                 </div>
@@ -376,15 +393,17 @@ const GoalSettingModal: React.FC<GoalSettingModalProps> = ({
 
                 {/* Footer Actions */}
                 <div className="p-6 border-t border-[#324467] flex gap-3">
-                    <button
-                        onClick={onClose}
-                        className="flex-1 py-3 rounded-xl border border-slate-700 text-slate-400 hover:text-white hover:bg-slate-800 transition-all text-sm font-bold uppercase tracking-widest"
-                    >
-                        Cancelar
-                    </button>
+                    {!isMandatory && (
+                        <button
+                            onClick={onClose}
+                            className="flex-1 py-3 rounded-xl border border-slate-700 text-slate-400 hover:text-white hover:bg-slate-800 transition-all text-sm font-bold uppercase tracking-widest"
+                        >
+                            Cancelar
+                        </button>
+                    )}
                     <button
                         onClick={handleSave}
-                        disabled={isSaving || personalGoal <= 0}
+                        disabled={isSaving || personalGoal <= 0 || isClosedMonth}
                         className="flex-1 py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 disabled:from-slate-700 disabled:to-slate-600 disabled:cursor-not-allowed text-white font-black text-sm uppercase tracking-widest transition-all flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20"
                     >
                         {isSaving ? (
@@ -392,10 +411,15 @@ const GoalSettingModal: React.FC<GoalSettingModalProps> = ({
                                 <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin" />
                                 Guardando...
                             </>
+                        ) : isClosedMonth ? (
+                            <>
+                                <Target size={18} />
+                                Mes Concluido
+                            </>
                         ) : (
                             <>
                                 <Save size={18} />
-                                Guardar Meta
+                                {isMandatory ? 'Activar Compromiso' : 'Guardar Meta'}
                             </>
                         )}
                     </button>

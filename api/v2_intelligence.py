@@ -90,12 +90,12 @@ def fetch_squad_intelligence(coordinador_email="carlos.echeverria", year=None, m
     cursor = None
     
     try:
-        debug_log.append(f"Connecting to DB... filtering by {use_year}-{use_month}")
+        debug_log.append(f"Connecting to DB... filtering by {use_year}-{month}")
         conn = get_db_connection()
         cursor = conn.cursor(dictionary=True)
         debug_log.append("Connected.")
         
-        # ================================================================
+            # ================================================================
         # PASO 1: Participación Histórica & Meta Equipo
         # ================================================================
         debug_log.append("Query 1: Participación histórica")
@@ -106,37 +106,50 @@ def fetch_squad_intelligence(coordinador_email="carlos.echeverria", year=None, m
         total_equipo_hist = float(cursor.fetchone()['total_equipo'] or 0)
         
         pct_equipo = total_equipo_hist / total_global_hist if total_global_hist > 0 else 0
-        meta_global = get_contract_goal(use_year, use_month)
+        
+        # Meta Global - Para 'all' sumamos las metas de los meses transcurridos (Ene-Mar 2026)
+        if month == 'all':
+            meta_global = sum([get_contract_goal(use_year, m) for m in range(1, CURRENT_MONTH + 1)])
+        else:
+            meta_global = get_contract_goal(use_year, use_month)
+            
         META_EQUIPO = int(meta_global * pct_equipo)
         
         # ================================================================
-        # PASO 2: Contratos del Equipo (Mes Actual)
+        # PASO 2: Contratos del Equipo
         # ================================================================
-        debug_log.append("Query 2: Contratos equipo mes")
-        cursor.execute('''
+        debug_log.append(f"Query 2: Contratos equipo {'año' if month == 'all' else 'mes'}")
+        
+        sql_contratos_equipo = '''
             SELECT COUNT(DISTINCT lead_id) as contratos_mes
             FROM bi_DimLeads
             WHERE YEAR(contrato_created_at) = %s 
-              AND MONTH(contrato_created_at) = %s
               AND corredor_id IN (
                   SELECT corredor_id FROM bi_DimCorredores 
                   WHERE coordinador = %s AND activo = 1
               )
-        ''', (use_year, use_month, coordinador_email))
-        contratos_equipo_mes = int(cursor.fetchone()['contratos_mes'] or 0)
+        '''
+        params_contratos = [use_year, coordinador_email]
+        if month != 'all':
+            sql_contratos_equipo += ' AND MONTH(contrato_created_at) = %s'
+            params_contratos.append(use_month)
+            
+        cursor.execute(sql_contratos_equipo, tuple(params_contratos))
+        contratos_equipo_actual = int(cursor.fetchone()['contratos_mes'] or 0)
         
         # ================================================================
         # PASO 3: Data Individual Base (Contratos, Leads, Prospectos)
         # ================================================================
-        debug_log.append("Query 3: Data individual base")
-        cursor.execute('''
+        debug_log.append(f"Query 3: Data individual base {'año' if month == 'all' else 'mes'}")
+        
+        sql_base = '''
             SELECT 
                 c.corredor_id,
                 c.nombre_corredor,
                 COALESCE(NULLIF(c.reserva, 0), 7) as reservas_historicas,
-                COALESCE(l.contratos_mes, 0) as contratos_mes,
-                COALESCE(l.leads_tomados_mes, 0) as leads_tomados_mes,
-                COALESCE(l.prospectos_mes, 0) as prospectos_mes,
+                COALESCE(l.contratos_periodo, 0) as contratos_periodo,
+                COALESCE(l.leads_tomados_periodo, 0) as leads_tomados_periodo,
+                COALESCE(l.prospectos_periodo, 0) as prospectos_periodo,
                 COALESCE(l.leads_descartados_sin_gestion, 0) as leads_descartados,
                 COALESCE(l.prospectos_descartados, 0) as prospectos_descartados,
                 COALESCE(l.contacto_24h, 0) as contacto_24h
@@ -144,29 +157,37 @@ def fetch_squad_intelligence(coordinador_email="carlos.echeverria", year=None, m
             LEFT JOIN (
                 SELECT 
                     corredor_id,
-                    COUNT(DISTINCT CASE WHEN contrato_created_at IS NOT NULL THEN lead_id END) as contratos_mes,
-                    COUNT(DISTINCT lead_id) as leads_tomados_mes,
-                    COUNT(DISTINCT CASE WHEN step_3_prospecto = 1 THEN lead_id END) as prospectos_mes,
+                    COUNT(DISTINCT CASE WHEN contrato_created_at IS NOT NULL THEN lead_id END) as contratos_periodo,
+                    COUNT(DISTINCT lead_id) as leads_tomados_periodo,
+                    COUNT(DISTINCT CASE WHEN step_3_prospecto = 1 THEN lead_id END) as prospectos_periodo,
                     SUM(CASE WHEN step_1_epc_descartado = 1 AND lag_contacto IS NULL THEN 1 ELSE 0 END) as leads_descartados_sin_gestion,
                     SUM(CASE WHEN step_3_prospecto_descartado = 1 THEN 1 ELSE 0 END) as prospectos_descartados,
                     SUM(CASE WHEN lag_contacto IS NOT NULL AND lag_contacto <= 24 THEN 1 ELSE 0 END) as contacto_24h
                 FROM bi_DimLeads
                 WHERE YEAR(fecha_tomado) = %s 
-                  AND MONTH(fecha_tomado) = %s
+        '''
+        params_base = [use_year]
+        if month != 'all':
+            sql_base += ' AND MONTH(fecha_tomado) = %s'
+            params_base.append(use_month)
+            
+        sql_base += '''
                 GROUP BY corredor_id
             ) l ON c.corredor_id = l.corredor_id
             WHERE c.coordinador = %s 
               AND c.activo = 1
-            ORDER BY contratos_mes DESC, c.reserva DESC
-        ''', (use_year, use_month, coordinador_email))
+            ORDER BY contratos_periodo DESC, c.reserva DESC
+        '''
+        params_base.append(coordinador_email)
         
+        cursor.execute(sql_base, tuple(params_base))
         corredores_data = cursor.fetchall()
         
         # ================================================================
         # PASO 4: Visitas (Agendas)
         # ================================================================
-        debug_log.append("Query 4: Visitas mes")
-        cursor.execute('''
+        debug_log.append(f"Query 4: Visitas {'año' if month == 'all' else 'mes'}")
+        sql_visitas = '''
             SELECT 
                 corredor_id,
                 COUNT(*) as total_agendas,
@@ -174,18 +195,25 @@ def fetch_squad_intelligence(coordinador_email="carlos.echeverria", year=None, m
                 SUM(CASE WHEN estado = 'Cancelado' THEN 1 ELSE 0 END) as visitas_canceladas
             FROM bi_DimAgendas
             WHERE YEAR(agenda_fecha) = %s 
-              AND MONTH(agenda_fecha) = %s
-              AND corredor_id IS NOT NULL
+        '''
+        params_visitas = [use_year]
+        if month != 'all':
+            sql_visitas += ' AND MONTH(agenda_fecha) = %s'
+            params_visitas.append(use_month)
+            
+        sql_visitas += '''
+            AND corredor_id IS NOT NULL
             GROUP BY corredor_id
-        ''', (use_year, use_month))
+        '''
         
+        cursor.execute(sql_visitas, tuple(params_visitas))
         visit_metrics = {str(row['corredor_id']): row for row in cursor.fetchall()}
         
         # ================================================================
         # PASO 5: Calcular métricas RAW para cada corredor
         # ================================================================
         debug_log.append("Calculating raw metrics...")
-        dias_restantes = calculate_dias_restantes(year=use_year, month=use_month)
+        dias_restantes = calculate_dias_restantes(year=use_year, month=use_month) if month != 'all' else 0
         brokers_raw = []
         
         for corredor in corredores_data:
@@ -196,10 +224,10 @@ def fetch_squad_intelligence(coordinador_email="carlos.echeverria", year=None, m
             pct_corredor = reservas_hist / total_equipo_hist if total_equipo_hist > 0 else 0
             meta_corredor = int(META_EQUIPO * pct_corredor)
             
-            # Conversiones básicas
-            contratos_mes = int(corredor['contratos_mes'] or 0)
-            leads_mes = int(corredor['leads_tomados_mes'] or 0)
-            prospectos_mes = int(corredor['prospectos_mes'] or 0)
+            # Conversiones periodo
+            contratos_periodo = int(corredor['contratos_periodo'] or 0)
+            leads_periodo = int(corredor['leads_tomados_periodo'] or 0)
+            prospectos_periodo = int(corredor['prospectos_periodo'] or 0)
             leads_descartados = int(corredor['leads_descartados'] or 0)
             prospectos_descartados = int(corredor['prospectos_descartados'] or 0)
             contacto_24h = int(corredor['contacto_24h'] or 0)
@@ -213,38 +241,36 @@ def fetch_squad_intelligence(coordinador_email="carlos.echeverria", year=None, m
             # === ENGAGEMENT METRICS (RAW) ===
             tasa_visitas = calculate_rate_with_smoothing(visitas_realizadas, total_agendas, 15)
             tasa_no_cancela = 1 - calculate_rate_with_smoothing(visitas_canceladas, total_agendas, 15)
-            tasa_no_descarta_leads = 1 - calculate_rate_with_smoothing(leads_descartados, leads_mes, 15)
-            tasa_no_descarta_prospectos = 1 - calculate_rate_with_smoothing(prospectos_descartados, prospectos_mes, 15)
-            tasa_contacto_24h = calculate_rate_with_smoothing(contacto_24h, leads_mes, 15)
+            tasa_no_descarta_leads = 1 - calculate_rate_with_smoothing(leads_descartados, leads_periodo, 15)
+            tasa_no_descarta_prospectos = 1 - calculate_rate_with_smoothing(prospectos_descartados, prospectos_periodo, 15)
+            tasa_contacto_24h = calculate_rate_with_smoothing(contacto_24h, leads_periodo, 15)
 
             # === RENDIMIENTO METRICS (RAW) ===
-            conv_prospecto_contrato = calculate_rate_with_smoothing(contratos_mes, prospectos_mes, 15)
-            conv_lead_contrato = calculate_rate_with_smoothing(contratos_mes, leads_mes, 15)
-            contratos_absolutos = contratos_mes
-            leads_por_visita = calculate_rate_with_smoothing(leads_mes, visitas_realizadas, 0) if visitas_realizadas > 0 else 0
+            conv_prospecto_contrato = calculate_rate_with_smoothing(contratos_periodo, prospectos_periodo, 15)
+            conv_lead_contrato = calculate_rate_with_smoothing(contratos_periodo, leads_periodo, 15)
+            contratos_absolutos = contratos_periodo
+            leads_por_visita = calculate_rate_with_smoothing(leads_periodo, visitas_realizadas, 0) if visitas_realizadas > 0 else 0
 
-            # === EFICIENCIA METRICS (RAW - Simulado para V2) ===
-            # En V2 no tenemos tickets_severidad ni tiempo_resolucion directo todavía, 
-            # pero podemos usar tasa_contacto_24h y conversion como proxies de eficiencia
-            tasa_demora = 1 - calculate_rate_with_smoothing(contacto_24h, leads_mes, 15)
+            # === EFICIENCIA METRICS (RAW) ===
+            tasa_demora = 1 - calculate_rate_with_smoothing(contacto_24h, leads_periodo, 15)
             tiempo_normalizado = 0.5 # Default
             tickets_normalizado = 0.0 # Default
 
             # === Datos Operativos ===
-            faltante = max(meta_corredor - contratos_mes, 0)
-            conv_mes = (prospectos_mes / leads_mes * 100) if leads_mes > 0 else 0
+            faltante = max(meta_corredor - contratos_periodo, 0)
+            conv_periodo = (prospectos_periodo / leads_periodo * 100) if leads_periodo > 0 else 0
             
-            leads_diarios_necesarios = int((faltante / max(dias_restantes, 1)) / (conv_mes / 100)) if conv_mes > 0 and dias_restantes > 0 else 0
+            leads_diarios_necesarios = int((faltante / max(dias_restantes, 1)) / (conv_periodo / 100)) if conv_periodo > 0 and dias_restantes > 0 else 0
 
             brokers_raw.append({
                 'corredor_id': corredor_id,
                 'nombre': corredor['nombre_corredor'],
                 'meta_personal': meta_corredor,
-                'contratos_mes': contratos_mes,
+                'contratos_periodo': contratos_periodo,
                 'faltante': faltante,
-                'leads_mes': leads_mes,
-                'prospectos_mes': prospectos_mes,
-                'conversion': f"{conv_mes:.1f}",
+                'leads_periodo': leads_periodo,
+                'prospectos_periodo': prospectos_periodo,
+                'conversion': f"{conv_periodo:.1f}",
                 'visitas_realizadas': visitas_realizadas,
                 'visitas_canceladas': visitas_canceladas,
                 'leads_diarios_necesarios': leads_diarios_necesarios,
@@ -299,48 +325,52 @@ def fetch_squad_intelligence(coordinador_email="carlos.echeverria", year=None, m
         norm_tasa_demora = normalize_z_score_simple(all_tasa_demora, inverse=True)
 
         # ================================================================
-        # PASO 7: CALCULAR SCORES FINALES (100 pts)
+        # PASO 7: CALCULAR SCORES FINALES (100 pts) - MODELO V4 PRIORIZADO
         # ================================================================
-        debug_log.append("Calculating scores...")
+        debug_log.append("Calculating scores (Scoring Model V4: 30/55/15)...")
         brokers_final = []
         
         for i, broker_raw in enumerate(brokers_raw):
-            # ENGAGEMENT (35 pts total)
-            eng_visitas = norm_tasa_visitas[i] * 7
-            eng_no_cancela = norm_tasa_no_cancela[i] * 7
-            eng_no_descarta_leads = norm_tasa_no_descarta_leads[i] * 7
-            eng_no_descarta_prospectos = norm_tasa_no_descarta_prospectos[i] * 7
-            eng_contacto_24h = norm_tasa_contacto_24h[i] * 7
+            # ENGAGEMENT (30 pts total - antes 35)
+            # Bajamos el peso individual de 7 a 6
+            eng_visitas = norm_tasa_visitas[i] * 6
+            eng_no_cancela = norm_tasa_no_cancela[i] * 6
+            eng_no_descarta_leads = norm_tasa_no_descarta_leads[i] * 6
+            eng_no_descarta_prospectos = norm_tasa_no_descarta_prospectos[i] * 6
+            eng_contacto_24h = norm_tasa_contacto_24h[i] * 6
             engagement_score = eng_visitas + eng_no_cancela + eng_no_descarta_leads + eng_no_descarta_prospectos + eng_contacto_24h
             
-            # RENDIMIENTO (40 pts total)
-            rend_conv_p_c = norm_conv_p_c[i] * 10
-            rend_conv_l_c = norm_conv_l_c[i] * 10
-            rend_contratos_abs = norm_contratos_abs[i] * 10
-            rend_lpv = norm_lpv[i] * 10
+            # RENDIMIENTO (55 pts total - antes 40)
+            # Subimos el peso de conversión y contratos absolutos de 10 a 13.75
+            rend_conv_p_c = norm_conv_p_c[i] * 13.75
+            rend_conv_l_c = norm_conv_l_c[i] * 13.75
+            rend_contratos_abs = norm_contratos_abs[i] * 13.75
+            rend_lpv = norm_lpv[i] * 13.75
             rendimiento_score = rend_conv_p_c + rend_conv_l_c + rend_contratos_abs + rend_lpv
             
-            # EFICIENCIA (25 pts total)
-            efi_demora = norm_tasa_demora[i] * 8.25
-            efi_tiempo = 0.5 * 8.25
-            efi_tickets = 1.0 * 8.5
+            # EFICIENCIA (15 pts total - antes 25)
+            efi_demora = norm_tasa_demora[i] * 5
+            efi_tiempo = 0.5 * 5
+            efi_tickets = 1.0 * 5
             eficiencia_score = efi_demora + efi_tiempo + efi_tickets
 
             # TOTAL (100 pts)
             total_score = engagement_score + rendimiento_score + eficiencia_score
             
             # Acción Sugerida
-            if broker_raw['contratos_mes'] >= broker_raw['meta_personal']:
+            if broker_raw['contratos_periodo'] >= broker_raw['meta_personal']:
                 action = "¡Meta Cumplida!"
             elif broker_raw['leads_diarios_necesarios'] > 0:
                 action = f"Asignar {broker_raw['leads_diarios_necesarios']} leads/día"
+            elif month == 'all':
+                action = "Mantener Ritmo Anual"
             else:
                 action = "Revisar Conversión"
             
             brokers_final.append({
                 "name": broker_raw['nombre'],
-                "leads": broker_raw['leads_mes'],
-                "reservas": broker_raw['contratos_mes'],
+                "leads": broker_raw['leads_periodo'],
+                "reservas": broker_raw['contratos_periodo'],
                 "meta_personal": broker_raw['meta_personal'],
                 "faltante": broker_raw['faltante'],
                 "conversion": broker_raw['conversion'],
@@ -378,11 +408,11 @@ def fetch_squad_intelligence(coordinador_email="carlos.echeverria", year=None, m
             "brokers": brokers_final,
             "squad_summary": {
                 "meta_equipo": META_EQUIPO,
-                "contratos_actuales": contratos_equipo_mes,
-                "faltante_equipo": max(META_EQUIPO - contratos_equipo_mes, 0),
+                "contratos_actuales": contratos_equipo_actual,
+                "faltante_equipo": max(META_EQUIPO - contratos_equipo_actual, 0),
                 "dias_restantes": dias_restantes,
                 "debug_log": debug_log,
-                "scoring_version": "Phase 3 (Unificado) - Engagement (35) + Rendimiento (40) + Eficiencia (25) = 100 pts"
+                "scoring_version": "Model V4 - Rendimiento (55%) > Engagement (30%) > Eficiencia (15%)"
             },
             "timestamp": datetime.now().isoformat()
         }

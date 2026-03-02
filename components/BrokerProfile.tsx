@@ -566,9 +566,9 @@ const BrokerProfile: React.FC<BrokerProfileProps> = ({ broker, onBack, selectedM
                                 <ProgressBar value={broker.score_engagement} max={35} color="bg-gradient-to-r from-indigo-600 to-indigo-400" />
                                 <div className="grid grid-cols-2 gap-2 mt-3">
                                     {Object.entries(broker.breakdown_engagement).slice(0, 4).map(([k, v]) => (
-                                        <div key={k} className="bg-slate-900 rounded-xl px-3 py-2 border border-slate-800">
-                                            <p className="text-[9px] text-slate-600 uppercase font-bold truncate">{k.replace(/_/g, ' ')}</p>
-                                            <p className="text-sm font-black text-indigo-400">{typeof v === 'number' ? v.toFixed(1) : v}</p>
+                                        <div className="p-3 bg-slate-900/80 rounded-2xl border border-slate-800 flex-1">
+                                            <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1">Meta Reservas</p>
+                                            <p className="text-2xl font-black text-white">{broker.meta_personal || 8}</p>
                                         </div>
                                     ))}
                                 </div>
@@ -606,7 +606,7 @@ const BrokerProfile: React.FC<BrokerProfileProps> = ({ broker, onBack, selectedM
                                     Leads necesarios: <strong>{broker.leadsNeeded}</strong>
                                 </div>
                                 <div className="bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs font-bold text-slate-400">
-                                    Faltante: <strong className="text-white">{broker.faltante}</strong>
+                                    {isPast ? 'Brecha Final' : 'Faltante'}: <strong className="text-white">{broker.faltante}</strong>
                                 </div>
                             </div>
                         </div>
@@ -750,8 +750,10 @@ const BrokerProfile: React.FC<BrokerProfileProps> = ({ broker, onBack, selectedM
                                 glow: 'bg-purple-500/10',
                                 btnColor: 'text-purple-400',
                                 title: 'Optimización de Pipeline',
-                                desc: `${broker.leadsNeeded > 0 ? `Necesita ${broker.leadsNeeded} leads adicionales para cumplir meta.` : 'En camino a su meta.'} Revisar velocidad de contacto y priorizar prospectos calientes de esta semana.`,
-                                cta: 'Ver pipeline'
+                                desc: isPast
+                                    ? `Finalizó el mes con ${broker.reservas} reservas. ${broker.faltante > 0 ? `Quedó a ${broker.faltante} de su meta personal.` : 'Cumplió exitosamente su compromiso.'}`
+                                    : `${broker.leadsNeeded > 0 ? `Necesita ${broker.leadsNeeded} leads adicionales para cumplir meta.` : 'En camino a su meta.'} Revisar velocidad de contacto y priorizar prospectos calientes de esta semana.`,
+                                cta: isPast ? 'Ver reporte final' : 'Ver pipeline'
                             }
                         ].map(({ icon, bg, border, hover, glow, btnColor, title, desc, cta }) => (
                             <div key={title} className={`bg-[#1e2433] ${border} ${hover} border rounded-2xl p-6 transition-all group relative overflow-hidden`}>

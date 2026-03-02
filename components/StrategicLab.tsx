@@ -274,13 +274,15 @@ const StrategicLab: React.FC<SquadLaboratoryProps> = ({
         vencimientoProximos: 0
     } : { leadsSinGestion: 0, unidadesSinVisitas: 0, vencimientoProximos: 0 };
 
-    // Filtered brokers based on search and score
+    // Filtered and sorted brokers based on search, score and contracts
     const filteredBrokers = useMemo(() => {
-        return brokers.filter((broker: BrokerIntelligence) => {
-            const matchesSearch = broker.name.toLowerCase().includes(searchTerm.toLowerCase());
-            const matchesScore = broker.score >= minScore;
-            return matchesSearch && matchesScore;
-        });
+        return brokers
+            .filter((broker: BrokerIntelligence) => {
+                const matchesSearch = broker.name.toLowerCase().includes(searchTerm.toLowerCase());
+                const matchesScore = broker.score >= minScore;
+                return matchesSearch && matchesScore;
+            })
+            .sort((a: BrokerIntelligence, b: BrokerIntelligence) => (b.reservas || 0) - (a.reservas || 0));
     }, [brokers, searchTerm, minScore]);
 
     // Stats calculation
@@ -798,9 +800,9 @@ const StrategicLab: React.FC<SquadLaboratoryProps> = ({
                                                 {isClosedMonth && (
                                                     <td className="px-6 py-4">
                                                         <span className={`flex items-center justify-center w-6 h-6 rounded-lg text-[10px] font-black ${index === 0 ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' :
-                                                                index === 1 ? 'bg-slate-400/20 text-slate-300 border border-slate-400/30' :
-                                                                    index === 2 ? 'bg-orange-800/20 text-orange-400 border border-orange-800/30' :
-                                                                        'bg-slate-800 text-slate-500'
+                                                            index === 1 ? 'bg-slate-400/20 text-slate-300 border border-slate-400/30' :
+                                                                index === 2 ? 'bg-orange-800/20 text-orange-400 border border-orange-800/30' :
+                                                                    'bg-slate-800 text-slate-500'
                                                             }`}>
                                                             {index + 1}
                                                         </span>
@@ -823,6 +825,10 @@ const StrategicLab: React.FC<SquadLaboratoryProps> = ({
                                                     <span className={`px-3 py-1.5 rounded-lg text-sm font-black ${getScoreColor(broker.score)}`}>
                                                         {broker.score.toFixed(0)}
                                                     </span>
+                                                    <div className="flex flex-col">
+                                                        <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Meta Reservas</span>
+                                                        <span className="text-white font-black text-sm">{broker.meta_personal || 0}</span>
+                                                    </div>
                                                 </td>
                                                 <td className="px-6 py-4 text-right whitespace-nowrap">
                                                     <span className="text-sm font-bold text-white">{broker.reservas}</span>

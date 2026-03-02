@@ -1,9 +1,7 @@
-import '@testing-library/jest-dom';
+require('@testing-library/jest-dom');
 
-// Mock de fetch global
 global.fetch = jest.fn();
 
-// Mock de localStorage
 const localStorageMock = {
   getItem: jest.fn(),
   setItem: jest.fn(),
@@ -12,7 +10,6 @@ const localStorageMock = {
 };
 global.localStorage = localStorageMock;
 
-// Mock de window.matchMedia
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
   value: jest.fn().mockImplementation(query => ({
@@ -27,7 +24,6 @@ Object.defineProperty(window, 'matchMedia', {
   })),
 });
 
-// Reset mocks después de cada test
 afterEach(() => {
   jest.clearAllMocks();
   localStorageMock.getItem.mockClear();

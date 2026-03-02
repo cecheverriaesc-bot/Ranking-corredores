@@ -18,6 +18,24 @@ export default defineConfig(({ mode }) => {
       alias: {
         '@': path.resolve(__dirname, '.'),
       }
+    },
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            'vendor-react': ['react', 'react-dom'],
+            'vendor-recharts': ['recharts'],
+            'vendor-lucide': ['lucide-react'],
+            'vendor-zustand': ['zustand'],
+          }
+        }
+      },
+      chunkSizeWarningLimit: 600,
+      sourcemap: mode === 'development',
+      minify: 'esbuild',
+    },
+    optimizeDeps: {
+      include: ['react', 'react-dom', 'recharts', 'lucide-react', 'zustand'],
     }
   };
 });

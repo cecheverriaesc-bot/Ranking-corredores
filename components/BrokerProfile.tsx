@@ -394,13 +394,25 @@ const BrokerProfile: React.FC<BrokerProfileProps> = ({ broker, onBack, selectedM
                 {/* ============================================================ */}
                 <section className={`bg-[#1e2433] rounded-3xl border shadow-2xl overflow-hidden ${atRisk ? 'border-amber-500/30' : 'border-emerald-500/30'}`}>
 
-                    {/* Alert strip */}
-                    {atRisk ? (
+                    {/* Alerta de Cierre o Riesgo */}
+                    {isPast ? (
+                        <div className="bg-slate-800/40 border-b border-slate-700/50 px-6 py-3 flex items-center justify-between gap-3">
+                            <div className="flex items-center gap-3">
+                                <Award size={16} className="text-amber-400 flex-shrink-0" />
+                                <p className="text-xs font-bold text-slate-300">
+                                    Periodo Concluido — Los resultados mostrados son finales y consolidados.
+                                </p>
+                            </div>
+                            <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${pctMeta >= 100 ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-slate-500/10 text-slate-400 border border-slate-500/20'
+                                }`}>
+                                {pctMeta >= 100 ? 'Meta Lograda' : 'Resultado Final'}
+                            </span>
+                        </div>
+                    ) : atRisk ? (
                         <div className="bg-amber-500/10 border-b border-amber-500/30 px-6 py-3 flex items-center gap-3">
                             <AlertTriangle size={16} className="text-amber-400 flex-shrink-0" />
                             <p className="text-xs font-bold text-amber-300">
                                 Riesgo de incumplimiento — Faltan <strong>{metaReservas - reservasCumplidas} reservas</strong> en {diasRestantes} días.
-                                Al ritmo actual proyecta {Math.round(ritmoActual * (28 - diasRestantes) + reservasCumplidas)} reservas.
                             </p>
                         </div>
                     ) : (
@@ -450,9 +462,9 @@ const BrokerProfile: React.FC<BrokerProfileProps> = ({ broker, onBack, selectedM
                                 />
                             </div>
                             <div className="flex justify-between text-[10px] font-bold text-slate-700 uppercase tracking-widest mt-1.5">
-                                <span>0</span>
-                                <span>{diasRestantes} días restantes</span>
-                                <span>{metaReservas} reservas</span>
+                                <span>0%</span>
+                                <span>{isPast ? 'Cierre de Periodo' : `${diasRestantes} días restantes`}</span>
+                                <span>100% Target</span>
                             </div>
                         </div>
 
@@ -466,20 +478,17 @@ const BrokerProfile: React.FC<BrokerProfileProps> = ({ broker, onBack, selectedM
                                     <p className="text-[10px] text-slate-500 font-semibold mt-0.5">Últimos 7 días hábiles</p>
                                 </div>
                             </div>
-                            <div className={`border rounded-2xl p-5 flex items-center gap-4 ${atRisk ? 'bg-amber-500/10 border-amber-500/30' : 'bg-blue-600/10 border-blue-600/30'}`}>
-                                <div className={`p-3 rounded-xl ${atRisk ? 'bg-amber-500/20' : 'bg-blue-600/20'}`}>
-                                    <Target size={22} className={atRisk ? 'text-amber-400' : 'text-blue-400'} />
+                            <div className={`border rounded-2xl p-5 flex items-center gap-4 ${isPast ? 'bg-slate-800/40 border-slate-700' : atRisk ? 'bg-amber-500/10 border-amber-500/30' : 'bg-blue-600/10 border-blue-600/30'}`}>
+                                <div className={`p-3 rounded-xl ${isPast ? 'bg-slate-700' : atRisk ? 'bg-amber-500/20' : 'bg-blue-600/20'}`}>
+                                    <Target size={22} className={isPast ? 'text-slate-400' : atRisk ? 'text-amber-400' : 'text-blue-400'} />
                                 </div>
                                 <div>
-                                    <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Ritmo Necesario</p>
-                                    <p className={`text-2xl font-black ${atRisk ? 'text-amber-400' : 'text-blue-400'}`}>
-                                        {ritmoNec.toFixed(2)}<span className="text-sm font-bold text-slate-400"> res/día</span>
+                                    <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">{isPast ? 'Evaluación Final' : 'Ritmo Necesario'}</p>
+                                    <p className={`text-2xl font-black ${isPast ? 'text-white' : atRisk ? 'text-amber-400' : 'text-blue-400'}`}>
+                                        {isPast ? (pctMeta >= 100 ? 'Excelente' : 'Ajustar') : `${ritmoNec.toFixed(2)}`}
+                                        {!isPast && <span className="text-sm font-bold text-slate-400"> res/día</span>}
                                     </p>
-                                    {atRisk && (
-                                        <p className="text-[10px] text-red-400 font-bold mt-0.5">
-                                            ↑ +{(ritmoNec - ritmoActual).toFixed(2)} sobre ritmo actual
-                                        </p>
-                                    )}
+                                    <p className="text-[10px] text-slate-500 font-semibold mt-0.5">{isPast ? 'Basado en ranking final' : 'Para lograr el objetivo'}</p>
                                 </div>
                             </div>
                             <div className="bg-blue-600/10 border border-blue-600/30 rounded-2xl p-5 flex items-center gap-4">

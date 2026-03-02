@@ -252,6 +252,19 @@ const StrategicLab: React.FC<SquadLaboratoryProps> = ({
         fetchAllData();
     }, [regionFilter, isCarlos, selectedMonth]);
 
+    // Detección de Mes Cerrado
+    const isClosedMonth = useMemo(() => {
+        if (!selectedMonth || selectedMonth === 'total-year') return false;
+        const [year, month] = selectedMonth.split('-').map(Number);
+        const today = new Date();
+        const currentYear = today.getFullYear();
+        const currentMonth = today.getMonth() + 1; // getMonth() es 0-indexed
+
+        if (year < currentYear) return true;
+        if (year === currentYear && month < currentMonth) return true;
+        return false;
+    }, [selectedMonth]);
+
     // Extract data from API response
     const brokers = intelligenceData?.brokers || [];
     const coverage = intelligenceData ? [] : []; // Placeholder para coverage
@@ -309,8 +322,8 @@ const StrategicLab: React.FC<SquadLaboratoryProps> = ({
         const isRM = regionType === 'RM';
         return (
             <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[10px] font-black uppercase tracking-wider ${isRM
-                    ? 'bg-blue-500/10 text-blue-400 border-blue-500/20 shadow-[0_0_10px_rgba(59,130,246,0.1)]'
-                    : 'bg-orange-500/10 text-orange-400 border-orange-500/20 shadow-[0_0_10px_rgba(249,115,22,0.1)]'
+                ? 'bg-blue-500/10 text-blue-400 border-blue-500/20 shadow-[0_0_10px_rgba(59,130,246,0.1)]'
+                : 'bg-orange-500/10 text-orange-400 border-orange-500/20 shadow-[0_0_10px_rgba(249,115,22,0.1)]'
                 }`}>
                 <Map size={10} />
                 {regionType}
@@ -432,8 +445,48 @@ const StrategicLab: React.FC<SquadLaboratoryProps> = ({
                 </div>
             </header>
 
+            {/* Banner de Mes Cerrado */}
+            {isClosedMonth && (
+                <section className="mb-6 animate-in slide-in-from-top duration-500">
+                    <div className="relative overflow-hidden rounded-3xl bg-slate-900 border border-amber-500/20 p-6 shadow-2xl">
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/5 rounded-full blur-3xl pointer-events-none"></div>
+                        <div className="relative flex flex-col md:flex-row items-center justify-between gap-6">
+                            <div className="flex items-center gap-4">
+                                <div className="p-3 bg-amber-500/20 rounded-2xl border border-amber-500/30">
+                                    <Award className="w-8 h-8 text-amber-400" />
+                                </div>
+                                <div>
+                                    <h2 className="text-2xl font-black text-white uppercase tracking-tighter">Mes Concluido</h2>
+                                    <p className="text-slate-400 text-sm font-medium">Resultados finales consolidados para {selectedMonth}</p>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-8">
+                                <div className="text-center">
+                                    <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Cumplimiento Final</p>
+                                    <p className={`text-2xl font-black ${(stats.totalContracts / (intelligenceData?.squad_summary?.meta_equipo || 1)) >= 1
+                                        ? 'text-emerald-400' : 'text-amber-400'
+                                        }`}>
+                                        {((stats.totalContracts / (intelligenceData?.squad_summary?.meta_equipo || 1)) * 100).toFixed(1)}%
+                                    </p>
+                                </div>
+                                <div className="h-12 w-px bg-slate-800"></div>
+                                <div className="text-center">
+                                    <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Status Final</p>
+                                    <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${(stats.totalContracts / (intelligenceData?.squad_summary?.meta_equipo || 1)) >= 1
+                                        ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+                                        : 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
+                                        }`}>
+                                        {(stats.totalContracts / (intelligenceData?.squad_summary?.meta_equipo || 1)) >= 1 ? 'Objetivo Logrado' : 'Cierre Meta'}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            )}
+
             {/* Barra de Progreso Global del Squad */}
-            {intelligenceData?.squad_summary && (
+            {!isClosedMonth && intelligenceData?.squad_summary && (
                 <section className="mb-8 bg-gradient-to-r from-slate-900/80 to-slate-800/50 rounded-2xl p-5 border border-slate-700/50">
                     <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center gap-2">
@@ -713,43 +766,18 @@ const StrategicLab: React.FC<SquadLaboratoryProps> = ({
                         <div className="overflow-x-auto">
                             <table className="w-full text-left border-collapse">
                                 <thead>
-                                    <tr className="text-[10px] font-black text-slate-500 uppercase tracking-wider border-b border-slate-800">
-                                        <th className="py-4">Pos</th>
-                                        <th className="py-4">Corredor</th>
-                                        <th className="py-4 text-center">Región</th>
-                                        <th className="py-4 text-center">Reservas</th>
-                                        <th className="py-4 text-center text-emerald-400">Contratos</th>
-                                        <th className="py-4 text-center">Conv. %</th>
-                                        {showPillarColumns && (
-                                            <>
-                                                <th className="py-4 text-center text-emerald-400 border-l border-slate-700">
-                                                    <div className="flex items-center justify-center gap-1">
-                                                        <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
-                                                        Engagement
-                                                    </div>
-                                                </th>
-                                                <th className="py-4 text-center text-blue-400">
-                                                    <div className="flex items-center justify-center gap-1">
-                                                        <div className="w-2 h-2 rounded-full bg-blue-500"></div>
-                                                        Rendimiento
-                                                    </div>
-                                                </th>
-                                                <th className="py-4 text-center text-purple-400 border-r border-slate-700">
-                                                    <div className="flex items-center justify-center gap-1">
-                                                        <div className="w-2 h-2 rounded-full bg-purple-500"></div>
-                                                        Eficiencia
-                                                    </div>
-                                                </th>
-                                            </>
-                                        )}
-                                        <th className="py-4 text-center text-amber-400">Score</th>
-                                        <th className="py-4 text-center text-indigo-400">Percentil</th>
-                                        <th className="py-4 text-center">Meta</th>
-                                        <th className="py-4 text-center">Acción</th>
-                                        <th className="py-4 text-center text-emerald-400">WhatsApp</th>
+                                    <tr className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] border-b border-white/5">
+                                        {isClosedMonth && <th className="px-6 py-4 text-left">Pos.</th>}
+                                        <th className="px-6 py-4 text-left">Corredor</th>
+                                        <th className="px-6 py-4 text-left">Equipo</th>
+                                        <th className="px-6 py-4 text-right">Score</th>
+                                        <th className="px-6 py-4 text-right">Contratos</th>
+                                        {!isClosedMonth && <th className="px-6 py-4 text-right">Proyección</th>}
+                                        <th className="px-6 py-4 text-right">Eficiencia</th>
+                                        <th className="px-6 py-4 text-right">Calidad</th>
                                     </tr>
                                 </thead>
-                                <tbody className="text-sm">
+                                <tbody className="divide-y divide-white/5">
                                     {filteredBrokers.map((broker: BrokerIntelligence, index: number) => {
                                         // Get broker goal and commitment
                                         const brokerGoal = brokerGoals[broker.name];
@@ -767,17 +795,18 @@ const StrategicLab: React.FC<SquadLaboratoryProps> = ({
                                                 onClick={() => onBrokerClick && onBrokerClick(broker)}
                                                 className={`border-b border-slate-800/50 hover:bg-white/5 transition-colors group ${onBrokerClick ? 'cursor-pointer' : ''}`}
                                             >
-                                                <td className="py-4">
-                                                    <div className="flex items-center gap-2">
-                                                        {index === 0 && <Trophy size={16} className="text-amber-400" />}
-                                                        {index === 1 && <Medal size={16} className="text-slate-400" />}
-                                                        {index === 2 && <Star size={16} className="text-orange-400" />}
-                                                        <span className={`font-black ${index < 3 ? 'text-white' : 'text-slate-500'}`}>
-                                                            #{index + 1}
+                                                {isClosedMonth && (
+                                                    <td className="px-6 py-4">
+                                                        <span className={`flex items-center justify-center w-6 h-6 rounded-lg text-[10px] font-black ${index === 0 ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' :
+                                                                index === 1 ? 'bg-slate-400/20 text-slate-300 border border-slate-400/30' :
+                                                                    index === 2 ? 'bg-orange-800/20 text-orange-400 border border-orange-800/30' :
+                                                                        'bg-slate-800 text-slate-500'
+                                                            }`}>
+                                                            {index + 1}
                                                         </span>
-                                                    </div>
-                                                </td>
-                                                <td className="py-4">
+                                                    </td>
+                                                )}
+                                                <td className="px-6 py-4 whitespace-nowrap">
                                                     <div className="space-y-0.5">
                                                         <p className="font-bold text-slate-300 group-hover:text-white transition-colors">{broker.name}</p>
                                                         {onBrokerClick && (
@@ -787,102 +816,33 @@ const StrategicLab: React.FC<SquadLaboratoryProps> = ({
                                                         )}
                                                     </div>
                                                 </td>
-                                                <td className="py-4 text-center">
+                                                <td className="px-6 py-4 text-left">
                                                     {getRegionBadge(broker.region_type)}
                                                 </td>
-                                                <td className="py-4 text-center font-bold text-slate-400">{broker.reservas}</td>
-                                                <td className="py-4 text-center font-black text-emerald-400">{broker.reservas}</td>
-                                                <td className="py-4 text-center font-mono text-slate-400">
-                                                    {parseFloat(broker.conversion || '0').toFixed(1)}%
-                                                </td>
-
-                                                {showPillarColumns && (
-                                                    <>
-                                                        {/* Engagement Score */}
-                                                        <td className="py-4 text-center border-l border-slate-700">
-                                                            <span className="text-xs font-black text-emerald-400">
-                                                                {broker.score_engagement.toFixed(1)}
-                                                            </span>
-                                                        </td>
-
-                                                        {/* Rendimiento Score */}
-                                                        <td className="py-4 text-center">
-                                                            <span className="text-xs font-black text-blue-400">
-                                                                {broker.score_rendimiento.toFixed(1)}
-                                                            </span>
-                                                        </td>
-
-                                                        {/* Eficiencia Score */}
-                                                        <td className="py-4 text-center border-r border-slate-700">
-                                                            <span className="text-xs font-black text-purple-400">
-                                                                {broker.score_eficiencia.toFixed(1)}
-                                                            </span>
-                                                        </td>
-                                                    </>
-                                                )}
-
-                                                {/* Score Column */}
-                                                <td className="py-4 text-center">
+                                                <td className="px-6 py-4 text-right">
                                                     <span className={`px-3 py-1.5 rounded-lg text-sm font-black ${getScoreColor(broker.score)}`}>
                                                         {broker.score.toFixed(0)}
                                                     </span>
                                                 </td>
-
-                                                {/* Percentile Column */}
-                                                <td className="py-4 text-center">
-                                                    <div className="flex items-center justify-center gap-1">
-                                                        <div className="w-16 h-2 bg-slate-800 rounded-full overflow-hidden">
-                                                            <div
-                                                                className="h-full bg-gradient-to-r from-indigo-500 to-purple-500"
-                                                                style={{ width: `${broker.percentile}%` }}
-                                                            ></div>
-                                                        </div>
-                                                        <span className="text-xs font-black text-indigo-400">
-                                                            {broker.percentile.toFixed(0)}°
+                                                <td className="px-6 py-4 text-right whitespace-nowrap">
+                                                    <span className="text-sm font-bold text-white">{broker.reservas}</span>
+                                                </td>
+                                                {!isClosedMonth && (
+                                                    <td className="px-6 py-4 text-right whitespace-nowrap">
+                                                        <span className="text-sm font-bold text-blue-400">
+                                                            {(broker.reservas / (intelligenceData?.day_of_month / intelligenceData?.total_days_month)).toFixed(1)}
                                                         </span>
-                                                    </div>
-                                                </td>
-
-                                                {/* Meta Personal Column */}
-                                                <td className="py-4 text-center">
-                                                    {personalGoal > 0 ? (
-                                                        <div className="flex flex-col items-center gap-1">
-                                                            <span className="text-sm font-black text-pink-400">{personalGoal}</span>
-                                                            {broker.faltante > 0 && (
-                                                                <span className="text-[9px] text-slate-500">
-                                                                    -{broker.faltante}
-                                                                </span>
-                                                            )}
-                                                        </div>
-                                                    ) : (
-                                                        <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-lg bg-amber-500/20 text-amber-400 border border-amber-500/30 text-\[10px\] font-bold uppercase"><AlertTriangle size={12} /> Sin meta</span>
-                                                    )}
-                                                </td>
-
-                                                <td className="py-4 text-center">
-                                                    <span className={`text-[10px] font-bold uppercase px-2 py-1 rounded-md border ${getActionBadge(broker.action)}`}>
-                                                        {broker.action}
+                                                    </td>
+                                                )}
+                                                <td className="px-6 py-4 text-right">
+                                                    <span className="text-xs font-black text-purple-400">
+                                                        {broker.score_eficiencia.toFixed(1)}
                                                     </span>
                                                 </td>
-
-                                                {/* WhatsApp Column */}
-                                                <td className="py-4 text-center">
-                                                    {broker.telefono ? (
-                                                        <a
-                                                            href={`https://wa.me/56${broker.telefono.replace(/[^0-9]/g, '')}`}
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs font-bold hover:bg-emerald-500/30 transition-colors"
-                                                        >
-                                                            <MessageSquare size={14} />
-                                                            WhatsApp
-                                                        </a>
-                                                    ) : (
-                                                        <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-lg bg-slate-500/20 text-slate-400 border border-slate-500/30 text-[10px] font-bold uppercase">
-                                                            <AlertTriangle size={12} />
-                                                            Sin tel
-                                                        </span>
-                                                    )}
+                                                <td className="px-6 py-4 text-right">
+                                                    <span className="text-xs font-black text-emerald-400">
+                                                        {broker.score_engagement.toFixed(1)}
+                                                    </span>
                                                 </td>
                                             </tr>
                                         );

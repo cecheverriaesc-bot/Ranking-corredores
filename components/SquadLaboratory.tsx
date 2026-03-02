@@ -203,6 +203,19 @@ const SquadLaboratory: React.FC<SquadLaboratoryProps> = ({
         return rankingData.filter(r => r.coord === 'carlos.echeverria@assetplan.cl');
     }, [rankingData]);
 
+    // Detección de Mes Cerrado
+    const isClosedMonth = useMemo(() => {
+        if (!selectedMonth || selectedMonth === 'total-year') return false;
+        const [year, month] = selectedMonth.split('-').map(Number);
+        const today = new Date();
+        const currentYear = today.getFullYear();
+        const currentMonth = today.getMonth() + 1;
+
+        if (year < currentYear) return true;
+        if (year === currentYear && month < currentMonth) return true;
+        return false;
+    }, [selectedMonth]);
+
     const stats = useMemo(() => {
         const totalReservas = squadMembers.reduce((acc, curr) => acc + (curr.val || 0), 0);
         const totalContracts = squadMembers.reduce((acc, curr) => acc + (curr.contracts || 0), 0);
@@ -307,13 +320,15 @@ const SquadLaboratory: React.FC<SquadLaboratoryProps> = ({
                             <Award size={18} className="text-emerald-500 mb-1" />
                         </div>
                     </div>
-                    <div className="flex-1 min-w-[140px] px-6 py-4 bg-slate-900/50 rounded-2xl border border-white/5 backdrop-blur-xl">
-                        <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Proyección</p>
-                        <div className="flex items-end gap-2 text-2xl font-black text-blue-400">
-                            {stats.projection}
-                            <TrendingUp size={18} className="text-blue-500 mb-1" />
+                    {!isClosedMonth && (
+                        <div className="flex-1 min-w-[140px] px-6 py-4 bg-slate-900/50 rounded-2xl border border-white/5 backdrop-blur-xl">
+                            <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Proyección</p>
+                            <div className="flex items-end gap-2 text-2xl font-black text-blue-400">
+                                {stats.projection}
+                                <TrendingUp size={18} className="text-blue-500 mb-1" />
+                            </div>
                         </div>
-                    </div>
+                    )}
                     <div className="flex-1 min-w-[140px] px-6 py-4 bg-emerald-500/5 rounded-2xl border border-emerald-500/10 backdrop-blur-xl">
                         <p className="text-[10px] font-black text-emerald-500/60 uppercase tracking-widest mb-1">Target</p>
                         <div className="flex items-end gap-2 text-2xl font-black text-emerald-400">
@@ -323,6 +338,47 @@ const SquadLaboratory: React.FC<SquadLaboratoryProps> = ({
                     </div>
                 </div>
             </header>
+
+            {/* Banner de Mes Cerrado - SQUAD VERSION */}
+            {isClosedMonth && (
+                <section className="mb-10 animate-in slide-in-from-top duration-500">
+                    <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-slate-950 to-slate-900 border border-amber-500/20 p-8 shadow-2xl">
+                        <div className="absolute top-0 right-0 w-80 h-80 bg-amber-500/5 rounded-full blur-[100px] pointer-events-none"></div>
+                        <div className="relative flex flex-col md:flex-row items-center justify-between gap-8">
+                            <div className="flex items-center gap-6">
+                                <div className="p-4 bg-amber-500/10 rounded-3xl border border-amber-500/20 shadow-[0_0_20px_rgba(245,158,11,0.1)]">
+                                    <Award className="w-10 h-10 text-amber-400" />
+                                </div>
+                                <div>
+                                    <h2 className="text-3xl font-black text-white uppercase tracking-tighter mb-1">Cierre de Operación</h2>
+                                    <p className="text-slate-400 text-sm font-bold uppercase tracking-widest">Snapshot Definitivo • {selectedMonth}</p>
+                                </div>
+                            </div>
+
+                            <div className="flex items-center gap-12 bg-white/5 px-8 py-4 rounded-3xl border border-white/10 backdrop-blur-md">
+                                <div className="text-center">
+                                    <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-2">Meta Squad</p>
+                                    <p className="text-2xl font-black text-white">{monthlyGoal}</p>
+                                </div>
+                                <div className="h-10 w-px bg-white/10"></div>
+                                <div className="text-center">
+                                    <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-2">Check Final</p>
+                                    <p className={`text-2xl font-black ${(stats.totalContracts / monthlyGoal) >= 1 ? 'text-emerald-400' : 'text-amber-400'}`}>
+                                        {((stats.totalContracts / monthlyGoal) * 100).toFixed(1)}%
+                                    </p>
+                                </div>
+                                <div className="h-10 w-px bg-white/10"></div>
+                                <div className="text-center">
+                                    <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-2">Resultado</p>
+                                    <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest ${(stats.totalContracts / monthlyGoal) >= 1 ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'}`}>
+                                        {(stats.totalContracts / monthlyGoal) >= 1 ? 'Objetivo Logrado' : 'Incompleto'}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            )}
 
             {/* Grilla Principal */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -497,8 +553,8 @@ const SquadLaboratory: React.FC<SquadLaboratoryProps> = ({
                                                 {/* Score Column */}
                                                 <td className="py-4 text-center">
                                                     <span className={`px-3 py-1.5 rounded-lg text-sm font-black ${broker.score >= 70 ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 shadow-[0_0_15px_rgba(16,185,129,0.1)]' :
-                                                            broker.score >= 40 ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30' :
-                                                                'bg-red-500/20 text-red-400 border border-red-500/30'
+                                                        broker.score >= 40 ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30' :
+                                                            'bg-red-500/20 text-red-400 border border-red-500/30'
                                                         }`}>
                                                         {broker.score?.toFixed(0) || '0'}
                                                     </span>
@@ -544,8 +600,8 @@ const SquadLaboratory: React.FC<SquadLaboratoryProps> = ({
 
                                                 <td className="py-4 text-center">
                                                     <span className={`text-[10px] font-black uppercase px-2.5 py-1 rounded-full border ${broker.action === "Meta Cumplida" ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
-                                                            broker.action === "Coaching Urgente" ? 'bg-red-500/10 text-red-400 border-red-500/20 animate-pulse' :
-                                                                'bg-blue-500/10 text-blue-400 border-blue-500/20'
+                                                        broker.action === "Coaching Urgente" ? 'bg-red-500/10 text-red-400 border-red-500/20 animate-pulse' :
+                                                            'bg-blue-500/10 text-blue-400 border-blue-500/20'
                                                         }`}>
                                                         {broker.action}
                                                     </span>

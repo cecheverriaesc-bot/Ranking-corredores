@@ -197,13 +197,30 @@ const StrategicLab: React.FC<SquadLaboratoryProps> = ({
             try {
                 setIsLoading(true);
 
-                // Fetch intelligence v5 con filtro de región
-                const intelligenceResponse = await fetch(`/api/v5_intelligence?region=${regionFilter}`);
+                const queryParams = new URLSearchParams();
+                queryParams.append('region', regionFilter);
+
+                const capacityParams = new URLSearchParams();
+
+                if (selectedMonth && selectedMonth !== 'total-year') {
+                    const [year, month] = selectedMonth.split('-');
+                    if (year && month) {
+                        queryParams.append('year', year);
+                        queryParams.append('month', parseInt(month, 10).toString()); // removes leading zero if any, though Python handles '02' well
+                        capacityParams.append('year', year);
+                        capacityParams.append('month', parseInt(month, 10).toString());
+                    }
+                }
+
+                // Fetch intelligence v5 con filtro de región y fecha
+                const intelligenceResponse = await fetch(`/api/v5_intelligence?${queryParams.toString()}`);
                 if (!intelligenceResponse.ok) throw new Error('Failed to fetch intelligence data');
                 const intelligenceData = await intelligenceResponse.json();
 
                 // Fetch capacity
-                const capacityResponse = await fetch('/api/v3_capacity');
+                const capacityQueryStr = capacityParams.toString();
+                const capacityUrl = `/api/v3_capacity${capacityQueryStr ? `?${capacityQueryStr}` : ''}`;
+                const capacityResponse = await fetch(capacityUrl);
                 if (!capacityResponse.ok) throw new Error('Failed to fetch capacity data');
                 const capacityData = await capacityResponse.json();
 
@@ -239,9 +256,10 @@ const StrategicLab: React.FC<SquadLaboratoryProps> = ({
     const brokers = intelligenceData?.brokers || [];
     const coverage = intelligenceData ? [] : []; // Placeholder para coverage
     const efficiencyAlerts = intelligenceData ? {
-        leadsSinGestion: 0,
-        unidadesSinVisitas: 0
-    } : { leadsSinGestion: 0, unidadesSinVisitas: 0 };
+        leadsSinGestion: intelligenceData.brokers.filter(b => (b.breakdown_engagement?.no_descarta_leads || 0) < 5).length,
+        unidadesSinVisitas: 0,
+        vencimientoProximos: 0
+    } : { leadsSinGestion: 0, unidadesSinVisitas: 0, vencimientoProximos: 0 };
 
     // Filtered brokers based on search and score
     const filteredBrokers = useMemo(() => {
@@ -288,17 +306,15 @@ const StrategicLab: React.FC<SquadLaboratoryProps> = ({
 
     // Get region badge
     const getRegionBadge = (regionType: string) => {
-        if (regionType === 'RM') {
-            return (
-                <span className="px-2 py-0.5 rounded-md bg-blue-500/20 text-blue-400 border border-blue-500/30 text-[9px] font-black uppercase">
-                    RM
-                </span>
-            );
-        }
+        const isRM = regionType === 'RM';
         return (
-            <span className="px-2 py-0.5 rounded-md bg-orange-500/20 text-orange-400 border border-orange-500/30 text-[9px] font-black uppercase">
-                Regiones
-            </span>
+            <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[10px] font-black uppercase tracking-wider ${isRM
+                    ? 'bg-blue-500/10 text-blue-400 border-blue-500/20 shadow-[0_0_10px_rgba(59,130,246,0.1)]'
+                    : 'bg-orange-500/10 text-orange-400 border-orange-500/20 shadow-[0_0_10px_rgba(249,115,22,0.1)]'
+                }`}>
+                <Map size={10} />
+                {regionType}
+            </div>
         );
     };
 
@@ -392,17 +408,26 @@ const StrategicLab: React.FC<SquadLaboratoryProps> = ({
                     </div>
                 </div>
                 <div className="flex items-center gap-6">
-                    <div className="text-right">
-                        <p className="text-[10px] font-bold text-slate-500 uppercase">Contratos</p>
-                        <p className="text-xl font-black text-white">{stats.totalContracts}</p>
+                    <div className="relative group">
+                        <div className="absolute inset-0 bg-blue-500/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        <div className="relative bg-slate-900/50 border border-slate-700/50 rounded-2xl px-5 py-3 text-right">
+                            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-tighter">Contratos</p>
+                            <p className="text-2xl font-black text-white">{stats.totalContracts}</p>
+                        </div>
                     </div>
-                    <div className="text-right">
-                        <p className="text-[10px] font-bold text-slate-500 uppercase">Proyección</p>
-                        <p className="text-xl font-black text-blue-400">{stats.projection}</p>
+                    <div className="relative group">
+                        <div className="absolute inset-0 bg-indigo-500/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        <div className="relative bg-slate-900/50 border border-slate-700/50 rounded-2xl px-5 py-3 text-right">
+                            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-tighter">Proyección</p>
+                            <p className="text-2xl font-black text-indigo-400">{stats.projection}</p>
+                        </div>
                     </div>
-                    <div className="text-right pl-4 border-l border-slate-800">
-                        <p className="text-[10px] font-bold text-slate-500 uppercase">Target 110%</p>
-                        <p className="text-xl font-black text-emerald-400">{(stats.targetCheck).toFixed(0)}</p>
+                    <div className="relative group">
+                        <div className="absolute inset-0 bg-emerald-500/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        <div className="relative bg-slate-900/50 border border-emerald-500/20 rounded-2xl px-5 py-3 text-right">
+                            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-tighter">Target 110%</p>
+                            <p className="text-2xl font-black text-emerald-400">{(stats.targetCheck).toFixed(0)}</p>
+                        </div>
                     </div>
                 </div>
             </header>
@@ -441,13 +466,12 @@ const StrategicLab: React.FC<SquadLaboratoryProps> = ({
                     </div>
                     <div className="flex justify-between mt-2 text-[9px] font-bold text-slate-500 uppercase tracking-wider">
                         <span>Inicio mes</span>
-                        <span className={
-                            (intelligenceData.squad_summary.contratos_actuales / intelligenceData.squad_summary.meta_equipo * 100) >= 80
-                                ? 'text-emerald-500/70'
-                                : (intelligenceData.squad_summary.contratos_actuales / intelligenceData.squad_summary.meta_equipo * 100) >= 50
-                                    ? 'text-amber-500/70'
-                                    : 'text-red-500/70'
-                        }>
+                        <span className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest ${(intelligenceData.squad_summary.contratos_actuales / intelligenceData.squad_summary.meta_equipo * 100) >= 80
+                            ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20'
+                            : (intelligenceData.squad_summary.contratos_actuales / intelligenceData.squad_summary.meta_equipo * 100) >= 50
+                                ? 'bg-amber-500/10 text-amber-500 border border-amber-500/20'
+                                : 'bg-red-500/10 text-red-500 border border-red-500/20'
+                            }`}>
                             {intelligenceData.squad_summary.dias_restantes} días restantes
                         </span>
                         <span>Meta: {intelligenceData.squad_summary.meta_equipo}</span>
@@ -457,47 +481,56 @@ const StrategicLab: React.FC<SquadLaboratoryProps> = ({
 
             {/* Líder de Performance Total */}
             {intelligenceData?.leader && (
-                <section className="mb-10 bg-gradient-to-r from-amber-900/20 to-yellow-900/20 rounded-3xl p-8 border-2 border-amber-500/40 shadow-2xl relative overflow-hidden">
-                    <div className="absolute top-0 right-0 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
-                    <div className="relative z-10">
-                        <div className="flex items-center gap-2 mb-4">
-                            <Trophy className="w-6 h-6 text-amber-400" />
-                            <h2 className="text-lg font-black text-amber-400 uppercase tracking-widest">
-                                ðŸ† Líder de Performance Total
-                            </h2>
-                        </div>
-                        <div className="flex items-center gap-6">
-                            <div className="w-20 h-20 rounded-full bg-amber-500/20 border-4 border-amber-400 flex items-center justify-center text-3xl font-black text-amber-400">
-                                {intelligenceData.leader.name.charAt(0)}
-                            </div>
-                            <div>
-                                <h3 className="text-3xl font-black text-white mb-1">
-                                    {intelligenceData.leader.name}
-                                </h3>
-                                <div className="flex items-center gap-3 mb-2">
-                                    {getRegionBadge(intelligenceData.leader.region_type)}
-                                    <span className="text-slate-400 text-sm">
-                                        {intelligenceData.leader.comunas?.slice(0, 3).join(', ')}
-                                    </span>
+                <section className="mb-10 relative group">
+                    <div className="absolute -inset-1 bg-gradient-to-r from-amber-500/50 to-yellow-500/50 rounded-[2rem] blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+                    <div className="relative bg-gradient-to-r from-slate-900 via-slate-900 to-amber-950/30 rounded-[2rem] p-8 border border-white/10 shadow-2xl overflow-hidden">
+                        <div className="absolute top-0 right-0 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+                        <div className="relative z-10">
+                            <div className="flex items-center gap-3 mb-6">
+                                <div className="p-2 bg-amber-500/20 rounded-lg border border-amber-500/30">
+                                    <Trophy className="w-6 h-6 text-amber-400" />
                                 </div>
-                                <div className="flex items-center gap-6 text-sm">
-                                    <div className="flex items-center gap-2">
-                                        <Star className="w-4 h-4 text-amber-400" />
-                                        <span className="text-amber-400 font-black">
-                                            Score: {intelligenceData.leader.score.toFixed(1)}
-                                        </span>
+                                <h2 className="text-xl font-black text-white uppercase tracking-widest">
+                                    Líder de Performance Total
+                                </h2>
+                                <div className="h-px flex-1 bg-gradient-to-r from-amber-500/50 to-transparent"></div>
+                            </div>
+                            <div className="flex flex-col md:flex-row items-center gap-8">
+                                <div className="relative">
+                                    <div className="absolute -inset-2 bg-amber-500/30 blur-lg rounded-full animate-pulse"></div>
+                                    <div className="relative w-24 h-24 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 border-4 border-white/20 flex items-center justify-center text-4xl font-black text-slate-950 shadow-2xl">
+                                        {intelligenceData.leader.name.charAt(0)}
                                     </div>
-                                    <div className="flex items-center gap-2">
-                                        <TrendingUp className="w-4 h-4 text-emerald-400" />
-                                        <span className="text-emerald-400 font-black">
-                                            {intelligenceData.leader.reservas} reservas
-                                        </span>
+                                </div>
+                                <div className="flex-1 text-center md:text-left">
+                                    <h3 className="text-4xl font-black text-white mb-2 tracking-tight">
+                                        {intelligenceData.leader.name}
+                                    </h3>
+                                    <div className="flex flex-wrap justify-center md:justify-start items-center gap-3 mb-4">
+                                        {getRegionBadge(intelligenceData.leader.region_type)}
+                                        <div className="px-3 py-1 bg-white/5 rounded-full border border-white/10 flex items-center gap-2">
+                                            <Map size={12} className="text-slate-400" />
+                                            <span className="text-slate-300 text-xs font-bold uppercase tracking-wide">
+                                                {intelligenceData.leader.comunas?.slice(0, 3).join(', ')}
+                                            </span>
+                                        </div>
                                     </div>
-                                    <div className="flex items-center gap-2">
-                                        <Award className="w-4 h-4 text-blue-400" />
-                                        <span className="text-blue-400 font-black">
-                                            Percentil: {intelligenceData.leader.percentile}°
-                                        </span>
+                                    <div className="flex flex-wrap justify-center md:justify-start items-center gap-6">
+                                        {/* Score Pill */}
+                                        <div className="bg-amber-500/10 border border-amber-500/30 rounded-2xl px-4 py-2 flex flex-col items-center min-w-[100px]">
+                                            <span className="text-[9px] font-black text-amber-500/70 uppercase">Score AP</span>
+                                            <span className="text-2xl font-black text-amber-400">{intelligenceData.leader.score.toFixed(1)}</span>
+                                        </div>
+                                        {/* Reservas Pill */}
+                                        <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-2xl px-4 py-2 flex flex-col items-center min-w-[100px]">
+                                            <span className="text-[9px] font-black text-emerald-500/70 uppercase">Reservas</span>
+                                            <span className="text-2xl font-black text-emerald-400">{intelligenceData.leader.reservas}</span>
+                                        </div>
+                                        {/* Percentile Pill */}
+                                        <div className="bg-blue-500/10 border border-blue-500/30 rounded-2xl px-4 py-2 flex flex-col items-center min-w-[100px]">
+                                            <span className="text-[9px] font-black text-blue-500/70 uppercase">Percentil</span>
+                                            <span className="text-2xl font-black text-blue-400">{intelligenceData.leader.percentile}°</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

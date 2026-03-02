@@ -475,17 +475,33 @@ const App: React.FC = () => {
         const loadBrokerGoals = async () => {
             try {
                 const response = await fetch(`/api/v4_goals?month=${selectedMonth}-01`);
+                
+                // Validar respuesta HTTP
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
                 const data = await response.json();
 
-                if (Array.isArray(data)) {
-                    const goalsMap: Record<string, BrokerGoalData> = {};
-                    data.forEach((goal: BrokerGoalData) => {
-                        goalsMap[goal.broker_name] = goal;
-                    });
-                    setBrokerGoals(goalsMap);
+                // Validar formato de datos
+                if (!Array.isArray(data)) {
+                    console.warn('Unexpected data format from v4_goals API:', data);
+                    setBrokerGoals({});
+                    return;
                 }
+
+                const goalsMap: Record<string, BrokerGoalData> = {};
+                data.forEach((goal: BrokerGoalData) => {
+                    // Validar campos requeridos
+                    if (goal && goal.broker_name) {
+                        goalsMap[goal.broker_name] = goal;
+                    }
+                });
+                setBrokerGoals(goalsMap);
             } catch (error) {
                 console.error('Error loading broker goals:', error);
+                // No fallar silenciosamente - mantener estado anterior o mostrar advertencia
+                setBrokerGoals(prev => prev); // Mantener estado anterior
             }
         };
 

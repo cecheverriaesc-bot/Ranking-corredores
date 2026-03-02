@@ -2,6 +2,8 @@
 """
 API Endpoint: Ranking Data (Unified)
 Obtiene datos del ranking para cualquier mes dinámicamente desde la base de datos.
+
+Usa servicios centralizados para cálculos consistentes de métricas.
 """
 
 from http.server import BaseHTTPRequestHandler
@@ -15,6 +17,20 @@ from urllib.parse import parse_qs, urlparse
 import sys
 sys.path.append(os.path.dirname(__file__))
 from rate_limiter import check_rate_limit, APIRateLimits, send_cors_headers, validate_query_params
+
+# Import servicios centralizados
+sys.path.append(os.path.dirname(__file__))
+from services.metrics_service import (
+    calculate_net_reservations,
+    validate_squad_email,
+    get_reservation_goal,
+    get_contract_goal,
+)
+from utils.dates import (
+    get_month_boundaries,
+    format_chile_time,
+    get_current_chile_datetime,
+)
 
 # Load environment variables
 def load_env_vars():
@@ -60,37 +76,17 @@ def get_bi_connection():
     )
 
 def get_squad_email(coordinator_email):
-    """Mapea email de coordinador a squads oficiales"""
-    if not coordinator_email:
-        return "carlos.echeverria@assetplan.cl"
-    email = coordinator_email.lower().strip()
-    squads = [
-        "carlos.echeverria@assetplan.cl",
-        "luis.gomez@assetplan.cl",
-        "nataly.espinoza@assetplan.cl",
-        "angely.rojo@assetplan.cl",
-        "maria.chacin@assetplan.cl"
-    ]
-    if email in squads:
-        return email
-    return "carlos.echeverria@assetplan.cl"
+    """Mapea email de coordinador a squads oficiales (wrapper para servicio centralizado)"""
+    return validate_squad_email(coordinator_email)
 
 def fetch_ranking_data(year: int, month: int):
     """Obtiene datos del ranking para un mes específico"""
     conn = get_rentas_connection()
     cursor = conn.cursor()
-    
-    # Calcular fechas del mes
-    if month == 12:
-        next_year = year + 1
-        next_month = 1
-    else:
-        next_year = year
-        next_month = month + 1
-    
-    start_date = f"{year}-{month:02d}-01 00:00:00"
-    end_date = f"{next_year}-{next_month:02d}-01 00:00:00"
-    
+
+    # Calcular fechas del mes usando servicio centralizado
+    start_date, end_date = get_month_boundaries(year, month)
+
     try:
         # Current Ranking - Solo activos
         cursor.execute("""
@@ -142,22 +138,22 @@ def fetch_ranking_data(year: int, month: int):
         ranking, others = [], []
         for r in rows:
             name = f"{r[1]} {r[2]}".strip()
-            val_gross = int(r[5] or 0)
-            val_fallen = int(r[6] or 0)
-            net = val_gross - val_fallen
-            
+            # Usar servicio centralizado para cálculo de net reservations
+            net = calculate_net_reservations(r[5], r[6])
+            fallen = int(r[6] or 0)
+
             obj = {
                 "name": name,
                 "val": net,
-                "fallen": val_fallen,
+                "fallen": fallen,
                 "leads": leads.get(r[0], 0),
                 "agendas": agendas.get(r[0], 0),
                 "coord": get_squad_email(r[4])
             }
-            
+
             if "reservas adicionales" in name.lower():
                 obj["hidden"] = True
-            
+
             if r[3] == 1:  # Externo
                 others.append(obj)
             else:
@@ -179,15 +175,14 @@ def fetch_ranking_data(year: int, month: int):
             for k, v in sorted(daily_map.items())
         ]
         
-        # Last Update (Chile time)
+        # Last Update (Chile time) - usando servicio centralizado
         cursor.execute("SELECT MAX(fecha) FROM reservas WHERE fecha <= NOW()")
         last_res_raw = cursor.fetchone()[0]
-        
+
         last_update_str = "---"
         if last_res_raw:
-            chile_time = last_res_raw - timedelta(hours=3)
-            last_update_str = chile_time.strftime("%d/%m/%Y %H:%M")
-        
+            last_update_str = format_chile_time(last_res_raw, "%d/%m/%Y %H:%M")
+
         return {
             "ranking": ranking,
             "others": others,
@@ -203,18 +198,10 @@ def fetch_contract_data(year: int, month: int):
     """Obtiene datos de contratos desde BI para un mes específico"""
     conn = get_bi_connection()
     cursor = conn.cursor(dictionary=True)
-    
-    # Calcular fechas del mes
-    if month == 12:
-        next_year = year + 1
-        next_month = 1
-    else:
-        next_year = year
-        next_month = month + 1
-    
-    start_date = f"{year}-{month:02d}-01"
-    end_date = f"{next_year}-{next_month:02d}-01"
-    
+
+    # Calcular fechas del mes usando servicio centralizado (solo fecha, sin hora)
+    start_date, end_date = get_month_boundaries_date_only(year, month)
+
     try:
         # Contratos por corredor (solo activos)
         cursor.execute("""
@@ -269,20 +256,12 @@ def fetch_historical_comparison(year: int, month: int):
     """Obtiene comparación con año anterior"""
     conn = get_rentas_connection()
     cursor = conn.cursor()
-    
+
     prev_year = year - 1
-    
-    # Calcular fechas del mes
-    if month == 12:
-        next_year = year + 1
-        next_month = 1
-    else:
-        next_year = year
-        next_month = month + 1
-    
-    start_date_prev = f"{prev_year}-{month:02d}-01 00:00:00"
-    end_date_prev = f"{prev_year}-{next_month:02d}-01 00:00:00"
-    
+
+    # Calcular fechas del mes usando servicio centralizado
+    start_date_prev, end_date_prev = get_month_boundaries(prev_year, month)
+
     try:
         cursor.execute("""
             SELECT COUNT(r.id)
@@ -302,21 +281,13 @@ def fetch_historical_comparison(year: int, month: int):
         conn.close()
 
 def get_month_goal(year: int, month: int) -> int:
-    """Retorna la meta mensual configurada"""
-    # Metas configuradas por mes
-    GOALS = {
-        (2026, 1): 1928,
-        (2026, 2): 2174,
-    }
-    return GOALS.get((year, month), 2000)
+    """Retorna la meta mensual configurada (wrapper para servicio centralizado)"""
+    return get_reservation_goal(year, month)
+
 
 def get_contract_goal(year: int, month: int) -> int:
-    """Retorna la meta de contratos mensual"""
-    CONTRACT_GOALS = {
-        (2026, 1): 1928,
-        (2026, 2): 2066,
-    }
-    return CONTRACT_GOALS.get((year, month), 2000)
+    """Retorna la meta de contratos mensual (wrapper para servicio centralizado)"""
+    return get_contract_goal(year, month)
 
 
 class handler(BaseHTTPRequestHandler):

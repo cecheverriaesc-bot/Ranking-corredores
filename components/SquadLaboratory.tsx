@@ -137,13 +137,29 @@ const SquadLaboratory: React.FC<SquadLaboratoryProps> = ({
             try {
                 setIsLoading(true);
 
+                // Construir query params para el mes seleccionado
+                const queryParams = new URLSearchParams();
+                const capacityParams = new URLSearchParams();
+
+                if (selectedMonth && selectedMonth !== 'total-year') {
+                    const [year, month] = selectedMonth.split('-');
+                    if (year && month) {
+                        queryParams.append('year', year);
+                        queryParams.append('month', parseInt(month, 10).toString());
+                        capacityParams.append('year', year);
+                        capacityParams.append('month', parseInt(month, 10).toString());
+                    }
+                }
+
                 // Fetch intelligence (existing)
-                const intelligenceResponse = await fetch('/api/v2_intelligence');
+                const intelligenceResponse = await fetch(`/api/v2_intelligence?${queryParams.toString()}`);
                 if (!intelligenceResponse.ok) throw new Error('Failed to fetch intelligence data');
                 const intelligenceData = await intelligenceResponse.json();
 
                 // Fetch capacity (new)
-                const capacityResponse = await fetch('/api/v3_capacity');
+                const capacityQueryStr = capacityParams.toString();
+                const capacityUrl = `/api/v3_capacity${capacityQueryStr ? `?${capacityQueryStr}` : ''}`;
+                const capacityResponse = await fetch(capacityUrl);
                 if (!capacityResponse.ok) throw new Error('Failed to fetch capacity data');
                 const capacityData = await capacityResponse.json();
 
@@ -256,38 +272,54 @@ const SquadLaboratory: React.FC<SquadLaboratoryProps> = ({
     return (
         <div className="min-h-screen bg-[#0f172a] text-slate-200 font-sans p-6 pb-20 animate-in fade-in duration-500">
 
-            {/* Encabezado */}
-            <header className="flex justify-between items-center mb-10 border-b border-indigo-500/20 pb-6">
-                <div className="flex items-center gap-4">
+            {/* Encabezado - REDISEÑO PREMIUM */}
+            <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12 border-b border-white/5 pb-10">
+                <div className="flex items-center gap-6">
                     <button
                         onClick={onBack}
-                        className="p-2 rounded-xl bg-slate-800/50 hover:bg-indigo-500/20 text-slate-400 hover:text-white transition-all"
+                        className="p-3 rounded-2xl bg-slate-800/40 hover:bg-slate-700/60 text-slate-400 hover:text-white transition-all border border-slate-700/50 group"
                     >
-                        <ChevronLeft size={20} />
+                        <ChevronLeft size={24} className="group-hover:-translate-x-1 transition-transform" />
                     </button>
                     <div>
-                        <h1 className="text-2xl font-black text-white uppercase tracking-widest flex items-center gap-3">
-                            <Brain className="text-indigo-400" />
-                            Laboratorio Estratégico
-                        </h1>
-                        <div className="flex items-center gap-4 mt-2">
-                            <p className="text-xs font-bold text-indigo-500/80 uppercase tracking-widest">Misión 110% • Meta Estratégica</p>
+                        <div className="flex items-center gap-3 mb-2">
+                            <div className="p-2 bg-indigo-500/20 rounded-lg">
+                                <Brain size={24} className="text-indigo-400" />
+                            </div>
+                            <h1 className="text-3xl font-black text-white uppercase tracking-tighter">
+                                Squad <span className="text-indigo-500">Laboratory</span>
+                            </h1>
+                        </div>
+                        <div className="flex items-center gap-4">
+                            <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 text-[10px] font-black uppercase tracking-widest">
+                                <Target size={12} /> Misión 110%
+                            </span>
                             <MonthSelector selected={selectedMonth} onChange={setSelectedMonth} />
                         </div>
                     </div>
                 </div>
-                <div className="flex items-center gap-6">
-                    <div className="text-right">
-                        <p className="text-[10px] font-bold text-slate-500 uppercase">Contratos</p>
-                        <p className="text-xl font-black text-white">{stats.totalContracts}</p>
+
+                <div className="flex items-center gap-4 w-full md:w-auto overflow-x-auto pb-2 md:pb-0">
+                    <div className="flex-1 min-w-[140px] px-6 py-4 bg-slate-900/50 rounded-2xl border border-white/5 backdrop-blur-xl">
+                        <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Contratos</p>
+                        <div className="flex items-end gap-2 text-2xl font-black text-white">
+                            {stats.totalContracts}
+                            <Award size={18} className="text-emerald-500 mb-1" />
+                        </div>
                     </div>
-                    <div className="text-right">
-                        <p className="text-[10px] font-bold text-slate-500 uppercase">Proyección Final</p>
-                        <p className="text-xl font-black text-blue-400">{stats.projection}</p>
+                    <div className="flex-1 min-w-[140px] px-6 py-4 bg-slate-900/50 rounded-2xl border border-white/5 backdrop-blur-xl">
+                        <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Proyección</p>
+                        <div className="flex items-end gap-2 text-2xl font-black text-blue-400">
+                            {stats.projection}
+                            <TrendingUp size={18} className="text-blue-500 mb-1" />
+                        </div>
                     </div>
-                    <div className="text-right pl-4 border-l border-slate-800">
-                        <p className="text-[10px] font-bold text-slate-500 uppercase">Target 110%</p>
-                        <p className="text-xl font-black text-emerald-400">{(stats.targetCheck).toFixed(0)}</p>
+                    <div className="flex-1 min-w-[140px] px-6 py-4 bg-emerald-500/5 rounded-2xl border border-emerald-500/10 backdrop-blur-xl">
+                        <p className="text-[10px] font-black text-emerald-500/60 uppercase tracking-widest mb-1">Target</p>
+                        <div className="flex items-end gap-2 text-2xl font-black text-emerald-400">
+                            {(stats.targetCheck).toFixed(0)}
+                            <Trophy size={18} className="text-emerald-500 mb-1" />
+                        </div>
                     </div>
                 </div>
             </header>
@@ -305,89 +337,130 @@ const SquadLaboratory: React.FC<SquadLaboratoryProps> = ({
                             <Zap size={18} className="text-yellow-400" /> Análisis de Rendimiento Operativo
                         </h3>
 
-                        {/* Score Methodology Legend - REDISEÑADO PREMIUM */}
-                        <div className="mb-8 p-6 bg-gradient-to-br from-slate-950 to-slate-900 border border-slate-700/50 rounded-3xl shadow-inner">
-                            <div className="flex items-center gap-4 mb-8">
-                                <div className="p-3 bg-amber-500/20 rounded-2xl border border-amber-500/30">
-                                    <BarChart3 className="text-amber-400 w-6 h-6" />
+                        {/* Score Methodology - REDISEÑO PREMIUM 3 PILARES */}
+                        <div className="mb-12 p-8 bg-gradient-to-br from-slate-950 to-slate-900 border border-white/5 rounded-[2.5rem] shadow-2xl relative overflow-hidden group">
+                            <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-500/5 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2 group-hover:bg-indigo-500/10 transition-colors"></div>
+
+                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10 relative z-10">
+                                <div className="flex items-center gap-6">
+                                    <div className="p-4 bg-amber-500/10 rounded-3xl border border-amber-500/20 shadow-[0_0_20px_rgba(245,158,11,0.05)]">
+                                        <Award className="text-amber-400 w-8 h-8" />
+                                    </div>
+                                    <div>
+                                        <h4 className="text-2xl font-black text-white uppercase tracking-tighter">
+                                            Arquitectura <span className="text-amber-400">Scoring V3</span>
+                                        </h4>
+                                        <p className="text-[10px] text-slate-500 font-bold uppercase tracking-[0.2em]">
+                                            Fase 3: Engagement + Rendimiento + Eficiencia
+                                        </p>
+                                    </div>
                                 </div>
-                                <div>
-                                    <h4 className="text-lg font-black text-white uppercase tracking-wider">
-                                        Arquitectura del Scoring <span className="text-amber-400 ml-2">(75/100 PTS)</span>
-                                    </h4>
-                                    <p className="text-xs text-slate-500 font-medium">
-                                        Fase 1: Enfoque en Gestión Comercial y Conversión
-                                    </p>
+                                <div className="flex items-center gap-3 px-6 py-3 bg-white/5 rounded-2xl border border-white/10 backdrop-blur-md">
+                                    <span className="text-3xl font-black text-white tracking-tighter">100</span>
+                                    <span className="text-[10px] font-black text-slate-500 uppercase">Puntos<br />Máximos</span>
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10">
                                 {/* Pilar 1: Engagement */}
-                                <div className="p-5 bg-slate-800/20 rounded-2xl border border-emerald-500/10 hover:border-emerald-500/30 transition-all">
+                                <div className="p-6 bg-slate-800/20 rounded-3xl border border-emerald-500/5 hover:border-emerald-500/30 transition-all group/pilar">
                                     <div className="flex justify-between items-start mb-4">
                                         <div className="flex items-center gap-2">
-                                            <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
-                                            <span className="text-emerald-400 font-black uppercase text-xs tracking-wider">Engagement & Gestión</span>
+                                            <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.4)]"></div>
+                                            <span className="text-emerald-400 font-black uppercase text-[10px] tracking-widest">Engagement</span>
                                         </div>
-                                        <span className="text-xl font-black text-white">35 Pts</span>
+                                        <span className="text-xl font-black text-white">35%</span>
                                     </div>
-                                    <div className="w-full h-1 bg-slate-800 rounded-full mb-4 overflow-hidden">
-                                        <div className="h-full bg-emerald-500" style={{ width: '46%' }}></div>
+                                    <div className="w-full h-1.5 bg-slate-800 rounded-full mb-6 overflow-hidden">
+                                        <div className="h-full bg-gradient-to-r from-emerald-600 to-emerald-400" style={{ width: '35%' }}></div>
                                     </div>
-                                    <ul className="grid grid-cols-2 gap-x-4 gap-y-2 text-[11px] text-slate-400">
-                                        <li className="flex items-center gap-1.5 font-medium">• Visitas Realizadas <span className="text-[10px] text-emerald-500/70">(10)</span></li>
-                                        <li className="flex items-center gap-1.5 font-medium">• No Cancela Visitas <span className="text-[10px] text-emerald-500/70">(8)</span></li>
-                                        <li className="flex items-center gap-1.5 font-medium">• Respuesta &lt;24h <span className="text-[10px] text-emerald-500/70">(5)</span></li>
-                                        <li className="flex items-center gap-1.5 font-medium">• Gestión Activa <span className="text-[10px] text-emerald-500/70">(7)</span></li>
-                                        <li className="flex items-center gap-1.5 font-medium col-span-2">• No Descarta Leads <span className="text-[10px] text-emerald-500/70">(5)</span></li>
-                                    </ul>
+                                    <div className="space-y-3">
+                                        <div className="flex items-center justify-between text-[10px] text-slate-400 font-bold uppercase tracking-wider">
+                                            <span>Visitas</span>
+                                            <span className="text-emerald-500/70">10 Pts</span>
+                                        </div>
+                                        <div className="flex items-center justify-between text-[10px] text-slate-400 font-bold uppercase tracking-wider">
+                                            <span>No Cancela</span>
+                                            <span className="text-emerald-500/70">10 Pts</span>
+                                        </div>
+                                        <div className="flex items-center justify-between text-[10px] text-slate-400 font-bold uppercase tracking-wider">
+                                            <span>Respuesta</span>
+                                            <span className="text-emerald-500/70">15 Pts</span>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 {/* Pilar 2: Rendimiento */}
-                                <div className="p-5 bg-slate-800/20 rounded-2xl border border-blue-500/10 hover:border-blue-500/30 transition-all">
+                                <div className="p-6 bg-slate-800/20 rounded-3xl border border-blue-500/5 hover:border-blue-500/30 transition-all group/pilar">
                                     <div className="flex justify-between items-start mb-4">
                                         <div className="flex items-center gap-2">
-                                            <div className="w-2.5 h-2.5 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]"></div>
-                                            <span className="text-blue-400 font-black uppercase text-xs tracking-wider">Rendimiento & Conversión</span>
+                                            <div className="w-2.5 h-2.5 rounded-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.4)]"></div>
+                                            <span className="text-blue-400 font-black uppercase text-[10px] tracking-widest">Rendimiento</span>
                                         </div>
-                                        <span className="text-xl font-black text-white">40 Pts</span>
+                                        <span className="text-xl font-black text-white">40%</span>
                                     </div>
-                                    <div className="w-full h-1 bg-slate-800 rounded-full mb-4 overflow-hidden">
-                                        <div className="h-full bg-blue-500" style={{ width: '53%' }}></div>
+                                    <div className="w-full h-1.5 bg-slate-800 rounded-full mb-6 overflow-hidden">
+                                        <div className="h-full bg-gradient-to-r from-blue-600 to-blue-400" style={{ width: '40%' }}></div>
                                     </div>
-                                    <ul className="grid grid-cols-1 gap-2 text-[11px] text-slate-400">
-                                        <li className="flex items-center gap-1.5 font-medium">• Prospecto → Reserva <span className="text-[10px] text-blue-500/70">(15)</span></li>
-                                        <li className="flex items-center gap-1.5 font-medium">• Reservas Absolutas <span className="text-[10px] text-blue-500/70">(10)</span></li>
-                                        <li className="flex items-center gap-1.5 font-medium">• Leads/Visita Eficiencia <span className="text-[10px] text-blue-500/70">(10)</span></li>
-                                        <li className="flex items-center gap-1.5 font-medium">• Lead → Contrato <span className="text-[10px] text-blue-500/70">(5)</span></li>
-                                    </ul>
+                                    <div className="space-y-3">
+                                        <div className="flex items-center justify-between text-[10px] text-slate-400 font-bold uppercase tracking-wider">
+                                            <span>Conv. Reserva</span>
+                                            <span className="text-blue-500/70">15 Pts</span>
+                                        </div>
+                                        <div className="flex items-center justify-between text-[10px] text-slate-400 font-bold uppercase tracking-wider">
+                                            <span>Reservas Abs</span>
+                                            <span className="text-blue-500/70">15 Pts</span>
+                                        </div>
+                                        <div className="flex items-center justify-between text-[10px] text-slate-400 font-bold uppercase tracking-wider">
+                                            <span>Conv. Contrato</span>
+                                            <span className="text-blue-500/70">10 Pts</span>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div className="mt-6 flex flex-col items-center gap-2">
-                                <div className="flex items-center gap-2 text-[10px] text-slate-500 font-medium">
-                                    <Activity size={12} className="text-indigo-500" />
-                                    <span>Pilar 3: <span className="text-slate-300">Eficiencia Operativa (25%)</span> — Próximamente: Resolución de Tickets</span>
+                                {/* Pilar 3: Eficiencia */}
+                                <div className="p-6 bg-slate-800/20 rounded-3xl border border-purple-500/5 hover:border-purple-500/30 transition-all group/pilar">
+                                    <div className="flex justify-between items-start mb-4">
+                                        <div className="flex items-center gap-2">
+                                            <div className="w-2.5 h-2.5 rounded-full bg-purple-500 shadow-[0_0_10px_rgba(168,85,247,0.4)]"></div>
+                                            <span className="text-purple-400 font-black uppercase text-[10px] tracking-widest">Eficiencia</span>
+                                        </div>
+                                        <span className="text-xl font-black text-white">25%</span>
+                                    </div>
+                                    <div className="w-full h-1.5 bg-slate-800 rounded-full mb-6 overflow-hidden">
+                                        <div className="h-full bg-gradient-to-r from-purple-600 to-purple-400" style={{ width: '25%' }}></div>
+                                    </div>
+                                    <div className="space-y-3">
+                                        <div className="flex items-center justify-between text-[10px] text-slate-400 font-bold uppercase tracking-wider">
+                                            <span>Tickets Res.</span>
+                                            <span className="text-purple-500/70">10 Pts</span>
+                                        </div>
+                                        <div className="flex items-center justify-between text-[10px] text-slate-400 font-bold uppercase tracking-wider">
+                                            <span>Calidad Ges.</span>
+                                            <span className="text-purple-500/70">15 Pts</span>
+                                        </div>
+                                        <div className="flex items-center justify-between text-[10px] text-slate-400 font-bold uppercase tracking-wider opacity-30">
+                                            <span>Próximamente</span>
+                                            <span>--</span>
+                                        </div>
+                                    </div>
                                 </div>
-                                <p className="text-[9px] text-slate-600 italic">
-                                    * Hover sobre el score de cada corredor para ver el desglose detallado
-                                </p>
                             </div>
                         </div>
 
                         <div className="overflow-x-auto">
                             <table className="w-full text-left border-collapse">
                                 <thead>
-                                    <tr className="text-[10px] font-black text-slate-500 uppercase tracking-wider border-b border-slate-800">
-                                        <th className="py-4">Corredor</th>
-                                        <th className="py-4 text-center">Reservas</th>
-                                        <th className="py-4 text-center text-emerald-400">Contratos</th>
-                                        <th className="py-4 text-center">Conv. %</th>
-                                        <th className="py-4 text-center text-amber-400">Score</th>
-                                        <th className="py-4 text-center">Capacidad</th>
-                                        <th className="py-4 text-center text-indigo-400">Leads Diarios</th>
-                                        <th className="py-4 text-center text-pink-400">Meta Personal</th>
-                                        <th className="py-4 text-center">Acción Sugerida</th>
+                                    <tr className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] border-b border-white/5">
+                                        <th className="py-6 px-4">Corredor</th>
+                                        <th className="py-6 text-center">Reservas</th>
+                                        <th className="py-6 text-center text-emerald-400">Contratos</th>
+                                        <th className="py-6 text-center">Eficiencia</th>
+                                        <th className="py-6 text-center text-amber-400">Score</th>
+                                        <th className="py-6 text-center">Capacidad</th>
+                                        <th className="py-6 text-center text-indigo-400">Leads</th>
+                                        <th className="py-6 text-center text-pink-400">Meta</th>
+                                        <th className="py-6 text-center">Acción Sugerida</th>
                                     </tr>
                                 </thead>
                                 <tbody className="text-sm">
@@ -422,15 +495,13 @@ const SquadLaboratory: React.FC<SquadLaboratoryProps> = ({
                                                 </td>
 
                                                 {/* Score Column */}
-                                                <td className="py-4 text-center relative group">
-                                                    <div className="flex flex-col items-center gap-1">
-                                                        <span className={`px-2 py-1 rounded-lg text-xs font-black cursor-help ${(broker.score || 0) >= 0.25 ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' :
-                                                            (broker.score || 0) >= 0.15 ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30' :
+                                                <td className="py-4 text-center">
+                                                    <span className={`px-3 py-1.5 rounded-lg text-sm font-black ${broker.score >= 70 ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 shadow-[0_0_15px_rgba(16,185,129,0.1)]' :
+                                                            broker.score >= 40 ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30' :
                                                                 'bg-red-500/20 text-red-400 border border-red-500/30'
-                                                            }`}>
-                                                            {((broker.score || 0) * 100).toFixed(0)}
-                                                        </span>
-                                                    </div>
+                                                        }`}>
+                                                        {broker.score?.toFixed(0) || '0'}
+                                                    </span>
                                                 </td>
 
                                                 {/* Capacity Column */}
@@ -472,8 +543,9 @@ const SquadLaboratory: React.FC<SquadLaboratoryProps> = ({
                                                 </td>
 
                                                 <td className="py-4 text-center">
-                                                    <span className={`text-[10px] font-bold uppercase ${broker.action === "Coaching Urgente" ? 'text-red-400' :
-                                                        broker.action === "Meta Cumplida" ? 'text-slate-500' : 'text-emerald-400'
+                                                    <span className={`text-[10px] font-black uppercase px-2.5 py-1 rounded-full border ${broker.action === "Meta Cumplida" ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
+                                                            broker.action === "Coaching Urgente" ? 'bg-red-500/10 text-red-400 border-red-500/20 animate-pulse' :
+                                                                'bg-blue-500/10 text-blue-400 border-blue-500/20'
                                                         }`}>
                                                         {broker.action}
                                                     </span>

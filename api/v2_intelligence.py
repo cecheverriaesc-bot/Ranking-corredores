@@ -7,6 +7,19 @@ import calendar
 import statistics
 import math
 
+# Import servicios centralizados
+import sys
+sys.path.append(os.path.dirname(__file__))
+from services.metrics_service import (
+    calculate_rate_with_smoothing,
+    normalize_z_score_simple,
+    get_contract_goal,
+)
+from utils.dates import (
+    is_current_month,
+    get_days_remaining_in_month,
+)
+
 # Load environment variables
 def load_env_vars():
     env_vars = {}
@@ -33,7 +46,6 @@ load_env_vars()
 # ===================================================================
 # CONSTANTES GLOBALES
 # ===================================================================
-META_GLOBAL_110 = 1707  # Meta total mensual (110%)
 CURRENT_YEAR = datetime.now().year
 CURRENT_MONTH = datetime.now().month  # Dinámico - mes actual
 
@@ -47,54 +59,38 @@ def get_db_connection():
         database='bi_assetplan'
     )
 
-def calculate_dias_restantes():
-    """Calcular días hábiles restantes del mes"""
-    today = date.today()
-    last_day = calendar.monthrange(today.year, today.month)[1]
-    dias_restantes = last_day - today.day
-    return max(dias_restantes, 1)
+def calculate_dias_restantes(year=None, month=None):
+    """
+    Calcular días hábiles restantes del mes usando el servicio centralizado.
+    """
+    use_year = int(year) if year else CURRENT_YEAR
+    use_month = int(month) if month else CURRENT_MONTH
+    
+    if not is_current_month(use_year, use_month):
+        from datetime import date
+        today = date.today()
+        if use_year < today.year or (use_year == today.year and use_month < today.month):
+            return 0
+        return calendar.monthrange(use_year, use_month)[1]
+        
+    return get_days_remaining_in_month(use_year, use_month)
 
-# ===================================================================
-# NORMALIZACIÓN Z-SCORE
-# ===================================================================
-def normalize_z_score(values, inverse=False):
+def fetch_squad_intelligence(coordinador_email="carlos.echeverria", year=None, month=None):
     """
-    Normaliza valores usando z-score con transformación sigmoide.
-    Retorna valores entre ~0 y 1.
-    
-    Args:
-        values: Lista de valores a normalizar
-        inverse: Si True, invierte la escala (para métricas donde menor es mejor)
-    """
-    if not values or len(values) < 2:
-        return [0.5] * len(values)
-    
-    mean = statistics.mean(values)
-    stdev = statistics.stdev(values) if len(values) > 1 else 1.0
-    
-    if stdev == 0:
-        return [0.5] * len(values)
-    
-    z_scores = [(v - mean) / stdev for v in values]
-    normalized = [(math.tanh(z / 2) + 1) / 2 for z in z_scores]
-    
-    if inverse:
-        normalized = [1 - n for n in normalized]
-    
-    return normalized
-
-def fetch_squad_intelligence(coordinador_email="carlos.echeverria"):
-    """
-    Sistema de Inteligencia con Scoring Robusto Fase 1
+    Sistema de Inteligencia con Scoring Robusto Fase 3 (Unificado)
     - Engagement (35 pts)
     - Rendimiento (40 pts)
+    - Eficiencia (25 pts)
     """
+    use_year = int(year) if year else CURRENT_YEAR
+    use_month = int(month) if month else CURRENT_MONTH
+
     debug_log = []
     conn = None
     cursor = None
     
     try:
-        debug_log.append("Connecting to DB...")
+        debug_log.append(f"Connecting to DB... filtering by {use_year}-{use_month}")
         conn = get_db_connection()
         cursor = conn.cursor(dictionary=True)
         debug_log.append("Connected.")
@@ -110,7 +106,8 @@ def fetch_squad_intelligence(coordinador_email="carlos.echeverria"):
         total_equipo_hist = float(cursor.fetchone()['total_equipo'] or 0)
         
         pct_equipo = total_equipo_hist / total_global_hist if total_global_hist > 0 else 0
-        META_EQUIPO = int(META_GLOBAL_110 * pct_equipo)
+        meta_global = get_contract_goal(use_year, use_month)
+        META_EQUIPO = int(meta_global * pct_equipo)
         
         # ================================================================
         # PASO 2: Contratos del Equipo (Mes Actual)
@@ -125,7 +122,7 @@ def fetch_squad_intelligence(coordinador_email="carlos.echeverria"):
                   SELECT corredor_id FROM bi_DimCorredores 
                   WHERE coordinador = %s AND activo = 1
               )
-        ''', (CURRENT_YEAR, CURRENT_MONTH, coordinador_email))
+        ''', (use_year, use_month, coordinador_email))
         contratos_equipo_mes = int(cursor.fetchone()['contratos_mes'] or 0)
         
         # ================================================================
@@ -161,7 +158,7 @@ def fetch_squad_intelligence(coordinador_email="carlos.echeverria"):
             WHERE c.coordinador = %s 
               AND c.activo = 1
             ORDER BY contratos_mes DESC, c.reserva DESC
-        ''', (CURRENT_YEAR, CURRENT_MONTH, coordinador_email))
+        ''', (use_year, use_month, coordinador_email))
         
         corredores_data = cursor.fetchall()
         
@@ -180,16 +177,15 @@ def fetch_squad_intelligence(coordinador_email="carlos.echeverria"):
               AND MONTH(agenda_fecha) = %s
               AND corredor_id IS NOT NULL
             GROUP BY corredor_id
-        ''', (CURRENT_YEAR, CURRENT_MONTH))
+        ''', (use_year, use_month))
         
         visit_metrics = {str(row['corredor_id']): row for row in cursor.fetchall()}
-        
-        debug_log.append("Calculating raw metrics...")
         
         # ================================================================
         # PASO 5: Calcular métricas RAW para cada corredor
         # ================================================================
-        dias_restantes = calculate_dias_restantes()
+        debug_log.append("Calculating raw metrics...")
+        dias_restantes = calculate_dias_restantes(year=use_year, month=use_month)
         brokers_raw = []
         
         for corredor in corredores_data:
@@ -200,38 +196,46 @@ def fetch_squad_intelligence(coordinador_email="carlos.echeverria"):
             pct_corredor = reservas_hist / total_equipo_hist if total_equipo_hist > 0 else 0
             meta_corredor = int(META_EQUIPO * pct_corredor)
             
-            # Conversiones básicas de Decimal a int/float
+            # Conversiones básicas
             contratos_mes = int(corredor['contratos_mes'] or 0)
             leads_mes = int(corredor['leads_tomados_mes'] or 0)
             prospectos_mes = int(corredor['prospectos_mes'] or 0)
             leads_descartados = int(corredor['leads_descartados'] or 0)
             prospectos_descartados = int(corredor['prospectos_descartados'] or 0)
             contacto_24h = int(corredor['contacto_24h'] or 0)
-            
+
             # Visitas
             visit_data = visit_metrics.get(corredor_id, {})
-            total_agendas = int(visit_data.get('total_agendas', 0) or 1)  # Evitar div/0
+            total_agendas = int(visit_data.get('total_agendas', 0) or 1)
             visitas_realizadas = int(visit_data.get('visitas_realizadas', 0) or 0)
             visitas_canceladas = int(visit_data.get('visitas_canceladas', 0) or 0)
-            
+
             # === ENGAGEMENT METRICS (RAW) ===
-            tasa_visitas = visitas_realizadas / total_agendas if total_agendas > 0 else 0
-            tasa_no_cancela = 1 - (visitas_canceladas / total_agendas) if total_agendas > 0 else 1
-            tasa_no_descarta_leads = 1 - (leads_descartados / leads_mes) if leads_mes > 0 else 1
-            tasa_no_descarta_prospectos = 1 - (prospectos_descartados / prospectos_mes) if prospectos_mes > 0 else 1
-            tasa_contacto_24h = contacto_24h / leads_mes if leads_mes > 0 else 0
-            
+            tasa_visitas = calculate_rate_with_smoothing(visitas_realizadas, total_agendas, 15)
+            tasa_no_cancela = 1 - calculate_rate_with_smoothing(visitas_canceladas, total_agendas, 15)
+            tasa_no_descarta_leads = 1 - calculate_rate_with_smoothing(leads_descartados, leads_mes, 15)
+            tasa_no_descarta_prospectos = 1 - calculate_rate_with_smoothing(prospectos_descartados, prospectos_mes, 15)
+            tasa_contacto_24h = calculate_rate_with_smoothing(contacto_24h, leads_mes, 15)
+
             # === RENDIMIENTO METRICS (RAW) ===
-            conv_prospecto_contrato = contratos_mes / prospectos_mes if prospectos_mes > 0 else 0
-            conv_lead_contrato = contratos_mes / leads_mes if leads_mes > 0 else 0
-            contratos_absolutos = contratos_mes  # Valor absoluto (no tasa)
-            leads_por_visita = leads_mes / visitas_realizadas if visitas_realizadas > 0 else 0
-            
-            # ===  Datos Operativos ===
+            conv_prospecto_contrato = calculate_rate_with_smoothing(contratos_mes, prospectos_mes, 15)
+            conv_lead_contrato = calculate_rate_with_smoothing(contratos_mes, leads_mes, 15)
+            contratos_absolutos = contratos_mes
+            leads_por_visita = calculate_rate_with_smoothing(leads_mes, visitas_realizadas, 0) if visitas_realizadas > 0 else 0
+
+            # === EFICIENCIA METRICS (RAW - Simulado para V2) ===
+            # En V2 no tenemos tickets_severidad ni tiempo_resolucion directo todavía, 
+            # pero podemos usar tasa_contacto_24h y conversion como proxies de eficiencia
+            tasa_demora = 1 - calculate_rate_with_smoothing(contacto_24h, leads_mes, 15)
+            tiempo_normalizado = 0.5 # Default
+            tickets_normalizado = 0.0 # Default
+
+            # === Datos Operativos ===
             faltante = max(meta_corredor - contratos_mes, 0)
             conv_mes = (prospectos_mes / leads_mes * 100) if leads_mes > 0 else 0
-            leads_diarios_necesarios = int((faltante / dias_restantes) / (conv_mes / 100)) if conv_mes > 0 else 0
             
+            leads_diarios_necesarios = int((faltante / max(dias_restantes, 1)) / (conv_mes / 100)) if conv_mes > 0 and dias_restantes > 0 else 0
+
             brokers_raw.append({
                 'corredor_id': corredor_id,
                 'nombre': corredor['nombre_corredor'],
@@ -254,64 +258,76 @@ def fetch_squad_intelligence(coordinador_email="carlos.echeverria"):
                 'conv_prospecto_contrato': conv_prospecto_contrato,
                 'conv_lead_contrato': conv_lead_contrato,
                 'contratos_absolutos': contratos_absolutos,
-                'leads_por_visita': leads_por_visita
+                'leads_por_visita': leads_por_visita,
+                # Eficiencia
+                'tasa_demora': tasa_demora,
+                'tiempo_normalizado': tiempo_normalizado,
+                'tickets_normalizado': tickets_normalizado
             })
         
         # ================================================================
         # PASO 6: NORMALIZACIÓN Z-SCORE DE MÉTRICAS
         # ================================================================
         debug_log.append("Normalizing metrics...")
-        
+
         # Extraer todas las métricas en listas
         all_tasa_visitas = [b['tasa_visitas'] for b in brokers_raw]
         all_tasa_no_cancela = [b['tasa_no_cancela'] for b in brokers_raw]
         all_tasa_no_descarta_leads = [b['tasa_no_descarta_leads'] for b in brokers_raw]
         all_tasa_no_descarta_prospectos = [b['tasa_no_descarta_prospectos'] for b in brokers_raw]
         all_tasa_contacto_24h = [b['tasa_contacto_24h'] for b in brokers_raw]
-        
+
         all_conv_p_c = [b['conv_prospecto_contrato'] for b in brokers_raw]
         all_conv_l_c = [b['conv_lead_contrato'] for b in brokers_raw]
         all_contratos_abs = [b['contratos_absolutos'] for b in brokers_raw]
         all_lpv = [b['leads_por_visita'] for b in brokers_raw]
-        
+
+        all_tasa_demora = [b['tasa_demora'] for b in brokers_raw]
+
         # Normalizar
-        norm_tasa_visitas = normalize_z_score(all_tasa_visitas)
-        norm_tasa_no_cancela = normalize_z_score(all_tasa_no_cancela)
-        norm_tasa_no_descarta_leads = normalize_z_score(all_tasa_no_descarta_leads)
-        norm_tasa_no_descarta_prospectos = normalize_z_score(all_tasa_no_descarta_prospectos)
-        norm_tasa_contacto_24h = normalize_z_score(all_tasa_contacto_24h)
-        
-        norm_conv_p_c = normalize_z_score(all_conv_p_c)
-        norm_conv_l_c = normalize_z_score(all_conv_l_c)
-        norm_contratos_abs = normalize_z_score(all_contratos_abs)
-        norm_lpv = normalize_z_score(all_lpv)
-        
+        norm_tasa_visitas = normalize_z_score_simple(all_tasa_visitas)
+        norm_tasa_no_cancela = normalize_z_score_simple(all_tasa_no_cancela)
+        norm_tasa_no_descarta_leads = normalize_z_score_simple(all_tasa_no_descarta_leads)
+        norm_tasa_no_descarta_prospectos = normalize_z_score_simple(all_tasa_no_descarta_prospectos)
+        norm_tasa_contacto_24h = normalize_z_score_simple(all_tasa_contacto_24h)
+
+        norm_conv_p_c = normalize_z_score_simple(all_conv_p_c)
+        norm_conv_l_c = normalize_z_score_simple(all_conv_l_c)
+        norm_contratos_abs = normalize_z_score_simple(all_contratos_abs)
+        norm_lpv = normalize_z_score_simple(all_lpv)
+
+        norm_tasa_demora = normalize_z_score_simple(all_tasa_demora, inverse=True)
+
         # ================================================================
-        # PASO 7: CALCULAR SCORES FINALES
+        # PASO 7: CALCULAR SCORES FINALES (100 pts)
         # ================================================================
         debug_log.append("Calculating scores...")
         brokers_final = []
         
         for i, broker_raw in enumerate(brokers_raw):
             # ENGAGEMENT (35 pts total)
-            eng_visitas = norm_tasa_visitas[i] * 10
-            eng_no_cancela = norm_tasa_no_cancela[i] * 8
+            eng_visitas = norm_tasa_visitas[i] * 7
+            eng_no_cancela = norm_tasa_no_cancela[i] * 7
             eng_no_descarta_leads = norm_tasa_no_descarta_leads[i] * 7
-            eng_no_descarta_prospectos = norm_tasa_no_descarta_prospectos[i] * 5
-            eng_contacto_24h = norm_tasa_contacto_24h[i] * 5
-            
+            eng_no_descarta_prospectos = norm_tasa_no_descarta_prospectos[i] * 7
+            eng_contacto_24h = norm_tasa_contacto_24h[i] * 7
             engagement_score = eng_visitas + eng_no_cancela + eng_no_descarta_leads + eng_no_descarta_prospectos + eng_contacto_24h
             
             # RENDIMIENTO (40 pts total)
-            rend_conv_p_c = norm_conv_p_c[i] * 15
+            rend_conv_p_c = norm_conv_p_c[i] * 10
             rend_conv_l_c = norm_conv_l_c[i] * 10
             rend_contratos_abs = norm_contratos_abs[i] * 10
-            rend_lpv = norm_lpv[i] * 5
-            
+            rend_lpv = norm_lpv[i] * 10
             rendimiento_score = rend_conv_p_c + rend_conv_l_c + rend_contratos_abs + rend_lpv
             
-            # TOTAL (75 pts - Fase 1)
-            total_score = engagement_score + rendimiento_score
+            # EFICIENCIA (25 pts total)
+            efi_demora = norm_tasa_demora[i] * 8.25
+            efi_tiempo = 0.5 * 8.25
+            efi_tickets = 1.0 * 8.5
+            eficiencia_score = efi_demora + efi_tiempo + efi_tickets
+
+            # TOTAL (100 pts)
+            total_score = engagement_score + rendimiento_score + eficiencia_score
             
             # Acción Sugerida
             if broker_raw['contratos_mes'] >= broker_raw['meta_personal']:
@@ -333,6 +349,7 @@ def fetch_squad_intelligence(coordinador_email="carlos.echeverria"):
                 "score": round(total_score, 2),
                 "score_engagement": round(engagement_score, 2),
                 "score_rendimiento": round(rendimiento_score, 2),
+                "score_eficiencia": round(eficiencia_score, 2),
                 "visitas_realizadas": broker_raw['visitas_realizadas'],
                 "breakdown_engagement": {
                     "visitas_realizadas": round(eng_visitas, 2),
@@ -346,6 +363,11 @@ def fetch_squad_intelligence(coordinador_email="carlos.echeverria"):
                     "conv_lead_contrato": round(rend_conv_l_c, 2),
                     "contratos_absolutos": round(rend_contratos_abs, 2),
                     "leads_por_visita": round(rend_lpv, 2)
+                },
+                "breakdown_eficiencia": {
+                    "sin_demora": round(efi_demora, 2),
+                    "tiempo_resolucion": round(efi_tiempo, 2),
+                    "tickets_severidad": round(efi_tickets, 2)
                 }
             })
         
@@ -360,7 +382,7 @@ def fetch_squad_intelligence(coordinador_email="carlos.echeverria"):
                 "faltante_equipo": max(META_EQUIPO - contratos_equipo_mes, 0),
                 "dias_restantes": dias_restantes,
                 "debug_log": debug_log,
-                "scoring_version": "Phase 1 - Engagement (35) + Rendimiento (40) = 75 pts"
+                "scoring_version": "Phase 3 (Unificado) - Engagement (35) + Rendimiento (40) + Eficiencia (25) = 100 pts"
             },
             "timestamp": datetime.now().isoformat()
         }
@@ -381,7 +403,15 @@ class handler(BaseHTTPRequestHandler):
         Endpoint: GET /api/v2_intelligence
         """
         try:
-            data = fetch_squad_intelligence("carlos.echeverria")
+            from urllib.parse import parse_qs, urlparse
+            parsed_path = urlparse(self.path)
+            query_params = parse_qs(parsed_path.query)
+            
+            coordinator = query_params.get('coordinator', ['carlos.echeverria'])[0]
+            year = query_params.get('year', [None])[0]
+            month = query_params.get('month', [None])[0]
+
+            data = fetch_squad_intelligence(coordinator, year=year, month=month)
             
             self.send_response(200)
             self.send_header('Content-type', 'application/json')

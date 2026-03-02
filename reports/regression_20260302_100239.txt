@@ -1,0 +1,19 @@
+============================================================
+REPORTE DE VERIFICACIÓN DE REGRESIÓN
+============================================================
+Timestamp: 2026-03-02T10:02:39.731737
+
+RESUMEN:
+  Total tests: 25
+  Pasados:     24
+  Fallidos:    1
+  Advertencias: 0
+  Éxito:       96.0%
+
+TESTS FALLIDOS:
+  [FAIL] Z-Score: Manejo de outliers
+    outlier score=0.8176
+
+============================================================
+RESULTADO: FAIL - 1 TESTS FALLARON
+============================================================

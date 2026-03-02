@@ -1,0 +1,11 @@
+# Configuración de Cron Jobs para Vercel
+# Ejecuta el ETL automáticamente para mantener actualizados los datos estáticos
+
+# Ejecutar ETL todos los días a las 00:00 UTC (21:00 Chile)
+0 0 * * * curl -X POST https://ranking-corredores-rm---dashboard.vercel.app/api/etl_trigger?secret=$ETL_SECRET
+
+# Ejecutar ETL cada 6 horas para datos más frescos durante el día
+0 */6 * * * curl -X POST https://ranking-corredores-rm---dashboard.vercel.app/api/etl_trigger?secret=$ETL_SECRET
+
+# Ejecutar ETL los días 1 de cada mes a las 00:05 UTC (inicio de mes)
+5 0 1 * * curl -X POST https://ranking-corredores-rm---dashboard.vercel.app/api/etl_trigger?secret=$ETL_SECRET

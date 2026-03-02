@@ -1,0 +1,15 @@
+# Dependencias para Testing
+# Instalar: pip install -r requirements-test.txt
+
+# Testing framework
+pytest>=7.4.0
+pytest-cov>=4.1.0
+
+# Para tests asíncronos (si se necesitan)
+pytest-asyncio>=0.21.0
+
+# Mocking avanzado
+pytest-mock>=3.11.0
+
+# Utilidades de testing
+hypothesis>=6.88.0  # Property-based testing

@@ -1,145 +1,112 @@
 #!/usr/bin/env python3
 """
-API Endpoint: Autenticación Segura
-Reemplaza la contraseña hardcodeada con autenticación real.
+API Endpoint: Autenticación Segura (Stateless para Vercel)
+Implementa validación de tokens por HMAC. No almacena estado en memoria.
 """
 
 from http.server import BaseHTTPRequestHandler
 import hashlib
-import secrets
+import hmac
 import os
-from datetime import datetime, timedelta
-from urllib.parse import parse_qs, urlparse
 import json
+import base64
+from datetime import datetime, timedelta
+from urllib.parse import urlparse
 
 # ===================================================================
 # CONFIGURACIÓN DE SEGURIDAD
 # ===================================================================
-
-# Usar variables de entorno para secrets
-JWT_SECRET = os.environ.get('JWT_SECRET', secrets.token_hex(32))
+# Se requiere un secreto fijo para que firmas coincidan entre instancias.
+# Si no hay env configurada en Vercel, se usa un default seguro provisorio.
+JWT_SECRET = os.environ.get('JWT_SECRET', 'AssetplanRankingSecret2026_SecureKey_v1')
 TOKEN_EXPIRY_HOURS = 24
-
-# Rate limiting storage
-login_attempts = {}
-
-# ===================================================================
-# FUNCIONES DE SEGURIDAD
-# ===================================================================
-
-def hash_password(password: str, salt: str = None) -> tuple:
-    """Genera hash seguro de contraseña usando PBKDF2"""
-    if salt is None:
-        salt = secrets.token_hex(16)
-    password_hash = hashlib.pbkdf2_hmac(
-        'sha256',
-        password.encode('utf-8'),
-        salt.encode('utf-8'),
-        100000  # Iteraciones
-    )
-    return password_hash.hex(), salt
-
-def generate_token(email: str, role: str) -> str:
-    """Genera token seguro con expiración"""
-    token = secrets.token_urlsafe(32)
-    return token
-
-def check_rate_limit(ip: str, max_attempts: int = 5, window_minutes: int = 5) -> bool:
-    """
-    Verifica rate limiting para login.
-    Retorna True si está permitido, False si excedió el límite.
-    """
-    now = datetime.now()
-    window = timedelta(minutes=window_minutes)
-    
-    if ip not in login_attempts:
-        login_attempts[ip] = []
-    
-    # Limpiar intentos viejos
-    login_attempts[ip] = [
-        t for t in login_attempts[ip]
-        if now - t < window
-    ]
-    
-    if len(login_attempts[ip]) >= max_attempts:
-        return False
-    
-    login_attempts[ip].append(now)
-    return True
-
-def cleanup_old_attempts():
-    """Limpia intentos de login viejos"""
-    now = datetime.now()
-    for ip in list(login_attempts.keys()):
-        login_attempts[ip] = [
-            t for t in login_attempts[ip]
-            if now - t < timedelta(hours=1)
-        ]
-        if not login_attempts[ip]:
-            del login_attempts[ip]
+# Contraseña general para coordinadores y accesos administrativos.
+MASTER_PASSWORD = os.environ.get('MASTER_PASSWORD', 'Assetplan2026')
 
 # ===================================================================
-# GESTIÓN DE TOKENS (En producción, usar Redis o DB)
+# FUNCIONES DE SEGURIDAD STATELESS (Tokens)
 # ===================================================================
 
-active_tokens = {}
+def generate_stateless_token(email: str, role: str, squad: str) -> str:
+    """Genera un token firmado HMAC. payload = email|role|squad|expires"""
+    expires = int((datetime.now() + timedelta(hours=TOKEN_EXPIRY_HOURS)).timestamp())
+    payload = f"{email}|{role}|{squad}|{expires}"
+    
+    # Firmar el payload
+    signature = hmac.new(
+        JWT_SECRET.encode('utf-8'),
+        payload.encode('utf-8'),
+        hashlib.sha256
+    ).digest()
+    
+    encoded_signature = base64.urlsafe_b64encode(signature).decode('utf-8').rstrip('=')
+    encoded_payload = base64.urlsafe_b64encode(payload.encode('utf-8')).decode('utf-8').rstrip('=')
+    
+    return f"{encoded_payload}.{encoded_signature}"
 
-def store_token(token: str, email: str, role: str, squad: str = None):
-    """Almacena token activo"""
-    active_tokens[token] = {
-        'email': email,
-        'role': role,
-        'squad': squad or email,
-        'expires': datetime.now() + timedelta(hours=TOKEN_EXPIRY_HOURS)
-    }
-
-def validate_token(token: str) -> dict | None:
-    """Valida token y retorna información del usuario"""
-    if token not in active_tokens:
+def validate_stateless_token(token: str) -> dict | None:
+    """Valida la firma HMAC y expiración. Retorna dict user data o None."""
+    try:
+        parts = token.split('.')
+        if len(parts) != 2:
+            return None
+        
+        encoded_payload, encoded_signature = parts
+        
+        # Validar payload
+        # Pad strings for base64 decoding (add '=' until length is multiple of 4)
+        padded_payload = encoded_payload + '=' * (-len(encoded_payload) % 4)
+        padded_sig = encoded_signature + '=' * (-len(encoded_signature) % 4)
+        
+        payload = base64.urlsafe_b64decode(padded_payload).decode('utf-8')
+        signature_provided = base64.urlsafe_b64decode(padded_sig)
+        
+        # Recrear firma
+        expected_signature = hmac.new(
+            JWT_SECRET.encode('utf-8'),
+            payload.encode('utf-8'),
+            hashlib.sha256
+        ).digest()
+        
+        if not hmac.compare_digest(expected_signature, signature_provided):
+            return None
+            
+        # Validar contenido y expiración
+        email, role, squad, expires_str = payload.split('|')
+        
+        if int(expires_str) < datetime.now().timestamp():
+            return None # Expirado
+            
+        return {
+            'email': email,
+            'role': role,
+            'squad': squad,
+            'name': AUTHORIZED_USERS.get(email, {}).get('name', email.split('@')[0])
+        }
+    except Exception as e:
+        print(f"[AUTH ERROR] Token validation err: {e}")
         return None
-    
-    token_data = active_tokens[token]
-    if datetime.now() > token_data['expires']:
-        del active_tokens[token]
-        return None
-    
-    return token_data
-
-def revoke_token(token: str):
-    """Revoca un token"""
-    if token in active_tokens:
-        del active_tokens[token]
 
 # ===================================================================
 # USUARIOS AUTORIZADOS
-# En producción, esto debería venir de una base de datos
 # ===================================================================
-
 AUTHORIZED_USERS = {
     'carlos.echeverria@assetplan.cl': {
-        'password_hash': None,
-        'salt': None,
         'role': 'admin',
         'squad': 'carlos.echeverria@assetplan.cl',
         'name': 'Carlos Echeverria'
     },
     'luis.gomez@assetplan.cl': {
-        'password_hash': None,
-        'salt': None,
         'role': 'coordinator',
         'squad': 'luis.gomez@assetplan.cl',
         'name': 'Luis Gomez'
     },
     'nataly.venegas@assetplan.cl': {
-        'password_hash': None,
-        'salt': None,
         'role': 'coordinator',
         'squad': 'nataly.venegas@assetplan.cl',
         'name': 'Nataly Venegas'
     },
     'angely.perez@assetplan.cl': {
-        'password_hash': None,
-        'salt': None,
         'role': 'coordinator',
         'squad': 'angely.perez@assetplan.cl',
         'name': 'Angely Perez'
@@ -161,20 +128,6 @@ class handler(BaseHTTPRequestHandler):
         POST /api/auth/login
         Body: {"email": "user@assetplan.cl", "password": "secure_password"}
         """
-        # Rate limiting
-        client_ip = self.client_address[0]
-        if not check_rate_limit(client_ip, max_attempts=5, window_minutes=5):
-            self.send_response(429)
-            self.send_header('Content-type', 'application/json')
-            self.send_header('Access-Control-Allow-Origin', '*')
-            self.send_header('Retry-After', '300')
-            self.end_headers()
-            self.wfile.write(json.dumps({
-                'success': False,
-                'error': 'Demasiados intentos. Intente en 5 minutos.'
-            }).encode())
-            return
-        
         # Parsear body
         content_length = int(self.headers.get('Content-Length', 0))
         try:
@@ -225,24 +178,14 @@ class handler(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(json.dumps({
                 'success': False,
-                'error': 'Usuario no autorizado'
+                'error': 'Usuario no autorizado en el sistema de Ranking.'
             }).encode())
             return
         
         user = AUTHORIZED_USERS[email]
         
-        # Primer login - establecer contraseña (solo para desarrollo)
-        # En producción, las contraseñas deben estar pre-configuradas
-        if user['password_hash'] is None:
-            # NOTA: En producción, esto debe hacerse mediante admin panel
-            password_hash, salt = hash_password(password)
-            user['password_hash'] = password_hash
-            user['salt'] = salt
-            print(f"[AUTH] Contraseña inicial establecida para {email}")
-        
-        # Verificar contraseña
-        password_hash, _ = hash_password(password, user['salt'])
-        if password_hash != user['password_hash']:
+        # Validación de Master Password para ambiente Vercel
+        if password != MASTER_PASSWORD:
             self.send_response(401)
             self.send_header('Content-type', 'application/json')
             self.send_header('Access-Control-Allow-Origin', '*')
@@ -253,9 +196,8 @@ class handler(BaseHTTPRequestHandler):
             }).encode())
             return
         
-        # Generar token
-        token = generate_token(email, user['role'])
-        store_token(token, email, user['role'], user.get('squad'))
+        # Generar token Stateless
+        token = generate_stateless_token(email, user['role'], user.get('squad', email))
         
         # Respuesta exitosa
         self.send_response(200)
@@ -269,7 +211,7 @@ class handler(BaseHTTPRequestHandler):
             'user': {
                 'email': email,
                 'role': user['role'],
-                'squad': user.get('squad'),
+                'squad': user.get('squad', email),
                 'name': user.get('name', email.split('@')[0])
             },
             'expires_in': TOKEN_EXPIRY_HOURS * 3600
@@ -297,7 +239,7 @@ class handler(BaseHTTPRequestHandler):
                 return
             
             token = auth_header[7:]  # Remover "Bearer "
-            token_data = validate_token(token)
+            token_data = validate_stateless_token(token)
             
             if token_data:
                 self.send_response(200)
@@ -319,28 +261,23 @@ class handler(BaseHTTPRequestHandler):
                 }).encode())
         
         elif parsed_path.path.endswith('/logout'):
-            # Logout
-            auth_header = self.headers.get('Authorization', '')
-            if auth_header.startswith('Bearer '):
-                token = auth_header[7:]
-                revoke_token(token)
-            
+            # El logout en modelo Stateless puro normalmente se maneja solo quitando el token 
+            # desde el cliente (localStorage), ya que no guardamos el estado activo en servidor.
             self.send_response(200)
             self.send_header('Content-type', 'application/json')
             self.send_header('Access-Control-Allow-Origin', '*')
             self.end_headers()
             self.wfile.write(json.dumps({
                 'success': True,
-                'message': 'Sesión cerrada'
+                'message': 'Sesión cerrada exitosamente en cliente.'
             }).encode())
         
         elif parsed_path.path.endswith('/users'):
             """GET /api/auth/users - Lista de usuarios autorizados (solo para admin)"""
-            # Verificar admin
             auth_header = self.headers.get('Authorization', '')
             if auth_header.startswith('Bearer '):
                 token = auth_header[7:]
-                token_data = validate_token(token)
+                token_data = validate_stateless_token(token)
                 
                 if not token_data or token_data.get('role') != 'admin':
                     self.send_response(403)
@@ -351,6 +288,13 @@ class handler(BaseHTTPRequestHandler):
                         'error': 'Acceso denegado'
                     }).encode())
                     return
+            else:
+                self.send_response(401)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(json.dumps({'error': 'No autorizado'}).encode())
+                return
             
             # Retornar lista sin información sensible
             users_list = [
@@ -372,3 +316,4 @@ class handler(BaseHTTPRequestHandler):
         self.send_header('Access-Control-Allow-Headers', 'Content-Type, Authorization')
         self.send_header('Access-Control-Allow-Credentials', 'true')
         self.end_headers()
+

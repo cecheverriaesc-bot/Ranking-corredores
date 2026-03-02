@@ -46,7 +46,7 @@ def get_assetplan_rentas_connection():
         database="assetplan_rentas"  # Base principal
     )
 
-def fetch_broker_capacity(coordinador_email='carlos.echeverria@assetplan.cl'):
+def fetch_broker_capacity(coordinador_email='carlos.echeverria@assetplan.cl', year=None, month=None):
     """
     Obtiene capacidad disponible de corredores desde assetplan_rentas.
     Usa la query compartida por el usuario para detectar saturación.
@@ -54,9 +54,23 @@ def fetch_broker_capacity(coordinador_email='carlos.echeverria@assetplan.cl'):
     conn = get_assetplan_rentas_connection()
     cursor = conn.cursor(dictionary=True)
     
+    if year and month:
+        time_filter_mes = f"YEAR(comments.created_at) = {int(year)} AND MONTH(comments.created_at) = {int(month)}"
+        # Para toma diaria en meses pasados, no tiene sentido el intervalo de 1 día actual
+        # pero si es el mes actual, permitimos ver el día de hoy
+        today = datetime.now()
+        if int(year) == today.year and int(month) == today.month:
+            time_filter_dia = "comments.created_at >= DATE_SUB(NOW(), INTERVAL 1 DAY)"
+        else:
+            time_filter_dia = "1=0" # Filtro vacío para meses pasados
+    else:
+        # Defaults si no hay filtros (tiempo real)
+        time_filter_mes = "comments.created_at >= DATE_SUB(NOW(), INTERVAL 1 MONTH)"
+        time_filter_dia = "comments.created_at >= DATE_SUB(NOW(), INTERVAL 1 DAY)"
+            
     try:
         # Query adaptada del código compartido
-        cursor.execute("""
+        cursor.execute(f"""
             WITH toma_mensual AS (
                 SELECT
                     corredores.id AS corredor_id,
@@ -65,7 +79,7 @@ def fetch_broker_capacity(coordinador_email='carlos.echeverria@assetplan.cl'):
                 INNER JOIN users ON comments.user_id = users.id
                 INNER JOIN corredores ON users.id = corredores.user_id
                 WHERE comments.milestone_id = 1
-                  AND comments.created_at >= DATE_SUB(NOW(), INTERVAL 1 MONTH)
+                  AND {time_filter_mes}
                   AND corredores.gestiona_leads IS NULL
                 GROUP BY corredores.id
             ),
@@ -77,7 +91,7 @@ def fetch_broker_capacity(coordinador_email='carlos.echeverria@assetplan.cl'):
                 INNER JOIN users ON comments.user_id = users.id
                 INNER JOIN corredores ON users.id = corredores.user_id
                 WHERE comments.milestone_id = 1
-                  AND comments.created_at >= DATE_SUB(NOW(), INTERVAL 1 DAY)
+                  AND {time_filter_dia}
                   AND corredores.gestiona_leads IS NULL
                 GROUP BY corredores.id
             ),
@@ -244,7 +258,15 @@ class handler(BaseHTTPRequestHandler):
     def do_GET(self):
         """Handle GET request for capacity data"""
         try:
-            data = fetch_broker_capacity()
+            from urllib.parse import parse_qs, urlparse
+            parsed_path = urlparse(self.path)
+            query_params = parse_qs(parsed_path.query)
+            
+            coordinator = query_params.get('coordinator', ['carlos.echeverria@assetplan.cl'])[0]
+            year = query_params.get('year', [None])[0]
+            month = query_params.get('month', [None])[0]
+            
+            data = fetch_broker_capacity(coordinator, year=year, month=month)
             
             self.send_response(200)
             self.send_header('Content-Type', 'application/json')

@@ -7,6 +7,20 @@ import calendar
 import statistics
 import math
 
+# Import servicios centralizados
+import sys
+sys.path.append(os.path.dirname(__file__))
+from services.metrics_service import (
+    calculate_rate_with_smoothing,
+    normalize_z_score_robust,
+    get_contract_goal,
+)
+from utils.dates import (
+    is_current_month,
+    get_days_remaining_in_month,
+    get_days_elapsed_in_month,
+)
+
 # Load environment variables
 def load_env_vars():
     env_vars = {}
@@ -33,7 +47,6 @@ load_env_vars()
 # ===================================================================
 # CONSTANTES GLOBALES
 # ===================================================================
-META_GLOBAL_110 = 1707  # Meta total mensual (110%)
 CURRENT_YEAR = datetime.now().year
 CURRENT_MONTH = datetime.now().month  # Dinámico - mes actual
 
@@ -113,12 +126,25 @@ def fetch_broker_phones_map():
         if conn: conn.close()
     return phones_map
 
-def calculate_dias_restantes():
-    """Calcular días hábiles restantes del mes"""
-    today = date.today()
-    last_day = calendar.monthrange(today.year, today.month)[1]
-    dias_restantes = last_day - today.day
-    return max(dias_restantes, 1)
+def calculate_dias_restantes(year=None, month=None):
+    """
+    Calcular días hábiles restantes del mes usando el servicio centralizado.
+    Si el mes ya pasó, retorna 0 para evitar proyecciones erróneas.
+    """
+    use_year = int(year) if year else CURRENT_YEAR
+    use_month = int(month) if month else CURRENT_MONTH
+    
+    if not is_current_month(use_year, use_month):
+        # Si el mes es pasado, los días restantes son 0
+        from datetime import date
+        today = date.today()
+        if use_year < today.year or (use_year == today.year and use_month < today.month):
+            return 0
+        # Si es un mes futuro, retornamos el total de días del mes como 'restantes'
+        # o 1 para evitar division por cero en proyecciones simples
+        return calendar.monthrange(use_year, use_month)[1]
+        
+    return get_days_remaining_in_month(use_year, use_month)
 
 # ===================================================================
 # CLASIFICACIÓN REGIONAL
@@ -170,38 +196,11 @@ def get_robust_mean_std(values):
     # Calcular estadísticos con datos truncados
     mean = statistics.mean(truncated)
     stdev = statistics.stdev(truncated) if len(truncated) > 1 else 1.0
-    
+
     return mean, max(stdev, 0.001)  # Evitar stdev = 0
 
-def normalize_z_score_robust(values, inverse=False):
-    """
-    Normaliza valores usando z-score robusto con transformación sigmoide.
-    Usa media y stdev robustas (truncando outliers).
-    Retorna valores entre 0 y 1.
-    
-    Args:
-        values: Lista de valores a normalizar
-        inverse: Si True, invierte la escala (para métricas donde menor es mejor)
-    """
-    if not values or len(values) < 2:
-        return [0.5] * len(values)
-    
-    mean, stdev = get_robust_mean_std(values)
-    
-    if stdev == 0:
-        return [0.5] * len(values)
-    
-    # Calcular Z-scores
-    z_scores = [(v - mean) / stdev for v in values]
-    
-    # Transformación sigmoide: mapea Z a (0, 1)
-    # Usamos tanh(x/2) que es más suave que sigmoid para valores extremos
-    normalized = [(math.tanh(z / 2) + 1) / 2 for z in z_scores]
-    
-    if inverse:
-        normalized = [1 - n for n in normalized]
-    
-    return normalized
+# NOTA: normalize_z_score_robust ahora se importa desde services.metrics_service
+# para garantizar consistencia en todo el proyecto
 
 def calculate_percentile_rank(value, values):
     """
@@ -210,13 +209,13 @@ def calculate_percentile_rank(value, values):
     """
     if not values:
         return 50
-    
+
     sorted_values = sorted(values)
     count_below = sum(1 for v in sorted_values if v < value)
     percentile = (count_below / len(sorted_values)) * 100
     return min(100, max(0, percentile))
 
-def fetch_squad_intelligence_v5(coordinador_email="carlos.echeverria", filter_region="ALL"):
+def fetch_squad_intelligence_v5(coordinador_email="carlos.echeverria", filter_region="ALL", year=None, month=None):
     """
     Sistema de Inteligencia con Scoring Estadístico Robusto - Fase 3
     Enfocado en RM con diferenciación clara de Regiones.
@@ -241,13 +240,18 @@ def fetch_squad_intelligence_v5(coordinador_email="carlos.echeverria", filter_re
     Args:
         coordinador_email: Email del coordinador
         filter_region: 'ALL', 'RM', o 'REGIONES'
+        year: Filtro de año
+        month: Filtro de mes
     """
+    use_year = int(year) if year else CURRENT_YEAR
+    use_month = int(month) if month else CURRENT_MONTH
+
     debug_log = []
     conn = None
     cursor = None
     
     try:
-        debug_log.append("Connecting to DB...")
+        debug_log.append(f"Connecting to DB... filtering by {use_year}-{use_month}")
         conn = get_db_connection()
         cursor = conn.cursor(dictionary=True)
         debug_log.append("Connected.")
@@ -266,8 +270,9 @@ def fetch_squad_intelligence_v5(coordinador_email="carlos.echeverria", filter_re
         total_equipo_hist = float(cursor.fetchone()['total_equipo'] or 0)
         
         pct_equipo = total_equipo_hist / total_global_hist if total_global_hist > 0 else 0
-        META_EQUIPO = int(META_GLOBAL_110 * pct_equipo)
-        
+        from services.metrics_service import get_contract_goal
+        meta_global = get_contract_goal(use_year, use_month)
+        META_EQUIPO = int(meta_global * pct_equipo)  
         # ================================================================
         # PASO 2: Contratos del Equipo (Mes Actual)
         # ================================================================
@@ -331,7 +336,7 @@ def fetch_squad_intelligence_v5(coordinador_email="carlos.echeverria", filter_re
                      l.leads_descartados_sin_gestion, l.prospectos_descartados, l.contacto_24h,
                      l.accion_24h
             ORDER BY contratos_mes DESC, c.reserva DESC
-        ''', (CURRENT_YEAR, CURRENT_MONTH, CURRENT_YEAR, CURRENT_MONTH, coordinador_email))
+        ''', (use_year, use_month, use_year, use_month, coordinador_email))
         
         corredores_data = cursor.fetchall()
         
@@ -351,7 +356,7 @@ def fetch_squad_intelligence_v5(coordinador_email="carlos.echeverria", filter_re
               AND MONTH(agenda_fecha) = %s
               AND corredor_id IS NOT NULL
             GROUP BY corredor_id
-        ''', (CURRENT_YEAR, CURRENT_MONTH))
+        ''', (use_year, use_month))
         
         visit_metrics = {str(row['corredor_id']): row for row in cursor.fetchall()}
         
@@ -359,7 +364,7 @@ def fetch_squad_intelligence_v5(coordinador_email="carlos.echeverria", filter_re
         # PASO 5: Clasificar corredores por región
         # ================================================================
         debug_log.append("Classifying brokers by region...")
-        dias_restantes = calculate_dias_restantes()
+        dias_restantes = calculate_dias_restantes(year=use_year, month=use_month)
         brokers_rm = []
         brokers_regiones = []
         
@@ -367,14 +372,14 @@ def fetch_squad_intelligence_v5(coordinador_email="carlos.echeverria", filter_re
             corredor_id = str(corredor['corredor_id'])
             comunas_str = corredor['comunas'] or ''
             comunas_list = [c.strip() for c in comunas_str.split(',') if c.strip()]
-            
+
             region_type = classify_broker_region(comunas_list)
-            
-            # Meta personalizada
+
+            # Meta personalizada - usando servicio centralizado para cálculo de tasas
             reservas_hist = float(corredor['reservas_historicas'] or 0)
             pct_corredor = reservas_hist / total_equipo_hist if total_equipo_hist > 0 else 0
             meta_corredor = int(META_EQUIPO * pct_corredor)
-            
+
             # Conversiones
             contratos_mes = int(corredor['contratos_mes'] or 0)
             leads_mes = int(corredor['leads_tomados_mes'] or 0)
@@ -383,49 +388,52 @@ def fetch_squad_intelligence_v5(coordinador_email="carlos.echeverria", filter_re
             prospectos_descartados = int(corredor['prospectos_descartados'] or 0)
             contacto_24h = int(corredor['contacto_24h'] or 0)
             accion_24h = int(corredor['accion_24h'] or 0)
-            
+
             # Eficiencia operativa
             tiempo_prom_resolucion = float(corredor['tiempo_prom_resolucion'] or 0)
             tickets_severidad = float(corredor['tickets_severidad'] or 0)
             prospectos_demora = int(corredor['prospectos_demora'] or 0)
-            
+
             # Visitas
             visit_data = visit_metrics.get(corredor_id, {})
             total_agendas = int(visit_data.get('total_agendas', 0) or 1)
             visitas_realizadas = int(visit_data.get('visitas_realizadas', 0) or 0)
             visitas_canceladas = int(visit_data.get('visitas_canceladas', 0) or 0)
             no_contesto = int(visit_data.get('no_contesto', 0) or 0)
-            
+
             # === ENGAGEMENT METRICS (RAW) - Pilar 1 (35%) ===
-            # Aplicando Suavizado de Laplace (+15 al denominador) para evitar inflado artificial por poco volumen
-            tasa_visitas = visitas_realizadas / (total_agendas + 15) if total_agendas > 0 else 0
-            tasa_cancelacion = visitas_canceladas / (total_agendas + 15) if total_agendas > 0 else 0
-            tasa_descarte_leads = leads_descartados / (leads_mes + 15) if leads_mes > 0 else 0
-            tasa_descarte_prospectos = prospectos_descartados / (prospectos_mes + 15) if prospectos_mes > 0 else 0
-            tasa_accion_24h = accion_24h / (leads_mes + 15) if leads_mes > 0 else 0
-            
+            # Usar servicio centralizado para tasas con suavizado de Laplace
+            tasa_visitas = calculate_rate_with_smoothing(visitas_realizadas, total_agendas, 15)
+            tasa_cancelacion = calculate_rate_with_smoothing(visitas_canceladas, total_agendas, 15)
+            tasa_descarte_leads = calculate_rate_with_smoothing(leads_descartados, leads_mes, 15)
+            tasa_descarte_prospectos = calculate_rate_with_smoothing(prospectos_descartados, prospectos_mes, 15)
+            tasa_accion_24h = calculate_rate_with_smoothing(accion_24h, leads_mes, 15)
+
             # === RENDIMIENTO METRICS (RAW) - Pilar 2 (40%) ===
-            # Eficacia (Con suavizado de Laplace)
-            conv_prospecto_contrato = contratos_mes / (prospectos_mes + 15) if prospectos_mes > 0 else 0
-            conv_lead_contrato = contratos_mes / (leads_mes + 15) if leads_mes > 0 else 0
+            # Eficacia (Con suavizado de Laplace via servicio centralizado)
+            conv_prospecto_contrato = calculate_rate_with_smoothing(contratos_mes, prospectos_mes, 15)
+            conv_lead_contrato = calculate_rate_with_smoothing(contratos_mes, leads_mes, 15)
             # Capacidad productiva (valores absolutos y tasas)
             contratos_absolutos = contratos_mes  # Valor absoluto
-            leads_por_visita = leads_mes / visitas_realizadas if visitas_realizadas > 0 else 0
-            
+            leads_por_visita = calculate_rate_with_smoothing(leads_mes, visitas_realizadas, 0) if visitas_realizadas > 0 else 0
+
             # === EFICIENCIA OPERATIVA (RAW) - Pilar 3 (25%) ===
-            # % prospectos con demora (inversa - menor es mejor, también suavizado)
-            tasa_demora = prospectos_demora / (prospectos_mes + 15) if prospectos_mes > 0 else 0
+            # % prospectos con demora (inversa - menor es mejor)
+            tasa_demora = calculate_rate_with_smoothing(prospectos_demora, prospectos_mes, 15)
             # Tiempo promedio de resolución (inverso - menor es mejor)
             # Normalizar a horas, asumir max 72h como peor caso
             tiempo_normalizado = min(tiempo_prom_resolucion / 72, 1) if tiempo_prom_resolucion > 0 else 0
             # Tickets severidad (inverso - menor es mejor)
             # Normalizar (asumir max 30 puntos como peor caso)
             tickets_normalizado = min(tickets_severidad / 30, 1) if tickets_severidad > 0 else 0
-            
+
             # === Datos Operativos ===
             faltante = max(meta_corredor - contratos_mes, 0)
             conv_mes = (prospectos_mes / leads_mes * 100) if leads_mes > 0 else 0
-            leads_diarios_necesarios = int((faltante / dias_restantes) / (conv_mes / 100)) if conv_mes > 0 else 0
+            
+            # Usar funciones centralizadas para días restantes
+            days_remaining = calculate_dias_restantes(use_year, use_month)
+            leads_diarios_necesarios = int((faltante / max(days_remaining, 1)) / (conv_mes / 100)) if conv_mes > 0 and days_remaining > 0 else 0
             
             broker_data = {
                 'corredor_id': corredor_id,
@@ -725,8 +733,10 @@ class handler(BaseHTTPRequestHandler):
             
             coordinator = query_params.get('coordinator', ['carlos.echeverria'])[0]
             region = query_params.get('region', ['ALL'])[0]
+            year = query_params.get('year', [None])[0]
+            month = query_params.get('month', [None])[0]
             
-            data = fetch_squad_intelligence_v5(coordinator, region)
+            data = fetch_squad_intelligence_v5(coordinator, region, year=year, month=month)
             
             self.send_response(200)
             self.send_header('Content-type', 'application/json')

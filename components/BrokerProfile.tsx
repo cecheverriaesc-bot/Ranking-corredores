@@ -177,10 +177,80 @@ const BrokerProfile: React.FC<BrokerProfileProps> = ({ broker, onBack, selectedM
     const metaReservas = broker.meta_personal > 0 ? broker.meta_personal : 7;
     const reservasCumplidas = broker.reservas;
     const pctMeta = Math.min(100, Math.round((reservasCumplidas / metaReservas) * 100));
-    const diasRestantes = 12; // Simplified – in production: calculate from selectedMonth
-    const ritmoActual = parseFloat((reservasCumplidas / Math.max(1, 28 - diasRestantes)).toFixed(2));
-    const ritmoNec = parseFloat(((metaReservas - reservasCumplidas) / Math.max(1, diasRestantes)).toFixed(2));
-    const atRisk = reservasCumplidas < metaReservas && ritmoActual < ritmoNec;
+
+    // ======== CÁLCULO DINÁMICO DE FECHAS ========
+    // Determinamos si selectedMonth es histórico, futuro o el mes actual
+    const hoy = new Date();
+    // Hora chilena aproximada compensando UTC
+    hoy.setHours(hoy.getHours() - 3);
+    const currentYear = hoy.getFullYear();
+    const currentMonthNum = hoy.getMonth() + 1; // 1-12
+    const currentDay = hoy.getDate();
+
+    let isCurrentMonth = true;
+    let isPast = false;
+    let diasRestantes = 0;
+    let diasTranscurridos = currentDay;
+    let diasHabilesTranscurridos = 0;
+
+    // selectedMonth Format: "2026-02"
+    let targetYear = currentYear;
+    let targetMonth = currentMonthNum;
+
+    if (selectedMonth) {
+        const parts = selectedMonth.split('-');
+        if (parts.length === 2) {
+            targetYear = parseInt(parts[0], 10);
+            targetMonth = parseInt(parts[1], 10);
+            if (targetYear !== currentYear || targetMonth !== currentMonthNum) {
+                isCurrentMonth = false;
+            }
+        }
+    }
+
+    // Función auxiliar para obtener días en un mes
+    const getDaysInMonth = (month: number, year: number) => new Date(year, month, 0).getDate();
+    // Función auxiliar para contar días hábiles considerando lunes a sábado (excluyendo solo domingos)
+    const countWorkingDays = (year: number, month: number, startDay: number, endDay: number) => {
+        let count = 0;
+        for (let day = startDay; day <= endDay; day++) {
+            const d = new Date(year, month - 1, day);
+            if (d.getDay() !== 0) count++; // 0 = Domingo
+        }
+        return count;
+    };
+
+    const diasTotalMes = getDaysInMonth(targetMonth, targetYear);
+    const diasHabilesMes = countWorkingDays(targetYear, targetMonth, 1, diasTotalMes);
+
+    if (isCurrentMonth) {
+        diasRestantes = diasTotalMes - currentDay;
+        diasTranscurridos = currentDay;
+        diasHabilesTranscurridos = countWorkingDays(targetYear, targetMonth, 1, currentDay);
+    } else {
+        // Validación Histórica
+        isPast = (targetYear < currentYear) || (targetYear === currentYear && targetMonth < currentMonthNum);
+        if (isPast) {
+            diasRestantes = 0;
+            diasTranscurridos = diasTotalMes;
+            diasHabilesTranscurridos = diasHabilesMes;
+        } else {
+            // Futuro (raro, pero just in case)
+            diasRestantes = diasTotalMes;
+            diasTranscurridos = 0;
+            diasHabilesTranscurridos = 0;
+        }
+    }
+
+    // Evitar división por cero en las matemáticas de ritmo
+    const divisorRitmo = Math.max(1, diasHabilesTranscurridos);
+    const divisorRestantes = Math.max(1, diasHabilesMes - diasHabilesTranscurridos);
+
+    const ritmoActual = parseFloat((reservasCumplidas / divisorRitmo).toFixed(2));
+    const ritmoNec = isPast ? 0 : parseFloat(((metaReservas - reservasCumplidas) / divisorRestantes).toFixed(2));
+
+    // Un corredor en un mes cerrado nunca está "atRisk" de perder su ritmo futuro
+    const atRisk = !isPast && (reservasCumplidas < metaReservas && ritmoActual < ritmoNec);
 
     // Commission — usa el canon real del corredor (si está disponible) o el fallback
     const commisionActual = Math.round(reservasCumplidas * avgCanon * COMMISSION_RATE);

@@ -5,6 +5,21 @@ import json
 from datetime import datetime
 from dotenv import load_dotenv
 
+# Importar servicios centralizados
+import sys
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'api'))
+from services.metrics_service import (
+    calculate_net_reservations,
+    calculate_personal_goal,
+    validate_squad_email,
+    get_contract_goal,
+)
+from utils.dates import (
+    get_month_boundaries,
+    is_current_month,
+    get_partial_month_end,
+)
+
 # Load Env
 script_dir = os.path.dirname(os.path.abspath(__file__))
 env_options = [
@@ -27,36 +42,25 @@ if not env_loaded:
 # DB Connection
 def get_connection():
     return mysql.connector.connect(
-        host=os.getenv("DB_HOST"),
-        user=os.getenv("DB_USER"),
-        password=os.getenv("DB_PASSWORD"),
-        port=os.getenv("DB_PORT", 3306),
+        host=os.getenv("DB_HOST", "").strip(),
+        user=os.getenv("DB_USER", "").strip(),
+        password=os.getenv("DB_PASSWORD", "").strip(),
+        port=int(os.getenv("DB_PORT", 3306)),
         database='assetplan_rentas'
     )
 
 def get_bi_connection():
     return mysql.connector.connect(
-        host=os.getenv("DB_HOST"),
-        user=os.getenv("DB_USER"),
-        password=os.getenv("DB_PASSWORD"),
-        port=os.getenv("DB_PORT", 3306),
+        host=os.getenv("DB_HOST", "").strip(),
+        user=os.getenv("DB_USER", "").strip(),
+        password=os.getenv("DB_PASSWORD", "").strip(),
+        port=int(os.getenv("DB_PORT", 3306)),
         database='bi_assetplan'
     )
 
-# Mapeo de Coordinadores
+# Mapeo de Coordinadores (wrapper para servicio centralizado)
 def get_squad_email(coordinator_email):
-    if not coordinator_email: return "sin_asignar@assetplan.cl"
-    email = coordinator_email.lower().strip()
-    squads = [
-        "carlos.echeverria@assetplan.cl",
-        "luis.gomez@assetplan.cl",
-        "nataly.espinoza@assetplan.cl",
-        "angely.rojo@assetplan.cl",
-        "maria.chacin@assetplan.cl"
-    ]
-    if email in squads:
-        return email
-    return "sin_asignar@assetplan.cl"
+    return validate_squad_email(coordinator_email)
 
 def fetch_last_db_update(conn):
     cursor = conn.cursor()
@@ -300,6 +304,15 @@ def main():
                 "end": "2026-02-28 23:59:59",
                 "history_start": "2025-02-01 00:00:00",
                 "daily_goal_base_month": 2
+            },
+            {
+                "id": "2026-03",
+                "goal": 1762, # Según imagen aportada
+                "contract_goal": 1762,
+                "start": "2026-03-01 00:00:00",
+                "end": "2026-03-31 23:59:59",
+                "history_start": "2025-03-01 00:00:00",
+                "daily_goal_base_month": 3
             }
         ]
         
@@ -325,21 +338,24 @@ def main():
             
             for r in rows:
                 full_name = f"{r['nombre']} {r['apellido']}".strip()
-                net = int(r['gross_val']) - int(r['fallen_val'])
+                # Usar servicio centralizado para cálculo de net reservations
+                net = calculate_net_reservations(r['gross_val'], r['fallen_val'])
                 fallen = int(r['fallen_val'])
                 coord = get_squad_email(r['coordinator_mail'])
                 cid = r['id']
-                
-                # Calcular Meta Personal basada en peso histórico
+
+                # Calcular Meta Personal usando servicio centralizado
                 weight = hist_weights.get(cid, 0)
-                # Si no tiene peso (nuevo), le damos un mínimo proporcional (ej: 0.8 del promedio)
-                if weight == 0:
-                    active_count = len(rows) if rows else 1
-                    weight = 0.8 / active_count
+                active_count = len(rows) if rows else 1
                 
-                personal_meta = int(config["contract_goal"] * weight)
-                if personal_meta < 5: personal_meta = 5 # Meta mínima saludable
-                
+                personal_meta = calculate_personal_goal(
+                    broker_id=cid,
+                    historical_weight=weight,
+                    contract_goal=config["contract_goal"],
+                    active_brokers_count=active_count,
+                    minimum_goal=5
+                )
+
                 obj = {
                     "name": full_name,
                     "val": net,
@@ -350,7 +366,7 @@ def main():
                     "personalMeta": personal_meta,
                     "coord": coord
                 }
-                
+
                 if "reservas adicionales" in full_name.lower():
                     obj["hidden"] = True
 
@@ -361,19 +377,26 @@ def main():
             
             freelance_list.sort(key=lambda x: x['val'], reverse=True)
             institutional_list.sort(key=lambda x: x['val'], reverse=True)
+
+            # History - Comparación year-over-year
+            # Extraer año del mes actual para calcular año anterior
+            current_year = int(mid.split('-')[0])
+            prev_year = current_year - 1
             
-            # History
-            s_2025 = start_date.replace("2026", "2025")
-            e_2025_total = end_date.replace("2026", "2025")
-            is_current_month = (datetime.now().strftime("%Y-%m") == mid)
+            s_2025 = start_date.replace(f"{current_year}", f"{prev_year}")
+            e_2025_total = end_date.replace(f"{current_year}", f"{prev_year}")
             
-            if is_current_month:
+            # Usar función centralizada para verificar mes actual
+            current_month_id = datetime.now().strftime("%Y-%m")
+            month_is_current = is_current_month(current_year, int(mid.split('-')[1]))
+
+            if month_is_current:
                 now = datetime.now()
-                p_end_2025 = f"2025-{now.month:02d}-{now.day:02d} 23:59:59"
-            elif mid < datetime.now().strftime("%Y-%m"):
+                p_end_2025 = get_partial_month_end(prev_year, now.month, now.day)
+            elif mid < current_month_id:
                 p_end_2025 = e_2025_total
             else:
-                p_end_2025 = s_2025 
+                p_end_2025 = s_2025
 
             h_rows = fetch_history_data(conn, s_2025, e_2025_total, p_end_2025)
             

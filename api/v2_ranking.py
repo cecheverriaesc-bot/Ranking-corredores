@@ -4,6 +4,17 @@ import json
 from datetime import datetime, timedelta
 from http.server import BaseHTTPRequestHandler
 
+# Import servicios centralizados
+import sys
+sys.path.append(os.path.dirname(__file__))
+from services.metrics_service import (
+    calculate_net_reservations,
+    validate_squad_email,
+    get_reservation_goal,
+    get_contract_goal,
+)
+from utils.dates import get_month_boundaries, format_chile_time
+
 def load_env_vars():
     """Carga variables de entorno desde .env o variables del sistema"""
     env_vars = {}
@@ -37,16 +48,15 @@ def get_connection():
     )
 
 def get_squad_email(coordinator_email):
-    if not coordinator_email: return "carlos.echeverria@assetplan.cl"
-    email = coordinator_email.lower().strip()
-    squads = ["carlos.echeverria@assetplan.cl", "luis.gomez@assetplan.cl", "nataly.espinoza@assetplan.cl", "angely.rojo@assetplan.cl", "maria.chacin@assetplan.cl"]
-    if email in squads: return email
-    return "carlos.echeverria@assetplan.cl"
+    """Wrapper para servicio centralizado"""
+    return validate_squad_email(coordinator_email)
 
-def fetch_data(conn):
+def fetch_data(conn, year: int = 2026, month: int = 1):
+    """Obtiene datos del ranking para un mes específico"""
     cursor = conn.cursor()
-    start_date = '2026-01-01 00:00:00'
-    end_date = '2026-01-31 23:59:59'
+    
+    # Usar servicio centralizado para fechas
+    start_date, end_date = get_month_boundaries(year, month)
 
     # Current Ranking
     cursor.execute("""
@@ -88,9 +98,10 @@ def fetch_data(conn):
     ranking, others = [], []
     for r in rows_2026:
         name = f"{r[1]} {r[2]}".strip()
-        val_gross, val_fallen = int(r[5] or 0), int(r[6] or 0)
-        net = val_gross - val_fallen
-        obj = {"name": name, "val": net, "fallen": val_fallen, "leads": leads.get(r[0], 0), "agendas": agendas.get(r[0], 0), "coord": get_squad_email(r[4])}
+        # Usar servicio centralizado para cálculo de net reservations
+        net = calculate_net_reservations(r[5], r[6])
+        fallen = int(r[6] or 0)
+        obj = {"name": name, "val": net, "fallen": fallen, "leads": leads.get(r[0], 0), "agendas": agendas.get(r[0], 0), "coord": get_squad_email(r[4])}
         if "reservas adicionales" in name.lower(): obj["hidden"] = True
         if r[3] == 1: others.append(obj)
         else: ranking.append(obj)
@@ -109,21 +120,14 @@ def fetch_data(conn):
     # Fallback to 'fecha' since created_at implies it might not exist or be named differently, and error confirmed it doesn't exist.
     cursor.execute("SELECT MAX(fecha) FROM reservas WHERE fecha <= NOW()")
     last_res_raw = cursor.fetchone()[0]
-    
+
     last_update_str = "---"
     if last_res_raw:
-        # User complained 00:44 (UTC) vs 22:04 (Local).
-        # So I will take the UTC time and subtract 3 hours manually.
-        from datetime import timedelta
-        # If last_res_raw is naive, assume UTC because user sees UTC.
-        # Adjust to Chile (UTC-3)
-        chile_time = last_res_raw - timedelta(hours=3)
-        last_update_str = chile_time.strftime("%d/%m/%Y %H:%M")
+        # Usar servicio centralizado para timezone de Chile
+        last_update_str = format_chile_time(last_res_raw, "%d/%m/%Y %H:%M")
     else:
         # Fallback if no reservations
-        from datetime import timedelta
-        chile_time = datetime.utcnow() - timedelta(hours=3)
-        last_update_str = chile_time.strftime("%d/%m/%Y %H:%M")
+        last_update_str = format_chile_time(datetime.utcnow(), "%d/%m/%Y %H:%M")
 
     # 2025 Comparison (YTD)
     # Compare 2026-01-01...Now vs 2025-01-01... Same Day/Month
@@ -159,10 +163,27 @@ def fetch_data(conn):
 
 class handler(BaseHTTPRequestHandler):
     def do_GET(self):
+        """
+        GET /api/v2_ranking?year=2026&month=1
+        Obtiene datos del ranking para un mes específico (legacy v2)
+        """
         try:
+            # Obtener parámetros opcionales year y month
+            from urllib.parse import parse_qs, urlparse
+            parsed_path = urlparse(self.path)
+            query_params = parse_qs(parsed_path.query)
+            
+            year = int(query_params.get('year', [2026])[0])
+            month = int(query_params.get('month', [1])[0])
+            
             conn = get_connection()
-            data = fetch_data(conn)
+            data = fetch_data(conn, year, month)
             conn.close()
+            
+            # Agregar metas centralizadas
+            data['reservation_goal'] = get_reservation_goal(year, month)
+            data['contract_goal'] = get_contract_goal(year, month)
+            
             self.send_response(200)
             self.send_header('Content-type', 'application/json')
             self.send_header('Access-Control-Allow-Origin', '*')

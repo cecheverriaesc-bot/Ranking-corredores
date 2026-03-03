@@ -7865,10 +7865,10 @@ export const MONTHLY_DATA: Record<string, MonthData> = {
 
 export const MONTHLY_GOAL = 1762;
 export const MONTHLY_RESERVATION_GOAL = 1854;
-export const CURRENT_RANKING_2026 = MONTHLY_DATA['2026-03'].ranking;
-export const OTHER_BROKERS_2026 = MONTHLY_DATA['2026-03'].others;
-export const DAILY_STATS = MONTHLY_DATA['2026-03'].daily_stats;
-export const DAILY_GOALS = MONTHLY_DATA['2026-03'].daily_goals;
+export const CURRENT_RANKING_2026 = MONTHLY_DATA?.['2026-03']?.ranking ?? [];
+export const OTHER_BROKERS_2026 = MONTHLY_DATA?.['2026-03']?.others ?? [];
+export const DAILY_STATS = MONTHLY_DATA?.['2026-03']?.daily_stats ?? [];
+export const DAILY_GOALS = MONTHLY_DATA?.['2026-03']?.daily_goals ?? {};
 
 export const NAMES_WITH_AGENDA: string[] = [
     "Erika Cepeda",

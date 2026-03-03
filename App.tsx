@@ -876,7 +876,7 @@ const App: React.FC = () => {
                                             className="bg-[#101622] text-slate-200 px-4 py-3 rounded-xl border border-[#324467] focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all text-sm font-bold cursor-pointer"
                                         >
                                             <option value="all">Todos los Equipos</option>
-                                            {Object.entries(TEAMS).map(([email, team]) => (
+                                            {Object.entries(TEAMS || {}).map(([email, team]) => (
                                                 <option key={email} value={email}>
                                                     {team.name}
                                                 </option>

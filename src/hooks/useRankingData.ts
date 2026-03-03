@@ -22,7 +22,7 @@ export function useRankingData(
 ): UseRankingDataReturn {
     const currentMonthData = useMemo(() => {
         if (selectedMonth === 'total-year') {
-            const months = Object.keys(monthlyData);
+            const months = Object.keys(monthlyData || {});
             if (months.length === 0) return monthlyData['2026-02'] || { goal: 0, ranking: [], others: [] };
 
             const aggregatedRanking: Record<string, CorredorData> = {};
@@ -47,7 +47,7 @@ export function useRankingData(
                         aggregatedRanking[broker.name].leads += broker.leads || 0;
                         aggregatedRanking[broker.name].agendas += broker.agendas || 0;
                         aggregatedRanking[broker.name].contracts += broker.contracts || 0;
-                        aggregatedRanking[broker.name].personalMeta = 
+                        aggregatedRanking[broker.name].personalMeta =
                             (aggregatedRanking[broker.name].personalMeta || 0) + (broker.personalMeta || 0);
                     }
                 });
@@ -90,17 +90,17 @@ export function useRankingData(
 
     const filteredBrokers = useMemo(() => {
         let filtered = allBrokers;
-        
+
         if (selectedSquad !== 'all') {
             filtered = filtered.filter(broker => broker.coord === selectedSquad);
         }
-        
+
         if (searchTerm) {
             filtered = filtered.filter(broker =>
                 broker.name.toLowerCase().includes(searchTerm.toLowerCase())
             );
         }
-        
+
         return filtered;
     }, [allBrokers, selectedSquad, searchTerm]);
 

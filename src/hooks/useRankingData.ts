@@ -78,10 +78,21 @@ export function useRankingData(
                 ranking: combinedRanking.filter(b => !othersNames.has(b.name)),
                 others: combinedRanking.filter(b => othersNames.has(b.name)),
                 daily_stats: [],
-                daily_goals: {}
+                daily_goals: {},
+                history: {}
             };
         }
-        return monthlyData[selectedMonth] || { goal: 0, ranking: [], others: [], daily_stats: [], daily_goals: {} };
+        return (monthlyData || {})[selectedMonth] || {
+            goal: 0,
+            reservation_goal: 0,
+            contract_goal: 0,
+            ranking: [],
+            others: [],
+            daily_stats: [],
+            daily_goals: {},
+            total_2025_ytd: 0,
+            history: {}
+        };
     }, [monthlyData, selectedMonth]);
 
     const allBrokers = useMemo(() => {

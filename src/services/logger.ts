@@ -100,7 +100,7 @@ export const logApiRequest = (endpoint: string, method: string): void => {
 
 export const logApiResponse = (endpoint: string, status: number, duration: number): void => {
     const level = status >= 400 ? 'warn' : 'info';
-    logger.log(level, `API Response: ${endpoint} - ${status} (${duration}ms)`, { module: 'api', status, duration });
+    logger[level](`API Response: ${endpoint} - ${status} (${duration}ms)`, { module: 'api', status, duration });
 };
 
 export const logUserAction = (action: string, details?: Record<string, unknown>): void => {

@@ -4,7 +4,7 @@ import {
     ArrowRight, ChevronLeft, TrendingUp, Activity, Search, MessageSquare, Award,
     Filter, Trophy, Medal, Star, TrendingDown, Minus, BarChart3, PieChart
 } from 'lucide-react';
-import { TEAMS, MONTHLY_DATA } from '../constants';
+import { TEAMS, MONTHLY_DATA } from '../src/data';
 import { CorredorData, BrokerGoalData } from '../types';
 
 interface SquadLaboratoryProps {
@@ -103,7 +103,7 @@ const MonthSelector = ({ selected, onChange }: { selected: string; onChange: (m:
                 {allMonths.map((monthNum, index) => {
                     const monthKey = `${currentYear}-${monthNum}`;
                     const monthName = MONTH_NAMES[monthNum];
-                    const hasData = MONTHLY_DATA[monthKey];
+                    const hasData = (MONTHLY_DATA || {})[monthKey];
                     const isSelected = selected === monthKey;
                     const isTotalYear = selected === 'total-year';
                     const monthIndex = parseInt(monthNum, 10);
@@ -841,7 +841,7 @@ const StrategicLab: React.FC<SquadLaboratoryProps> = ({
                                                 {!isClosedMonth && (
                                                     <td className="px-6 py-4 text-right whitespace-nowrap">
                                                         <span className="text-sm font-bold text-blue-400">
-                                                            {(broker.reservas / (intelligenceData?.day_of_month / intelligenceData?.total_days_month)).toFixed(1)}
+                                                            {(broker.reservas / ((intelligenceData?.day_of_month ?? 1) / (intelligenceData?.total_days_month ?? 1))).toFixed(1)}
                                                         </span>
                                                     </td>
                                                 )}

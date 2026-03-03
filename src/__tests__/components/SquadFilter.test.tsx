@@ -1,3 +1,7 @@
+/**
+ * @jest-environment jsdom
+ */
+
 import { render, screen, fireEvent } from '@testing-library/react';
 import SquadFilter from '../../components/dashboard/SquadFilter';
 import { TeamConfig } from '../../../types';
@@ -36,8 +40,12 @@ describe('SquadFilter', () => {
             />
         );
 
-        expect(screen.getByText('carlos')).toBeInTheDocument();
-        expect(screen.getByText('luis')).toBeInTheDocument();
+        expect(screen.getByText((content, element) => 
+            element?.tagName.toLowerCase() === 'button' && content.includes('carlos')
+        )).toBeInTheDocument();
+        expect(screen.getByText((content, element) => 
+            element?.tagName.toLowerCase() === 'button' && content.includes('luis')
+        )).toBeInTheDocument();
         expect(screen.queryByText('otro')).not.toBeInTheDocument();
     });
 
@@ -63,7 +71,10 @@ describe('SquadFilter', () => {
             />
         );
 
-        fireEvent.click(screen.getByText('carlos'));
+        const carlosButton = screen.getByText((content, element) => 
+            element?.tagName.toLowerCase() === 'button' && content.includes('carlos')
+        );
+        fireEvent.click(carlosButton);
         expect(mockOnSquadChange).toHaveBeenCalledWith('carlos@assetplan.cl');
     });
 
@@ -76,7 +87,9 @@ describe('SquadFilter', () => {
             />
         );
 
-        const luisButton = screen.getByText('luis');
+        const luisButton = screen.getByText((content, element) => 
+            element?.tagName.toLowerCase() === 'button' && content.includes('luis')
+        );
         expect(luisButton).toHaveClass('from-blue-500');
     });
 });

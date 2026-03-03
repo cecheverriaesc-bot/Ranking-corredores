@@ -1,0 +1,90 @@
+[warn] cdn.tailwindcss.com should not be used in production. To use Tailwind CSS in production, install it as a PostCSS plugin or use the Tailwind CLI: https://tailwindcss.com/docs/installation
+[log] App render # 0 isAuthenticated: false
+[warn] cdn.tailwindcss.com should not be used in production. To use Tailwind CSS in production, install it as a PostCSS plugin or use the Tailwind CLI: https://tailwindcss.com/docs/installation
+[error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[log] App render # 0 isAuthenticated: false
+[log] useEffect verifyAuth corriendo, isAuthenticated actual: false
+[log] Token encontrado: sí
+[error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[log] App render # 0 isAuthenticated: false
+[log] Verify response: [object Object]
+[log] App render # 0 isAuthenticated: true
+[log] App render # 0 isAuthenticated: true
+[error] TypeError: Cannot read properties of undefined (reading '2026-01')
+[error] Error capturado por ErrorBoundary: TypeError: Cannot read properties of undefined (reading '2026-01') [object Object]
+[log] App render # 0 isAuthenticated: true
+[warn] cdn.tailwindcss.com should not be used in production. To use Tailwind CSS in production, install it as a PostCSS plugin or use the Tailwind CLI: https://tailwindcss.com/docs/installation
+[log] App render # 0 isAuthenticated: false
+[log] useEffect verifyAuth corriendo, isAuthenticated actual: false
+[log] Token encontrado: sí
+[log] App render # 0 isAuthenticated: false
+[verbose] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o
+[warn] cdn.tailwindcss.com should not be used in production. To use Tailwind CSS in production, install it as a PostCSS plugin or use the Tailwind CLI: https://tailwindcss.com/docs/installation
+[log] App render # 0 isAuthenticated: false
+[log] useEffect verifyAuth corriendo, isAuthenticated actual: false
+[log] Token encontrado: sí
+[verbose] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o
+[log] App render # 0 isAuthenticated: false
+[log] Verify response: [object Object]
+[log] App render # 0 isAuthenticated: true
+[log] App render # 0 isAuthenticated: true
+[error] TypeError: Cannot read properties of undefined (reading '2026-01')
+[error] Error capturado por ErrorBoundary: TypeError: Cannot read properties of undefined (reading '2026-01') [object Object]
+[error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[log] App render # 0 isAuthenticated: true
+[warn] cdn.tailwindcss.com should not be used in production. To use Tailwind CSS in production, install it as a PostCSS plugin or use the Tailwind CLI: https://tailwindcss.com/docs/installation
+[log] App render # 0 isAuthenticated: false
+[log] useEffect verifyAuth corriendo, isAuthenticated actual: false
+[log] Token encontrado: sí
+[verbose] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o
+[error] Error loading broker goals: TypeError: Failed to fetch
+[warn] cdn.tailwindcss.com should not be used in production. To use Tailwind CSS in production, install it as a PostCSS plugin or use the Tailwind CLI: https://tailwindcss.com/docs/installation
+[log] App render # 0 isAuthenticated: false
+[log] useEffect verifyAuth corriendo, isAuthenticated actual: false
+[log] Token encontrado: no
+[error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[log] App render # 0 isAuthenticated: false
+[verbose] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o
+[warn] cdn.tailwindcss.com should not be used in production. To use Tailwind CSS in production, install it as a PostCSS plugin or use the Tailwind CLI: https://tailwindcss.com/docs/installation
+[log] App render # 0 isAuthenticated: false
+[log] useEffect verifyAuth corriendo, isAuthenticated actual: false
+[log] Token encontrado: sí
+[verbose] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o
+[log] App render # 0 isAuthenticated: false
+[warn] cdn.tailwindcss.com should not be used in production. To use Tailwind CSS in production, install it as a PostCSS plugin or use the Tailwind CLI: https://tailwindcss.com/docs/installation
+[log] App render # 0 isAuthenticated: false
+[log] useEffect verifyAuth corriendo, isAuthenticated actual: false
+[log] Token encontrado: sí
+[error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[log] Verify response: [object Object]
+[log] App render # 0 isAuthenticated: true
+[warn] The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[log] App render # 0 isAuthenticated: true
+[warn] cdn.tailwindcss.com should not be used in production. To use Tailwind CSS in production, install it as a PostCSS plugin or use the Tailwind CLI: https://tailwindcss.com/docs/installation
+[log] App render # 0 isAuthenticated: false
+[log] useEffect verifyAuth corriendo, isAuthenticated actual: false
+[log] Token encontrado: sí
+[verbose] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o
+[log] App render # 0 isAuthenticated: false
+[log] Verify response: [object Object]
+[log] App render # 0 isAuthenticated: true
+[warn] The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[warn] cdn.tailwindcss.com should not be used in production. To use Tailwind CSS in production, install it as a PostCSS plugin or use the Tailwind CLI: https://tailwindcss.com/docs/installation
+[log] App render # 0 isAuthenticated: false
+[log] useEffect verifyAuth corriendo, isAuthenticated actual: false
+[log] Token encontrado: sí
+[log] App render # 0 isAuthenticated: false
+[error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[log] Verify response: [object Object]
+[log] App render # 0 isAuthenticated: true
+[warn] The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[log] App render # 0 isAuthenticated: true

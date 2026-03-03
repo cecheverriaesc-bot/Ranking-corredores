@@ -1,6 +1,6 @@
 import React from 'react';
 import { Trophy } from 'lucide-react';
-import { MonthData } from '../../types';
+import { MonthData } from '../../../types';
 
 const MONTH_NAMES: Record<string, string> = {
     '01': 'Ene',
@@ -53,7 +53,7 @@ const MonthSelector: React.FC<MonthSelectorProps> = ({
                 {allMonths.map((monthNum, index) => {
                     const monthKey = `${currentYear}-${monthNum}`;
                     const monthName = MONTH_NAMES[monthNum];
-                    const hasData = monthlyData[monthKey];
+                    const hasData = (monthlyData || {})[monthKey];
                     const isSelected = selected === monthKey;
                     const monthIndex = parseInt(monthNum, 10);
                     const isCompleted = hasData || (lastAvailableMonthNum > 0 && monthIndex <= lastAvailableMonthNum);
@@ -65,10 +65,10 @@ const MonthSelector: React.FC<MonthSelectorProps> = ({
                                 onClick={() => onChange(monthKey)}
                                 disabled={isFuture}
                                 className={`relative flex items-center justify-center w-9 h-9 rounded-xl text-xs font-black uppercase transition-all duration-300 ${isSelected
-                                        ? 'bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/30 scale-110'
-                                        : isCompleted
-                                            ? 'bg-slate-700 text-slate-300 hover:bg-slate-600 hover:text-white hover:scale-105'
-                                            : 'bg-slate-800/50 text-slate-600 cursor-not-allowed'
+                                    ? 'bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/30 scale-110'
+                                    : isCompleted
+                                        ? 'bg-slate-700 text-slate-300 hover:bg-slate-600 hover:text-white hover:scale-105'
+                                        : 'bg-slate-800/50 text-slate-600 cursor-not-allowed'
                                     }`}
                                 title={monthName}
                             >
@@ -82,11 +82,11 @@ const MonthSelector: React.FC<MonthSelectorProps> = ({
                             </button>
                             {index < allMonths.length - 1 && (
                                 <div className={`w-1 h-0.5 transition-colors duration-300 ${isCompleted && allMonths[index + 1] && (
-                                        monthlyData[`${currentYear}-${allMonths[index + 1]}`] ||
-                                        parseInt(allMonths[index + 1], 10) <= lastAvailableMonthNum
-                                    )
-                                        ? 'bg-slate-600'
-                                        : 'bg-slate-800'
+                                    (monthlyData || {})[`${currentYear}-${allMonths[index + 1]}`] ||
+                                    parseInt(allMonths[index + 1], 10) <= lastAvailableMonthNum
+                                )
+                                    ? 'bg-slate-600'
+                                    : 'bg-slate-800'
                                     }`}></div>
                             )}
                         </React.Fragment>
@@ -96,8 +96,8 @@ const MonthSelector: React.FC<MonthSelectorProps> = ({
             <button
                 onClick={() => onChange('total-year')}
                 className={`flex flex-col items-center gap-1 px-4 py-2 rounded-xl border transition-all duration-300 ${isTotalYear
-                        ? 'bg-gradient-to-br from-emerald-500 to-emerald-600 border-emerald-400/50 text-white shadow-lg shadow-emerald-500/30'
-                        : 'bg-slate-800/50 border-slate-700 text-slate-400 hover:bg-slate-700 hover:text-white'
+                    ? 'bg-gradient-to-br from-emerald-500 to-emerald-600 border-emerald-400/50 text-white shadow-lg shadow-emerald-500/30'
+                    : 'bg-slate-800/50 border-slate-700 text-slate-400 hover:bg-slate-700 hover:text-white'
                     }`}
             >
                 <Trophy size={16} className={isTotalYear ? 'fill-white' : ''} />

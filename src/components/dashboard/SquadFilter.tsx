@@ -1,5 +1,5 @@
 import React from 'react';
-import { TeamConfig } from '../../types';
+import { TeamConfig } from '../../../types';
 
 interface SquadFilterProps {
     teams: TeamConfig[];

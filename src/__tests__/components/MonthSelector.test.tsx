@@ -1,3 +1,7 @@
+/**
+ * @jest-environment jsdom
+ */
+
 import { render, screen, fireEvent } from '@testing-library/react';
 import MonthSelector from '../../components/dashboard/MonthSelector';
 import { MonthData } from '../../../types';
@@ -11,7 +15,8 @@ const mockMonthlyData: Record<string, MonthData> = {
         daily_stats: [],
         daily_goals: {},
         total_2025_ytd: 500,
-        history: {}
+        history: {},
+        reservation_goal: 100
     },
     '2026-02': {
         goal: 120,
@@ -21,7 +26,8 @@ const mockMonthlyData: Record<string, MonthData> = {
         daily_stats: [],
         daily_goals: {},
         total_2025_ytd: 600,
-        history: {}
+        history: {},
+        reservation_goal: 120
     }
 };
 

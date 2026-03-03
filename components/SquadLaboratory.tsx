@@ -4,7 +4,7 @@ import {
     ArrowRight, ChevronLeft, TrendingUp, Activity, Search, MessageSquare, Award,
     Trophy, BarChart3
 } from 'lucide-react';
-import { TEAMS, MONTHLY_DATA } from '../constants';
+import { TEAMS, MONTHLY_DATA } from '../src/data';
 import { CorredorData, BrokerGoalData } from '../types';
 
 
@@ -43,7 +43,7 @@ const MonthSelector = ({ selected, onChange }: { selected: string; onChange: (m:
                 {allMonths.map((monthNum, index) => {
                     const monthKey = `${currentYear}-${monthNum}`;
                     const monthName = MONTH_NAMES[monthNum];
-                    const hasData = MONTHLY_DATA[monthKey];
+                    const hasData = (MONTHLY_DATA || {})[monthKey];
                     const isSelected = selected === monthKey;
                     const isTotalYear = selected === 'total-year';
                     const monthIndex = parseInt(monthNum, 10);

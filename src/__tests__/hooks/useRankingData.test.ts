@@ -1,6 +1,10 @@
+/**
+ * @jest-environment jsdom
+ */
+
 import { renderHook } from '@testing-library/react';
 import { useRankingData } from '../../hooks/useRankingData';
-import { MonthData, CorredorData } from '../../../types';
+import { MonthData } from '../../../types';
 
 const mockMonthlyData: Record<string, MonthData> = {
     '2026-01': {
@@ -16,7 +20,8 @@ const mockMonthlyData: Record<string, MonthData> = {
         daily_stats: [],
         daily_goals: {},
         total_2025_ytd: 500,
-        reservation_goal: 100
+        reservation_goal: 100,
+        history: {}
     },
     '2026-02': {
         goal: 120,
@@ -32,22 +37,6 @@ const mockMonthlyData: Record<string, MonthData> = {
         daily_goals: {},
         total_2025_ytd: 600,
         reservation_goal: 120,
-        history: {}
-    },
-    '2026-01': {
-        goal: 100,
-        contract_goal: 100,
-        ranking: [
-            { name: 'Juan Perez', val: 50, fallen: 2, leads: 100, agendas: 20, contracts: 45, coord: 'carlos@assetplan.cl' },
-            { name: 'Maria Garcia', val: 40, fallen: 1, leads: 80, agendas: 15, contracts: 35, coord: 'luis@assetplan.cl' }
-        ],
-        others: [
-            { name: 'Pedro Lopez', val: 30, fallen: 0, leads: 50, agendas: 10, contracts: 25, coord: 'carlos@assetplan.cl' }
-        ],
-        daily_stats: [],
-        daily_goals: {},
-        total_2025_ytd: 500,
-        reservation_goal: 100,
         history: {}
     }
 };
@@ -87,9 +76,10 @@ describe('useRankingData', () => {
             useRankingData(mockMonthlyData, '2026-01', 'all', '')
         );
 
-        expect(result.current.topBrokers).toHaveLength(2);
+        expect(result.current.topBrokers).toHaveLength(3);
         expect(result.current.topBrokers[0].name).toBe('Juan Perez');
         expect(result.current.topBrokers[1].name).toBe('Maria Garcia');
+        expect(result.current.topBrokers[2].name).toBe('Pedro Lopez');
     });
 
     it('calculates goal progress correctly', () => {
@@ -106,7 +96,7 @@ describe('useRankingData', () => {
         );
 
         expect(result.current.currentMonthData.goal).toBe(220);
-        expect(result.current.totalReservas).toBe(250);
+        expect(result.current.totalReservas).toBe(255);
     });
 
     it('returns empty data for non-existent month', () => {

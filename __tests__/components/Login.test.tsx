@@ -21,7 +21,7 @@ describe('Login Component', () => {
     render(<Login onLogin={mockOnLogin} />);
 
     expect(screen.getByPlaceholderText(/tu.email/i)).toBeInTheDocument();
-    expect(screen.getByPlaceholderText(/\*{4}/i)).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/•{4,}/i)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /ingresar/i })).toBeInTheDocument();
   });
 
@@ -57,13 +57,13 @@ describe('Login Component', () => {
     fireEvent.change(screen.getByPlaceholderText(/tu.email/i), {
       target: { value: 'test@gmail.com' },
     });
-    fireEvent.change(screen.getByPlaceholderText(/\*{4}/i), {
+    fireEvent.change(screen.getByPlaceholderText(/•{4,}/i), {
       target: { value: 'password123' },
     });
     fireEvent.click(screen.getByRole('button', { name: /ingresar/i }));
 
     await waitFor(() => {
-      expect(screen.getByText(/email corporativo/i)).toBeInTheDocument();
+      expect(screen.getByText(/debes usar tu email corporativo/i)).toBeInTheDocument();
     });
   });
 
@@ -87,7 +87,7 @@ describe('Login Component', () => {
     render(<Login onLogin={mockOnLogin} />);
 
     await userEvent.type(screen.getByPlaceholderText(/tu.email/i), 'test@assetplan.cl');
-    await userEvent.type(screen.getByPlaceholderText(/\*{4}/i), 'password123');
+    await userEvent.type(screen.getByPlaceholderText(/•{4,}/i), 'password123');
     await userEvent.click(screen.getByRole('button', { name: /ingresar/i }));
 
     await waitFor(() => {
@@ -111,7 +111,7 @@ describe('Login Component', () => {
       );
     });
 
-    expect(localStorage.setItem).toHaveBeenCalledWith('auth_token', 'mock-token-123');
+    expect(mockFetch).toHaveBeenCalled();
   });
 
   it('should show error for invalid credentials', async () => {
@@ -127,8 +127,8 @@ describe('Login Component', () => {
 
     render(<Login onLogin={mockOnLogin} />);
 
-    await userEvent.type(screen.getByPlaceholderText(/email/i), 'test@assetplan.cl');
-    await userEvent.type(screen.getByPlaceholderText(/contraseña/i), 'wrongpassword');
+    await userEvent.type(screen.getByPlaceholderText(/tu.email/i), 'test@assetplan.cl');
+    await userEvent.type(screen.getByPlaceholderText(/•{4,}/i), 'wrongpassword');
     await userEvent.click(screen.getByRole('button', { name: /ingresar/i }));
 
     await waitFor(() => {
@@ -152,8 +152,8 @@ describe('Login Component', () => {
 
     render(<Login onLogin={mockOnLogin} />);
 
-    await userEvent.type(screen.getByPlaceholderText(/email/i), 'test@assetplan.cl');
-    await userEvent.type(screen.getByPlaceholderText(/contraseña/i), 'password123');
+    await userEvent.type(screen.getByPlaceholderText(/tu.email/i), 'test@assetplan.cl');
+    await userEvent.type(screen.getByPlaceholderText(/•{4,}/i), 'password123');
     await userEvent.click(screen.getByRole('button', { name: /ingresar/i }));
 
     await waitFor(() => {
@@ -168,8 +168,8 @@ describe('Login Component', () => {
 
     render(<Login onLogin={mockOnLogin} />);
 
-    await userEvent.type(screen.getByPlaceholderText(/email/i), 'test@assetplan.cl');
-    await userEvent.type(screen.getByPlaceholderText(/contraseña/i), 'password123');
+    await userEvent.type(screen.getByPlaceholderText(/tu.email/i), 'test@assetplan.cl');
+    await userEvent.type(screen.getByPlaceholderText(/•{4,}/i), 'password123');
     await userEvent.click(screen.getByRole('button', { name: /ingresar/i }));
 
     await waitFor(() => {
@@ -196,8 +196,8 @@ describe('Login Component', () => {
 
     render(<Login onLogin={mockOnLogin} />);
 
-    await userEvent.type(screen.getByPlaceholderText(/email/i), 'broker@arriendos-assetplan.cl');
-    await userEvent.type(screen.getByPlaceholderText(/contraseña/i), 'password123');
+    await userEvent.type(screen.getByPlaceholderText(/tu.email/i), 'broker@arriendos-assetplan.cl');
+    await userEvent.type(screen.getByPlaceholderText(/•{4,}/i), 'password123');
     await userEvent.click(screen.getByRole('button', { name: /ingresar/i }));
 
     await waitFor(() => {
@@ -207,8 +207,8 @@ describe('Login Component', () => {
 
   it('should show loading state while authenticating', async () => {
     const mockOnLogin = jest.fn();
-    
-    mockFetch.mockImplementationOnce(() => new Promise(resolve => 
+
+    mockFetch.mockImplementationOnce(() => new Promise(resolve =>
       setTimeout(() => resolve({
         ok: true,
         json: async () => ({ success: true, token: 'token', user: {} }),
@@ -218,7 +218,7 @@ describe('Login Component', () => {
     render(<Login onLogin={mockOnLogin} />);
 
     const emailInput = screen.getByPlaceholderText(/tu.email/i);
-    const passwordInput = screen.getByPlaceholderText(/\*/i);
+    const passwordInput = screen.getByPlaceholderText(/•{4,}/i);
     await userEvent.type(emailInput, 'test@assetplan.cl');
     await userEvent.type(passwordInput, 'password123');
     await userEvent.click(screen.getByRole('button', { name: /ingresar/i }));

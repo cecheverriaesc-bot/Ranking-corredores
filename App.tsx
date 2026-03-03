@@ -6,10 +6,10 @@ import {
     Trophy, CheckCircle2, Edit3, LogOut, RefreshCw, MessageSquare, Shield, AlertTriangle
 } from 'lucide-react';
 import { ComposedChart, AreaChart, Area, Line, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
-import { MONTHLY_DATA, TEAMS, HISTORY_2025, NAMES_WITH_AGENDA, LAST_DB_UPDATE } from './src/data/index';
+import { MONTHLY_DATA, TEAMS, HISTORY_2025, NAMES_WITH_AGENDA, LAST_DB_UPDATE } from './constants';
 
 import { SquadStats, DashboardStats, CorredorData, DailyStat, MonthData, BrokerGoalData } from './types';
-import { MonthSelector, StatsCards, SquadFilter } from './src/components/dashboard/index';
+import { MonthSelector, StatsCards, SquadFilter } from './src/components/dashboard';
 import { useRankingData } from './src/hooks/useRankingData';
 import Login from './components/Login';
 
@@ -108,8 +108,8 @@ const App: React.FC = () => {
     const currentMonthData: MonthData = useMemo(() => {
         if (selectedMonth === 'total-year') {
             // Aggregate all months data
-            const months = Object.keys(MONTHLY_DATA || {}).sort();
-            if (months.length === 0) return MONTHLY_DATA['2026-02'] || { goal: 0, ranking: [], others: [] };
+            const months = Object.keys(MONTHLY_DATA ?? {}).sort();
+            if (months.length === 0) return (MONTHLY_DATA && MONTHLY_DATA['2026-02']) || { goal: 0, ranking: [], others: [], daily_stats: [], daily_goals: {}, total_2025_ytd: 0, contract_goal: 0, reservation_goal: 0, history: {} };
 
             // Combine all ranking data from all months
             const aggregatedRanking: Record<string, CorredorData> = {};
@@ -158,8 +158,8 @@ const App: React.FC = () => {
 
             // Get the last month data for reference to determine others
             const lastMonthKey = months[months.length - 1];
-            const lastMonthData = MONTHLY_DATA[lastMonthKey];
-            const othersNames = new Set(lastMonthData.others?.map(o => o.name) || []);
+            const lastMonthData = MONTHLY_DATA?.[lastMonthKey];
+            const othersNames = new Set(lastMonthData?.others?.map(o => o.name) || []);
 
             return {
                 goal: totalGoal,
@@ -248,7 +248,7 @@ const App: React.FC = () => {
         const squadStats: Record<string, SquadStats> = {};
 
         // Initialize Squad Stats
-        Object.keys(TEAMS || {}).forEach(id => {
+        Object.keys(TEAMS ?? {}).forEach(id => {
             squadStats[id] = { cur: 0, contracts: 0, past: 0, qual: 0, others: 0, totalMembers: 0, activeMembers: 0, totalLeads: 0, totalAgendas: 0 };
         });
 
@@ -876,7 +876,7 @@ const App: React.FC = () => {
                                             className="bg-[#101622] text-slate-200 px-4 py-3 rounded-xl border border-[#324467] focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all text-sm font-bold cursor-pointer"
                                         >
                                             <option value="all">Todos los Equipos</option>
-                                            {Object.entries(TEAMS || {}).map(([email, team]) => (
+                                            {Object.entries(TEAMS ?? {}).map(([email, team]) => (
                                                 <option key={email} value={email}>
                                                     {team.name}
                                                 </option>
@@ -1263,7 +1263,7 @@ const App: React.FC = () => {
                                                 />
 
                                                 {/* Stacked Bars for Squads */}
-                                                {Object.entries(TEAMS || {}).map(([email, config]) => {
+                                                {Object.entries(TEAMS ?? {}).map(([email, config]) => {
                                                     let hex = '#64748b';
                                                     if (email.includes('carlos')) hex = '#f97316';
                                                     if (email.includes('luis')) hex = '#3b82f6';

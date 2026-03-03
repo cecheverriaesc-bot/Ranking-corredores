@@ -565,7 +565,7 @@ const BrokerProfile: React.FC<BrokerProfileProps> = ({ broker, onBack, selectedM
                                 </div>
                                 <ProgressBar value={broker.score_engagement} max={35} color="bg-gradient-to-r from-indigo-600 to-indigo-400" />
                                 <div className="grid grid-cols-2 gap-2 mt-3">
-                                    {Object.entries(broker.breakdown_engagement).slice(0, 4).map(([k, v]) => (
+                                    {Object.entries(broker?.breakdown_engagement || {}).slice(0, 4).map(([k, v]) => (
                                         <div className="p-3 bg-slate-900/80 rounded-2xl border border-slate-800 flex-1">
                                             <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1">Meta Reservas</p>
                                             <p className="text-2xl font-black text-white">{broker.meta_personal || 8}</p>

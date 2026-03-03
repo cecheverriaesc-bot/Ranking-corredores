@@ -26,12 +26,29 @@ const mockMonthlyData: Record<string, MonthData> = {
             { name: 'Maria Garcia', val: 45, fallen: 2, leads: 90, agendas: 18, contracts: 40, coord: 'luis@assetplan.cl' }
         ],
         others: [
-            { name: 'Pedro Lopez', val: 35, fallen: 1, leads: 60, agendas: 12, contracts, coord: ': 30carlos@assetplan.cl' }
+            { name: 'Pedro Lopez', val: 35, fallen: 1, leads: 60, agendas: 12, contracts: 30, coord: 'carlos@assetplan.cl' }
         ],
         daily_stats: [],
         daily_goals: {},
         total_2025_ytd: 600,
-        reservation_goal: 120
+        reservation_goal: 120,
+        history: {}
+    },
+    '2026-01': {
+        goal: 100,
+        contract_goal: 100,
+        ranking: [
+            { name: 'Juan Perez', val: 50, fallen: 2, leads: 100, agendas: 20, contracts: 45, coord: 'carlos@assetplan.cl' },
+            { name: 'Maria Garcia', val: 40, fallen: 1, leads: 80, agendas: 15, contracts: 35, coord: 'luis@assetplan.cl' }
+        ],
+        others: [
+            { name: 'Pedro Lopez', val: 30, fallen: 0, leads: 50, agendas: 10, contracts: 25, coord: 'carlos@assetplan.cl' }
+        ],
+        daily_stats: [],
+        daily_goals: {},
+        total_2025_ytd: 500,
+        reservation_goal: 100,
+        history: {}
     }
 };
 

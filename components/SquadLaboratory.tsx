@@ -26,7 +26,7 @@ const MONTH_NAMES: Record<string, string> = {
 };
 
 const MonthSelector = ({ selected, onChange }: { selected: string; onChange: (m: string) => void }) => {
-    const availableMonths = Object.keys(MONTHLY_DATA).sort();
+    const availableMonths = Object.keys(MONTHLY_DATA || {}).sort();
     const currentYear = availableMonths.some(m => m.startsWith('2026')) ? '2026' : availableMonths[0]?.split('-')[0] || '2026';
     const allMonths = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
     const lastAvailableMonth = availableMonths.length > 0 ? availableMonths[availableMonths.length - 1] : null;

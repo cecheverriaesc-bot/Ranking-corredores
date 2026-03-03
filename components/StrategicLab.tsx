@@ -47,6 +47,8 @@ interface IntelligenceData {
     brokers_rm: BrokerIntelligence[];
     brokers_regiones: BrokerIntelligence[];
     leader?: BrokerIntelligence;
+    day_of_month?: number;
+    total_days_month?: number;
     squad_summary: {
         meta_equipo: number;
         contratos_actuales: number;
@@ -60,6 +62,9 @@ interface IntelligenceData {
             rendimiento_weight: number;
             total_possible: number;
             normalization: string;
+            pilar_1_engagement?: { weight: number };
+            pilar_2_rendimiento?: { weight: number };
+            pilar_3_eficiencia?: { weight: number };
         };
     };
 }
@@ -81,7 +86,7 @@ const MONTH_NAMES: Record<string, string> = {
 };
 
 const MonthSelector = ({ selected, onChange }: { selected: string; onChange: (m: string) => void }) => {
-    const availableMonths = Object.keys(MONTHLY_DATA).sort();
+    const availableMonths = Object.keys(MONTHLY_DATA || {}).sort();
     const currentYear = availableMonths.some(m => m.startsWith('2026')) ? '2026' : availableMonths[0]?.split('-')[0] || '2026';
     const allMonths = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
     const lastAvailableMonth = availableMonths.length > 0 ? availableMonths[availableMonths.length - 1] : null;

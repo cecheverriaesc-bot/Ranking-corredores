@@ -10,7 +10,8 @@ const mockMonthlyData: Record<string, MonthData> = {
         others: [],
         daily_stats: [],
         daily_goals: {},
-        total_2025_ytd: 500
+        total_2025_ytd: 500,
+        history: {}
     },
     '2026-02': {
         goal: 120,
@@ -19,7 +20,8 @@ const mockMonthlyData: Record<string, MonthData> = {
         others: [],
         daily_stats: [],
         daily_goals: {},
-        total_2025_ytd: 600
+        total_2025_ytd: 600,
+        history: {}
     }
 };
 

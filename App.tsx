@@ -264,7 +264,7 @@ const App: React.FC = () => {
                 if (item.val >= item.personalMeta) brokersMeetingGoal++;
             }
 
-            const isExternal = OTHER_BROKERS.some(e => e.name === item.name);
+            const isExternal = (OTHER_BROKERS || []).some(e => e.name === item.name);
             const isFreelance = !isExternal;
 
             if (isFreelance && item.val >= 7) globalQualified++;
@@ -376,7 +376,7 @@ const App: React.FC = () => {
 
     const filteredData = useMemo(() => {
         // Only show CURRENT_RANKING (Internals) in main table, exclude OTHER_BROKERS (Externals)
-        let data = CURRENT_RANKING.filter(item =>
+        let data = (CURRENT_RANKING || []).filter(item =>
             !item.hidden && item.name.toLowerCase().includes(searchTerm.toLowerCase())
         );
 
@@ -389,7 +389,7 @@ const App: React.FC = () => {
     }, [searchTerm, CURRENT_RANKING, selectedSquad]);
 
     const top3 = useMemo(() => {
-        const sorted = [...(filteredData || [])] // Use filteredData (Internals only) for Podium
+        const sorted = [...(filteredData ?? [])] // Use filteredData (Internals only) for Podium
             .sort((a, b) => b.val - a.val);
         return [sorted[0], sorted[1], sorted[2]].filter(Boolean);
     }, [filteredData]);

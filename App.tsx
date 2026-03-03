@@ -6,10 +6,10 @@ import {
     Trophy, CheckCircle2, Edit3, LogOut, RefreshCw, MessageSquare, Shield, AlertTriangle
 } from 'lucide-react';
 import { ComposedChart, AreaChart, Area, Line, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
-import { MONTHLY_DATA, TEAMS, HISTORY_2025, NAMES_WITH_AGENDA, LAST_DB_UPDATE } from './src/data';
+import { MONTHLY_DATA, TEAMS, HISTORY_2025, NAMES_WITH_AGENDA, LAST_DB_UPDATE } from './src/data/index';
 
 import { SquadStats, DashboardStats, CorredorData, DailyStat, MonthData, BrokerGoalData } from './types';
-import { MonthSelector, StatsCards, SquadFilter } from './src/components/dashboard';
+import { MonthSelector, StatsCards, SquadFilter } from './src/components/dashboard/index';
 import { useRankingData } from './src/hooks/useRankingData';
 import Login from './components/Login';
 

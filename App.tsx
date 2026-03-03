@@ -1,9 +1,9 @@
 
-import React, { useState, useMemo, useEffect, lazy, Suspense } from 'react';
+import React, { useState, useMemo, useEffect, lazy, Suspense, Component, ReactNode } from 'react';
 import {
     Search, TrendingUp, Users, Calendar, Medal, Crown, Droplet,
     GraduationCap, Flower2, Star, Target, Clock, Brain, Zap, Flame,
-    Trophy, CheckCircle2, Edit3, LogOut, RefreshCw, MessageSquare, Shield
+    Trophy, CheckCircle2, Edit3, LogOut, RefreshCw, MessageSquare, Shield, AlertTriangle
 } from 'lucide-react';
 import { ComposedChart, AreaChart, Area, Line, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { MONTHLY_DATA, TEAMS, HISTORY_2025, NAMES_WITH_AGENDA, LAST_DB_UPDATE } from './src/data';
@@ -22,9 +22,65 @@ const IconMap: Record<string, React.FC<any>> = {
     Flame, Droplet, GraduationCap, Flower2, Star
 };
 
+interface ErrorBoundaryProps {
+    children: ReactNode;
+}
+
+interface ErrorBoundaryState {
+    hasError: boolean;
+    error: Error | null;
+}
+
+class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
+    constructor(props: ErrorBoundaryProps) {
+        super(props);
+        this.state = { hasError: false, error: null };
+    }
+
+    static getDerivedStateFromError(error: Error): ErrorBoundaryState {
+        return { hasError: true, error };
+    }
+
+    componentDidCatch(error: Error, errorInfo: React.ErrorInfo): void {
+        console.error('Error capturado por ErrorBoundary:', error, errorInfo);
+    }
+
+    render(): ReactNode {
+        if (this.state.hasError) {
+            return (
+                <div className="min-h-screen bg-[#101622] flex items-center justify-center p-4">
+                    <div className="bg-[#1e293b] rounded-3xl border border-red-500/50 p-8 max-w-lg">
+                        <div className="flex items-center gap-3 mb-4">
+                            <AlertTriangle className="text-red-400" size={32} />
+                            <h1 className="text-xl font-bold text-white">Error de la aplicación</h1>
+                        </div>
+                        <p className="text-slate-400 mb-4">
+                            Ocurrió un error al cargar la aplicación. Por favor, recarga la página.
+                        </p>
+                        <pre className="bg-[#101622] p-4 rounded-xl text-red-300 text-xs overflow-auto max-h-40">
+                            {this.state.error?.message || 'Error desconocido'}
+                        </pre>
+                        <button
+                            onClick={() => window.location.reload()}
+                            className="mt-4 w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold"
+                        >
+                            Recargar página
+                        </button>
+                    </div>
+                </div>
+            );
+        }
+
+        return this.props.children;
+    }
+}
+
 const App: React.FC = () => {
     // --- Authentication State ---
     const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [debugRender, setDebugRender] = useState(0);
+    
+    console.log('App render #', debugRender, 'isAuthenticated:', isAuthenticated);
     const [userEmail, setUserEmail] = useState<string | null>(null);
 
     // --- State Management ---
@@ -426,12 +482,11 @@ const App: React.FC = () => {
     // ============================================
 
     const handleLogin = (email: string, token: string, user: any) => {
+        console.log('handleLogin llamado con:', email, token, user);
         setUserEmail(email);
         setIsAuthenticated(true);
-        // Guardar información adicional del usuario si es necesario
-        if (user) {
-            // Se puede extender para guardar role, squad, etc.
-        }
+        setDebugRender(prev => prev + 1);
+        console.log('handleLogin completado, isAuthenticated debería ser true');
     };
 
     const handleLogout = () => {
@@ -445,8 +500,10 @@ const App: React.FC = () => {
 
     // Verificar autenticación al cargar
     useEffect(() => {
+        console.log('useEffect verifyAuth corriendo, isAuthenticated actual:', isAuthenticated);
         const verifyAuth = async () => {
             const token = localStorage.getItem('auth_token');
+            console.log('Token encontrado:', token ? 'sí' : 'no');
             if (token) {
                 try {
                     const response = await fetch('/api/auth/verify', {
@@ -455,10 +512,14 @@ const App: React.FC = () => {
                         },
                     });
                     const data = await response.json();
+                    console.log('Verify response:', data);
                     if (!data.valid) {
                         localStorage.removeItem('auth_token');
                         setIsAuthenticated(false);
                         setUserEmail(null);
+                    } else {
+                        setIsAuthenticated(true);
+                        setUserEmail(data.user?.email || null);
                     }
                 } catch {
                     localStorage.removeItem('auth_token');
@@ -535,7 +596,13 @@ const App: React.FC = () => {
 
     // --- Main Render ---
     return (
+        <ErrorBoundary>
         <div className="min-h-screen bg-[#101622] text-slate-200 font-sans pb-20 selection:bg-blue-500/30 selection:text-white">
+
+            {/* DEBUG BANNER - REMOVER DESPUÉS */}
+            <div className="bg-yellow-600 text-white p-2 text-center text-xs font-bold">
+                DEBUG: userEmail={userEmail} | render={debugRender}
+            </div>
 
             {/* Header */}
             <header className="relative pt-10 pb-20 px-6 overflow-hidden">
@@ -1302,6 +1369,7 @@ const App: React.FC = () => {
                 </Suspense>
             )}
         </div >
+        </ErrorBoundary>
     );
 };
 

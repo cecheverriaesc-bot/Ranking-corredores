@@ -1,4 +1,4 @@
-import { CorredorData, HistoryData, TeamConfig, MonthData } from './types';
+import { CorredorData, HistoryData, TeamConfig, MonthData } from '../../types';
 
 export const MONTHLY_DATA: Record<string, MonthData> = {
     "2026-01": {
@@ -23,7 +23,8 @@ export const MONTHLY_DATA: Record<string, MonthData> = {
         "daily_stats": [],
         "daily_goals": {},
         "total_2025_ytd": 0,
-        "reservation_goal": 1928
+        "reservation_goal": 1928,
+        "history": {}
     },
     "2026-02": {
         "goal": 2174,
@@ -47,14 +48,26 @@ export const MONTHLY_DATA: Record<string, MonthData> = {
         "daily_stats": [],
         "daily_goals": {},
         "total_2025_ytd": 0,
-        "reservation_goal": 2174
+        "reservation_goal": 2174,
+        "history": {}
+    },
+    "2026-03": {
+        "goal": 2200,
+        "contract_goal": 2100,
+        "ranking": [] as CorredorData[],
+        "others": [] as CorredorData[],
+        "daily_stats": [],
+        "daily_goals": {},
+        "total_2025_ytd": 0,
+        "reservation_goal": 2200,
+        "history": {}
     }
 };
 
-export const TEAMS: TeamConfig[] = [
-    { name: 'carlos.echeverria@assetplan.cl', icon: '🔥', color: 'red', bg: 'bg-red-500', my: true },
-    { name: 'luis.gomez@assetplan.cl', icon: '💧', color: 'blue', bg: 'bg-blue-500', my: true },
-];
+export const TEAMS: Record<string, TeamConfig> = {
+    'carlos.echeverria@assetplan.cl': { name: 'carlos.echeverria@assetplan.cl', icon: '🔥', color: 'red', bg: 'bg-red-500', my: true },
+    'luis.gomez@assetplan.cl': { name: 'luis.gomez@assetplan.cl', icon: '💧', color: 'blue', bg: 'bg-blue-500', my: true },
+};
 
 export const HISTORY_2025: Record<string, HistoryData> = {
     '01': { c: 0, t: 0 },

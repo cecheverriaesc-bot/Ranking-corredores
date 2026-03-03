@@ -8,11 +8,11 @@
   "rewrites": [
     {
       "source": "/api/auth/:path*",
-      "destination": "/api/auth"
+      "destination": "/api/auth.py"
     },
     {
-      "source": "/api/(.*)",
-      "destination": "/api/$1"
+      "source": "/api/:path*",
+      "destination": "/api/:path*.py"
     },
     {
       "source": "/assets/(.*)",

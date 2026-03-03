@@ -40,6 +40,8 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
         }
 
         try {
+            console.log('Iniciando login para:', emailLower);
+            
             // Llamar a la API de autenticación
             const response = await fetch('/api/auth/login', {
                 method: 'POST',
@@ -49,7 +51,10 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
                 body: JSON.stringify({ email: emailLower, password }),
             });
 
+            console.log('Response status:', response.status);
+            
             const data = await response.json();
+            console.log('Response data:', data);
 
             if (!response.ok || !data.success) {
                 // Manejar rate limiting
@@ -68,14 +73,16 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
 
             // Login exitoso - guardar token
             localStorage.setItem('auth_token', data.token);
+            console.log('Token guardado, llamando onLogin...');
             
             // Pequeño delay para UX
             await new Promise(resolve => setTimeout(resolve, 500));
 
             // Login exitoso
             onLogin(emailLower, data.token, data.user);
+            console.log('onLogin llamado');
         } catch (err) {
-            console.error('Login error:', err);
+            console.error('Login error completo:', err);
             setError('Error de conexión. Verifica tu internet e intenta nuevamente.');
         } finally {
             setIsLoading(false);

@@ -128,7 +128,7 @@ const App: React.FC = () => {
                 // Aggregate ranking data
                 monthData.ranking?.forEach((broker: CorredorData) => {
                     if (!aggregatedRanking[broker.name]) {
-                        aggregatedRanking[broker.name] = { ...broker };
+                        aggregatedRanking[broker.name] = { ...(broker || {}) };
                     } else {
                         aggregatedRanking[broker.name].val += broker.val;
                         aggregatedRanking[broker.name].fallen += broker.fallen;
@@ -143,7 +143,7 @@ const App: React.FC = () => {
                 // Aggregate others data
                 monthData.others?.forEach((broker: CorredorData) => {
                     if (!aggregatedRanking[broker.name]) {
-                        aggregatedRanking[broker.name] = { ...broker };
+                        aggregatedRanking[broker.name] = { ...(broker || {}) };
                     } else {
                         aggregatedRanking[broker.name].val += broker.val;
                         aggregatedRanking[broker.name].fallen += broker.fallen;
@@ -236,7 +236,7 @@ const App: React.FC = () => {
     // However, the original code had separate "ranking" and "others".
     // Let's combine them for the main list unless "Others" were hidden.
     // In original App.tsx: `[...rankingData, ...othersData].forEach(...)` for stats.
-    const ALL_BROKERS = useMemo(() => [...CURRENT_RANKING, ...OTHER_BROKERS], [CURRENT_RANKING, OTHER_BROKERS]);
+    const ALL_BROKERS = useMemo(() => [...(CURRENT_RANKING || []), ...(OTHER_BROKERS || [])], [CURRENT_RANKING, OTHER_BROKERS]);
 
     // --- Statistics Calculation ---
     const stats: DashboardStats = useMemo(() => {
@@ -389,7 +389,7 @@ const App: React.FC = () => {
     }, [searchTerm, CURRENT_RANKING, selectedSquad]);
 
     const top3 = useMemo(() => {
-        const sorted = [...filteredData] // Use filteredData (Internals only) for Podium
+        const sorted = [...(filteredData || [])] // Use filteredData (Internals only) for Podium
             .sort((a, b) => b.val - a.val);
         return [sorted[0], sorted[1], sorted[2]].filter(Boolean);
     }, [filteredData]);

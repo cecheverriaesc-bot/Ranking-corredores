@@ -608,7 +608,12 @@ const App: React.FC = () => {
                                         <img src="/logo_white.png" alt="Assetplan" className="h-40 w-auto opacity-100" />
                                         <div className="h-12 w-px bg-[#324467]"></div>
                                         <div>
-                                            <h1 className="text-white font-black uppercase text-base tracking-widest leading-none">Home Operativo</h1>
+                                            <div className="flex items-center gap-3">
+                                                <h1 className="text-white font-black uppercase text-base tracking-widest leading-none">Home Operativo</h1>
+                                                <span className="text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full border border-emerald-500/30 uppercase tracking-widest font-bold">
+                                                    v3.2
+                                                </span>
+                                            </div>
                                             <div className="flex items-center gap-3 mt-2">
                                                 <h2 className="text-blue-400 font-bold uppercase text-xs tracking-widest">
                                                     Ranking {selectedMonth === 'total-year' ? 'Total Año' : selectedMonth === '2026-01' ? 'Enero' : selectedMonth === '2026-02' ? 'Febrero' : selectedMonth === '2026-03' ? 'Marzo' : selectedMonth === '2026-04' ? 'Abril' : selectedMonth === '2026-05' ? 'Mayo' : selectedMonth === '2026-06' ? 'Junio' : selectedMonth === '2026-07' ? 'Julio' : selectedMonth === '2026-08' ? 'Agosto' : selectedMonth === '2026-09' ? 'Septiembre' : selectedMonth === '2026-10' ? 'Octubre' : selectedMonth === '2026-11' ? 'Noviembre' : selectedMonth === '2026-12' ? 'Diciembre' : '2026'} 2026

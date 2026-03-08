@@ -1,0 +1,785 @@
+Total filas en bi_DimCorredores: 897
+  (6, 'Maritza Faundez', 413, 404, 685, 3005, 'luis.gomez', 1)
+  (7, 'Isadora Zepeda', 736, 727, 1112, 1838, 'carlos.echeverria', 1)
+  (26, 'Valeska Chavez', 160, 156, 337, 1158, 'carlos.echeverria', 1)
+  (33, 'Karla Garcia', 65, 64, 158, 273, 'carlos.echeverria', 1)
+  (40, 'Dutglas Delmoral', 656, 635, 1066, 1912, 'luis.gomez', 1)
+
+Broker goals path: None
+broker_goals.json no encontrado — usando proyección de historico.
+
+=== CORREDORES ACTIVOS: 223 ===
+                    nombre_corredor       coordinador  reserva  contrato_arriendos  cant_prospectos  cant_leads
+                  Rosangela Cirelli        luis.gomez     1028                1017             1456        3959
+                   Adriana Ollarves        luis.gomez      854                 845             1538        5596
+                  Johanna Hernandez carlos.echeverria      766                 758             1598        2466
+                     Isadora Zepeda carlos.echeverria      736                 727             1112        1838
+                    Henry Rodriguez carlos.echeverria      686                 670             1185        4878
+                   Dutglas Delmoral        luis.gomez      656                 635             1066        1912
+                     Mayerling Soto carlos.echeverria      645                 636             1064        3394
+            Henry Colina (Rumirent) carlos.echeverria      616                 608             1544        3768
+                   Yerimar Portillo carlos.echeverria      564                 548              961        2206
+                   Gustavo Gonzalez carlos.echeverria      545                 534             1129        3063
+                  Jennyfer Portillo        luis.gomez      480                 472             1131        1769
+                  Yinglis Hernandez        luis.gomez      478                 474              735        2880
+                       Erika Cepeda        luis.gomez      460                 449              724        2851
+                      Yonathan Pino carlos.echeverria      447                 446              766        2491
+                       Felix Ferrer        luis.gomez      446                 435              684        4824
+                    Manuel Martinez carlos.echeverria      440                 434              790        1299
+                 Christian Subiabre        luis.gomez      418                 410              696        4433
+                    Maritza Faundez        luis.gomez      413                 404              685        3005
+                       Yexica Gomez carlos.echeverria      394                 387              822        1407
+                     Luis Pernalete carlos.echeverria      367                 362              554        2024
+                       Douglas Rojo        luis.gomez      362                 356              555        4231
+                         Elkis Daza        luis.gomez      336                 330              595        1617
+                        Carla Palma carlos.echeverria      325                 321              600        2285
+              Daniela Paola Magrini        luis.gomez      324                 315              528        3683
+                     Joenny Moncada carlos.echeverria      324                 318              590        2306
+                     Dania Chirinos carlos.echeverria      313                 311              425        2921
+                    Daiana Quintero        luis.gomez      290                 288              551        1467
+         Daniel Alfredo Devita León        luis.gomez      287                 284              438        4401
+                     Dennys Morales carlos.echeverria      284                 280              511        2618
+                    Corredor Switch carlos.echeverria      283                 275              505         303
+                       Marlyn Parra        luis.gomez      282                 275              415        1834
+                    Yanelaine Reyes carlos.echeverria      282                 281              529        2210
+                    Carlos Zambrano carlos.echeverria      279                 278              429        2049
+                        Daina Tapia carlos.echeverria      271                 269              450        3025
+                       Nelly Ocando        luis.gomez      270                 263              502        3411
+                       Ingrid Muñoz        luis.gomez      268                 257              607        1975
+                       Paul Perdomo carlos.echeverria      257                 252              422        1546
+                       Enihet Curpa        luis.gomez      255                 248              526        4025
+                   Santiago Fuentes        luis.gomez      242                 242              436        3582
+                 Giovanny Gutierrez        luis.gomez      232                 227              354         626
+                       Maryse Arria        luis.gomez      225                 223              377        1762
+                      Victoria Díaz carlos.echeverria      215                 212              380        2795
+                     Lesbia Utrilla        luis.gomez      214                 214              387        1304
+                     Marco Martinez        luis.gomez      212                 208              351        1177
+                       Manuel Duran carlos.echeverria      208                 207              366         477
+                       Mario Lepore carlos.echeverria      202                 199              397         888
+                 Esthefani Gonzalez        luis.gomez      201                 199              352        1591
+                     Alejandra Romo carlos.echeverria      193                 190              367         480
+                     Yessica Asuaje carlos.echeverria      185                 182              301        1136
+                  Alexander Pereira carlos.echeverria      183                 183              496         545
+                  Patricia Gonzalez        luis.gomez      169                 168              271        1836
+                  Eugenio Arrevilla        luis.gomez      166                 164              281         912
+                      Angela Palomo carlos.echeverria      162                 161              417        1207
+                   Annhelys Cardiet        luis.gomez      161                 160              296        1699
+                     Valeska Chavez carlos.echeverria      160                 156              337        1158
+                        Nailet Rojo        luis.gomez      158                 155              274        1891
+                     Romelean Lopez carlos.echeverria      156                 154              274         735
+                    Carlos Gonzalez        luis.gomez      155                 153              227         494
+                     Sarah Volcanes        luis.gomez      147                 146              212        1600
+                   Jeanette Mendoza carlos.echeverria      144                 144              253         569
+                        Sofia Bravo        luis.gomez      144                 141              217        1052
+                  Camila Fuenzalida carlos.echeverria      139                 137              289         578
+                          Ivon Urra        luis.gomez      134                 134              242        1074
+                     Hector Cardiet        luis.gomez      131                 128              274        1812
+       Plaza & Nieto (Gloria Nieto) carlos.echeverria      129                 128              200         278
+                   Carolina Rosales        luis.gomez      129                 127              217        1084
+                  María Elena Katny carlos.echeverria      125                 124              258        1674
+                    Luisana Albarez        luis.gomez      125                 125              185         997
+                Alejandro Rodriguez        luis.gomez      118                 119              214         911
+                   Melida Castañeda        luis.gomez      111                 108              205        1239
+            Emeric Bergstrom Ibarra        luis.gomez       90                  88              197         722
+                    Yolimar Aguilar        luis.gomez       89                  88              160         875
+                         Ana Flores        luis.gomez       82                  81              148        1455
+                    Henmilys Medina carlos.echeverria       77                  76              112         187
+   Andreina Carolina López Pedrique        luis.gomez       76                  76              104         465
+                 Rosanyelys Cordova carlos.echeverria       71                  70              127        1335
+Yanioscar Margarita Nuñez Sarramera carlos.echeverria       69                  66              148         535
+   Valeria Carolina Navarro Mondaca        luis.gomez       68                  66              122         888
+        Yenny Alejandra Díaz Valdés carlos.echeverria       67                  65              138         497
+                       Karla Garcia carlos.echeverria       65                  64              158         273
+                    Yealvanny Perez carlos.echeverria       61                  61               84         657
+                      Wendy Navarro        luis.gomez       60                  58              108         768
+       Luimar Marilin Sucre Jiménez        luis.gomez       59                  59              175        1175
+                 Francisco Gonzalez        luis.gomez       57                  57              114         301
+ Confianza Inmobiliaria (Raul Mena) carlos.echeverria       57                  56              149         308
+      Marklim Javier González Arria        luis.gomez       51                  51               90         465
+                      Aillien Rojas carlos.echeverria       50                  47              100         552
+                         Juan Uribe carlos.echeverria       49                  49               84         934
+               Vivao (Nicole Jones) carlos.echeverria       48                  48              140         270
+       Julio César Marcano Giuliani carlos.echeverria       45                  45              105         474
+      Yelitza Andrea Perdomo Ocampo carlos.echeverria       43                  43              103         541
+                          Rosa Gana carlos.echeverria       42                  39              202        1997
+   Daniela Maritza Portillo Trompiz carlos.echeverria       42                  42               75         816
+                    Legacy Business carlos.echeverria       40                  40               88         108
+                  Enmanuel Guerrero carlos.echeverria       39                  37              103         299
+                Ejecutivo Assetplan                         38                  77              184         243
+   Alejandra Beatriz García Miranda        luis.gomez       35                  35               48         405
+                      Michelle Pino carlos.echeverria       34                  33               93         477
+                   Veronica Saumell        luis.gomez       34                  34               50         274
+             Ana María Pernia Vivas        luis.gomez       34                  33               66         490
+               Ignacio Vejar Zuñiga   nataly.espinoza       32                  32               50         754
+                  Jean Patricio Roa carlos.echeverria       28                  28               46         284
+                    Marian Escarate        luis.gomez       27                  26               58         441
+                       Yeissi Muñoz        luis.gomez       27                  26               58          97
+                   Patricia Latorre carlos.echeverria       24                  23               29         226
+                   Joselin Quintero        luis.gomez       20                  19               71         352
+                     David Berrueta        luis.gomez       19                  20               39         680
+                   Natalia Alvarado carlos.echeverria       19                  18               56         296
+                       Paola Malave carlos.echeverria       19                  18               30          36
+                       Karen Lesmes carlos.echeverria       18                  17               44         498
+        Yenkly Karelys León Pereira        luis.gomez       18                  18               90         297
+     Madeleine Margot Céspedes León        luis.gomez       18                  17               29          86
+      María Andreina Pérez Guerrero        luis.gomez       18                  18               46         373
+    Francisca Camila Cabero Gornall carlos.echeverria       16                  13               57         487
+  Hugo Sebastián González Velásquez carlos.echeverria       16                  16               26         227
+                    Gerardo Cabrera       angely.rojo       15                  15               29         160
+                    Ernesto Moscoso carlos.echeverria       13                  13               41          86
+            Ok Rent (Andrea Ferrer) carlos.echeverria       13                  13               43         119
+           Diego Antonio Varas Lira        luis.gomez       13                  12               24         239
+              Sahmar Jaimes Fuentes carlos.echeverria       13                  13               23         216
+                    Inversion Total carlos.echeverria       12                  12               19         125
+         Paul Andrés González Cerda        luis.gomez       11                  11               31         258
+                       Elisa Torres carlos.echeverria       11                  11               18         258
+    Virginia Del Valle Guerra Marin carlos.echeverria       10                  10               18         139
+                    Jessica Miranda carlos.echeverria        9                   9               12         134
+                  Alberto Del Campo carlos.echeverria        9                   9               19          24
+                 Geraldine Trujillo   nataly.espinoza        9                   8               13         208
+                      Yessica Avila                          9                   9               23         135
+                      Claudia Muñoz        luis.gomez        9                   9               14         177
+        Gabriela Margoth Díaz Gómez carlos.echeverria        9                   9               15          76
+            Ruth Mary Mata Martinez carlos.echeverria        9                   9               19         116
+    Kelly Alexandra Vásquez Narvaez        luis.gomez        8                   8               18         181
+           Corredor Switch 1 Switch carlos.echeverria        7                   6               29          64
+                      Dominic Berna carlos.echeverria        7                   7               14         158
+                     Cristian Uribe carlos.echeverria        7                   7               94         230
+            Desiree Hernández Nieto        luis.gomez        7                   7               12         130
+                  Lorena Son Rangel        luis.gomez        7                   7               24         233
+                    Angelica Robles      maria.chacin        6                   6                8          94
+                     Kristhy Guzman carlos.echeverria        4                   4                4          94
+                  Anyalila Franquiz       angely.rojo        4                   4                9          42
+                   Auribel Landaeta      maria.chacin        4                   4                4          55
+                      Cesar Salazar       angely.rojo        3                   3                5          94
+                 Yoanetzy Rodriguez      maria.chacin        3                   3                5          64
+                         Henry Ford                          2                   2               32          45
+                     Claudia Valdes      maria.chacin        1                   1                2          11
+                 Claudia Valenzuela carlos.echeverria        1                   1                1          68
+                       Angie Roxana                          1                   1                2           2
+                      Demand Demand                          0                   0               18         705
+            Postulaciones Assetplan                          0                   0                1           5
+                    Nataly Espinoza   nataly.espinoza        0                   0               21          36
+              Leandro Osorio Loaiza   nataly.espinoza        0                   0                1           5
+  Yhoselyn Jose Velásquez Hernández        luis.gomez        0                   0                1           6
+ Edmary Dauvinett Bolivar Hernández carlos.echeverria        0                   0                1          21
+                   Sebastian Pirela       angely.rojo        0                   0                2          30
+                     Adrian Alvarez              None        0                   0                0           0
+                       Eva Brizuela              None        0                   0                0           0
+                      Isamar Davila              None        0                   0                0           0
+                      Sarahi Garcia              None        0                   0                0           0
+                   Victoria Gosende              None        0                   0                0           0
+                        Janet Burga              None        0                   0                0           0
+      Cindy Katherine Donayre Reyes              None        0                   0                0           0
+    Moises Vladimir Oblitas Alcalde              None        0                   0                0           0
+               Fernando Di Guiseppe              None        0                   0                0           0
+                    Cecilia Bustios              None        0                   0                0           0
+                     Carolina Hoyos              None        0                   0                0           0
+                  Alejandra Paredes              None        0                   0                0           0
+                     Vanessa Garcia              None        0                   0                0           0
+      Katiuska Jazmin Puma Palomino              None        0                   0                0           0
+  Jacquelyn Lucich Lucich Fernandez              None        0                   0                0           0
+                           Aura Bot              None        0                   0                0           0
+               Catalina Salvo Rojas       angely.rojo        0                   0                0           0
+            Francisca Vidal Gajardo       angely.rojo        0                   0                0           0
+      Corredor Reservas Adicionales              None        0                   0                0           0
+                       Aura Bot 2.0              None        0                   0                0           0
+    Gloria Cecilia Salamanca Bruner carlos.echeverria        0                   0                0           0
+                          Aura Meli              None        0                   0                0           0
+       María José  Torrealba Cortez              None        0                   0                0           0
+                    Danielis Chacin      maria.chacin        0                   0                0           0
+                   Daniela Sulbaran      maria.chacin        0                   0                0           0
+                     Maria Quinonez              None        0                   0                0           0
+                   Xiomara Manrique              None        0                   0                0           0
+       Ninoska Dusan Miranda Ortega   nataly.espinoza        0                   0                0           0
+                     Arriendos Kodu carlos.echeverria        0                   0                0           0
+Maritza Josefina Cartagena Galindez   nataly.espinoza        0                   0                0           0
+                    Yetsabel Colina       angely.rojo        0                   0                0           0
+     Máximo Humberto Pérez González        luis.gomez        0                   0                0           0
+       Luisangela Morales De García        luis.gomez        0                   0                0           0
+   Susana Fabiola Sánchez Hernández carlos.echeverria        0                   0                0           0
+                  Michelle Alvarado       angely.rojo        0                   0                0           0
+                     Ignacio Bustos   nataly.espinoza        0                   0                0           0
+                         Ana Romero       angely.rojo        0                   0                0           0
+                      Xiomara Yepez        luis.gomez        0                   0                0           0
+        Leonardo Pablo Venegas Jara carlos.echeverria        0                   0                0           0
+                   Kala Urzúa Ajraz              None        0                   0                0           0
+                   Neribel Gonzalez              None        0                   0                0           0
+   Ivonne Francisca González Campos   nataly.espinoza        0                   0                0           0
+    Magaly Isabel Riquelme Sandoval   nataly.espinoza        0                   0                0           0
+          Diego Nicolás Zuñiga Vega   nataly.espinoza        0                   0                0           0
+           Francisca García Carmona   nataly.espinoza        0                   0                0           0
+        Venecia Kenebith Rasse Soto   nataly.espinoza        0                   0                0           0
+            Roberto Quintero Acosta   nataly.espinoza        0                   0                0           0
+        Dominique Tamara Díaz Vidal   nataly.espinoza        0                   0                0           0
+                         Juan Perez   nataly.espinoza        0                   0                0           0
+           Javiera Luz Baeza Campos   nataly.espinoza        0                   0                0           0
+                         Home Ready carlos.echeverria        0                   0                0           0
+                  Rodrigo Campusano carlos.echeverria        0                   0                0           0
+                       Daysi Surmay carlos.echeverria        0                   0                0           0
+                     Bianca Aracena carlos.echeverria        0                   0                0           0
+  Adriana Paola Hernández Castellón   nataly.espinoza        0                   0                0           0
+      Claudia Pamela Poblete Moreno   nataly.espinoza        0                   0                0           0
+     Esperanza Abril Pino Contreras   nataly.espinoza        0                   0                0           0
+           Jeslimar Jose Coa Bracho   nataly.espinoza        0                   0                0           0
+           Josma Jose Silva Payares   nataly.espinoza        0                   0                0           0
+            María Laura Pernia Leal   nataly.espinoza        0                   0                0           0
+     Marlyn Marian Labarca Urdaneta   nataly.espinoza        0                   0                0           0
+ Maryory Del Pilar Labarca Urdaneta   nataly.espinoza        0                   0                0           0
+     Yanira Angélica Rosales Guzman   nataly.espinoza        0                   0                0           0
+  Verónica Isabel González González   nataly.espinoza        0                   0                0           0
+           Victor Hugo Ravelo Parra   nataly.espinoza        0                   0                0           0
+  Manuel Alejandro Alvarez Montalez   nataly.espinoza        0                   0                0           0
+               Richard Morales Díaz   nataly.espinoza        0                   0                0           0
+         Pablo César Tobar Espinoza   nataly.espinoza        0                   0                0           0
+       Ana Cecilia Luengo Hernández   nataly.espinoza        0                   0                0           0
+
+=== AVANCE GLOBAL — MARZO 2026 ===
+Reservas:   24343 / 1656 = 1470.0%
+Contratos:  24006 / 1499 = 1601.5%
+
+=== RANKING INDIVIDUAL (Meta est. 7 res | 7 cont por persona) ===
+ # Corredor                      Res   %Res Cont   %Cont
+------------------------------------------------------------
+ 1 Rosangela Cirelli            1028 13843% 1017  15130%
+ 2 Adriana Ollarves              854 11500%  845  12571%
+ 3 Johanna Hernandez             766 10315%  758  11276%
+ 4 Isadora Zepeda                736  9911%  727  10815%
+ 5 Henry Rodriguez               686  9238%  670   9967%
+ 6 Dutglas Delmoral              656  8834%  635   9447%
+ 7 Mayerling Soto                645  8686%  636   9462%
+ 8 Henry Colina (Rumirent)       616  8295%  608   9045%
+ 9 Yerimar Portillo              564  7595%  548   8152%
+10 Gustavo Gonzalez              545  7339%  534   7944%
+11 Jennyfer Portillo             480  6464%  472   7022%
+12 Yinglis Hernandez             478  6437%  474   7052%
+13 Erika Cepeda                  460  6194%  449   6680%
+14 Yonathan Pino                 447  6019%  446   6635%
+15 Felix Ferrer                  446  6006%  435   6471%
+16 Manuel Martinez               440  5925%  434   6456%
+17 Christian Subiabre            418  5629%  410   6099%
+18 Maritza Faundez               413  5562%  404   6010%
+19 Yexica Gomez                  394  5306%  387   5757%
+20 Luis Pernalete                367  4942%  362   5385%
+21 Douglas Rojo                  362  4875%  356   5296%
+22 Elkis Daza                    336  4525%  330   4909%
+23 Carla Palma                   325  4376%  321   4775%
+24 Daniela Paola Magrini         324  4363%  315   4686%
+25 Joenny Moncada                324  4363%  318   4731%
+26 Dania Chirinos                313  4215%  311   4627%
+27 Daiana Quintero               290  3905%  288   4284%
+28 Daniel Alfredo Devita León    287  3865%  284   4225%
+29 Dennys Morales                284  3824%  280   4165%
+30 Corredor Switch               283  3811%  275   4091%
+31 Marlyn Parra                  282  3798%  275   4091%
+32 Yanelaine Reyes               282  3798%  281   4180%
+33 Carlos Zambrano               279  3757%  278   4136%
+34 Daina Tapia                   271  3649%  269   4002%
+35 Nelly Ocando                  270  3636%  263   3912%
+36 Ingrid Muñoz                  268  3609%  257   3823%
+37 Paul Perdomo                  257  3461%  252   3749%
+38 Enihet Curpa                  255  3434%  248   3689%
+39 Santiago Fuentes              242  3259%  242   3600%
+40 Giovanny Gutierrez            232  3124%  227   3377%
+41 Maryse Arria                  225  3030%  223   3318%
+42 Victoria Díaz                 215  2895%  212   3154%
+43 Lesbia Utrilla                214  2882%  214   3184%
+44 Marco Martinez                212  2855%  208   3094%
+45 Manuel Duran                  208  2801%  207   3080%
+46 Mario Lepore                  202  2720%  199   2960%
+47 Esthefani Gonzalez            201  2707%  199   2960%
+48 Alejandra Romo                193  2599%  190   2827%
+49 Yessica Asuaje                185  2491%  182   2708%
+50 Alexander Pereira             183  2464%  183   2722%
+51 Patricia Gonzalez             169  2276%  168   2499%
+52 Eugenio Arrevilla             166  2235%  164   2440%
+53 Angela Palomo                 162  2182%  161   2395%
+54 Annhelys Cardiet              161  2168%  160   2380%
+55 Valeska Chavez                160  2155%  156   2321%
+56 Nailet Rojo                   158  2128%  155   2306%
+57 Romelean Lopez                156  2101%  154   2291%
+58 Carlos Gonzalez               155  2087%  153   2276%
+59 Sarah Volcanes                147  1980%  146   2172%
+60 Jeanette Mendoza              144  1939%  144   2142%
+61 Sofia Bravo                   144  1939%  141   2098%
+62 Camila Fuenzalida             139  1872%  137   2038%
+63 Ivon Urra                     134  1804%  134   1994%
+64 Hector Cardiet                131  1764%  128   1904%
+65 Plaza & Nieto (Gloria Nieto)  129  1737%  128   1904%
+66 Carolina Rosales              129  1737%  127   1889%
+67 María Elena Katny             125  1683%  124   1845%
+68 Luisana Albarez               125  1683%  125   1860%
+69 Alejandro Rodriguez           118  1589%  119   1770%
+70 Melida Castañeda              111  1495%  108   1607%
+71 Emeric Bergstrom Ibarra        90  1212%   88   1309%
+72 Yolimar Aguilar                89  1198%   88   1309%
+73 Ana Flores                     82  1104%   81   1205%
+74 Henmilys Medina                77  1037%   76   1131%
+75 Andreina Carolina López Pedrique   76  1023%   76   1131%
+76 Rosanyelys Cordova             71   956%   70   1041%
+77 Yanioscar Margarita Nuñez Sarramera   69   929%   66    982%
+78 Valeria Carolina Navarro Mondaca   68   916%   66    982%
+79 Yenny Alejandra Díaz Valdés    67   902%   65    967%
+80 Karla Garcia                   65   875%   64    952%
+81 Yealvanny Perez                61   821%   61    908%
+82 Wendy Navarro                  60   808%   58    863%
+83 Luimar Marilin Sucre Jiménez   59   794%   59    878%
+84 Francisco Gonzalez             57   768%   57    848%
+85 Confianza Inmobiliaria (Raul Mena)   57   768%   56    833%
+86 Marklim Javier González Arria   51   687%   51    759%
+87 Aillien Rojas                  50   673%   47    699%
+88 Juan Uribe                     49   660%   49    729%
+89 Vivao (Nicole Jones)           48   646%   48    714%
+90 Julio César Marcano Giuliani   45   606%   45    669%
+91 Yelitza Andrea Perdomo Ocampo   43   579%   43    640%
+92 Rosa Gana                      42   566%   39    580%
+93 Daniela Maritza Portillo Trompiz   42   566%   42    625%
+94 Legacy Business                40   539%   40    595%
+95 Enmanuel Guerrero              39   525%   37    550%
+96 Ejecutivo Assetplan            38   512%   77   1146%
+97 Alejandra Beatriz García Miranda   35   471%   35    521%
+98 Michelle Pino                  34   458%   33    491%
+99 Veronica Saumell               34   458%   34    506%
+100 Ana María Pernia Vivas         34   458%   33    491%
+101 Ignacio Vejar Zuñiga           32   431%   32    476%
+102 Jean Patricio Roa              28   377%   28    416%
+103 Marian Escarate                27   364%   26    387%
+104 Yeissi Muñoz                   27   364%   26    387%
+105 Patricia Latorre               24   323%   23    342%
+106 Joselin Quintero               20   269%   19    283%
+107 David Berrueta                 19   256%   20    298%
+108 Natalia Alvarado               19   256%   18    268%
+109 Paola Malave                   19   256%   18    268%
+110 Karen Lesmes                   18   242%   17    253%
+111 Yenkly Karelys León Pereira    18   242%   18    268%
+112 Madeleine Margot Céspedes León   18   242%   17    253%
+113 María Andreina Pérez Guerrero   18   242%   18    268%
+114 Francisca Camila Cabero Gornall   16   216%   13    193%
+115 Hugo Sebastián González Velásquez   16   216%   16    238%
+116 Gerardo Cabrera                15   202%   15    223%
+117 Ernesto Moscoso                13   175%   13    193%
+118 Ok Rent (Andrea Ferrer)        13   175%   13    193%
+119 Diego Antonio Varas Lira       13   175%   12    178%
+120 Sahmar Jaimes Fuentes          13   175%   13    193%
+121 Inversion Total                12   162%   12    178%
+122 Paul Andrés González Cerda     11   148%   11    164%
+123 Elisa Torres                   11   148%   11    164%
+124 Virginia Del Valle Guerra Marin   10   135%   10    149%
+125 Jessica Miranda                 9   121%    9    134%
+126 Alberto Del Campo               9   121%    9    134%
+127 Geraldine Trujillo              9   121%    8    119%
+128 Yessica Avila                   9   121%    9    134%
+129 Claudia Muñoz                   9   121%    9    134%
+130 Gabriela Margoth Díaz Gómez     9   121%    9    134%
+131 Ruth Mary Mata Martinez         9   121%    9    134%
+132 Kelly Alexandra Vásquez Narvaez    8   108%    8    119%
+133 Corredor Switch 1 Switch        7    94%    6     89%
+134 Dominic Berna                   7    94%    7    104%
+135 Cristian Uribe                  7    94%    7    104%
+136 Desiree Hernández Nieto         7    94%    7    104%
+137 Lorena Son Rangel               7    94%    7    104%
+138 Angelica Robles                 6    81%    6     89%
+139 Kristhy Guzman                  4    54%    4     60% ⚠️ 
+140 Anyalila Franquiz               4    54%    4     60% ⚠️ 
+141 Auribel Landaeta                4    54%    4     60% ⚠️ 
+142 Cesar Salazar                   3    40%    3     45% ⚠️ 
+143 Yoanetzy Rodriguez              3    40%    3     45% ⚠️ 
+144 Henry Ford                      2    27%    2     30% ⚠️ 
+145 Claudia Valdes                  1    14%    1     15% ⚠️ 
+146 Claudia Valenzuela              1    14%    1     15% ⚠️ 
+147 Angie Roxana                    1    14%    1     15% ⚠️ 
+148 Demand Demand                   0     0%    0      0% ⚠️ 
+149 Postulaciones Assetplan         0     0%    0      0% ⚠️ 
+150 Nataly Espinoza                 0     0%    0      0% ⚠️ 
+151 Leandro Osorio Loaiza           0     0%    0      0% ⚠️ 
+152 Yhoselyn Jose Velásquez Hernández    0     0%    0      0% ⚠️ 
+153 Edmary Dauvinett Bolivar Hernández    0     0%    0      0% ⚠️ 
+154 Sebastian Pirela                0     0%    0      0% ⚠️ 
+155 Adrian Alvarez                  0     0%    0      0% ⚠️ 
+156 Eva Brizuela                    0     0%    0      0% ⚠️ 
+157 Isamar Davila                   0     0%    0      0% ⚠️ 
+158 Sarahi Garcia                   0     0%    0      0% ⚠️ 
+159 Victoria Gosende                0     0%    0      0% ⚠️ 
+160 Janet Burga                     0     0%    0      0% ⚠️ 
+161 Cindy Katherine Donayre Reyes    0     0%    0      0% ⚠️ 
+162 Moises Vladimir Oblitas Alcalde    0     0%    0      0% ⚠️ 
+163 Fernando Di Guiseppe            0     0%    0      0% ⚠️ 
+164 Cecilia Bustios                 0     0%    0      0% ⚠️ 
+165 Carolina Hoyos                  0     0%    0      0% ⚠️ 
+166 Alejandra Paredes               0     0%    0      0% ⚠️ 
+167 Vanessa Garcia                  0     0%    0      0% ⚠️ 
+168 Katiuska Jazmin Puma Palomino    0     0%    0      0% ⚠️ 
+169 Jacquelyn Lucich Lucich Fernandez    0     0%    0      0% ⚠️ 
+170 Aura Bot                        0     0%    0      0% ⚠️ 
+171 Catalina Salvo Rojas            0     0%    0      0% ⚠️ 
+172 Francisca Vidal Gajardo         0     0%    0      0% ⚠️ 
+173 Corredor Reservas Adicionales    0     0%    0      0% ⚠️ 
+174 Aura Bot 2.0                    0     0%    0      0% ⚠️ 
+175 Gloria Cecilia Salamanca Bruner    0     0%    0      0% ⚠️ 
+176 Aura Meli                       0     0%    0      0% ⚠️ 
+177 María José  Torrealba Cortez    0     0%    0      0% ⚠️ 
+178 Danielis Chacin                 0     0%    0      0% ⚠️ 
+179 Daniela Sulbaran                0     0%    0      0% ⚠️ 
+180 Maria Quinonez                  0     0%    0      0% ⚠️ 
+181 Xiomara Manrique                0     0%    0      0% ⚠️ 
+182 Ninoska Dusan Miranda Ortega    0     0%    0      0% ⚠️ 
+183 Arriendos Kodu                  0     0%    0      0% ⚠️ 
+184 Maritza Josefina Cartagena Galindez    0     0%    0      0% ⚠️ 
+185 Yetsabel Colina                 0     0%    0      0% ⚠️ 
+186 Máximo Humberto Pérez González    0     0%    0      0% ⚠️ 
+187 Luisangela Morales De García    0     0%    0      0% ⚠️ 
+188 Susana Fabiola Sánchez Hernández    0     0%    0      0% ⚠️ 
+189 Michelle Alvarado               0     0%    0      0% ⚠️ 
+190 Ignacio Bustos                  0     0%    0      0% ⚠️ 
+191 Ana Romero                      0     0%    0      0% ⚠️ 
+192 Xiomara Yepez                   0     0%    0      0% ⚠️ 
+193 Leonardo Pablo Venegas Jara     0     0%    0      0% ⚠️ 
+194 Kala Urzúa Ajraz                0     0%    0      0% ⚠️ 
+195 Neribel Gonzalez                0     0%    0      0% ⚠️ 
+196 Ivonne Francisca González Campos    0     0%    0      0% ⚠️ 
+197 Magaly Isabel Riquelme Sandoval    0     0%    0      0% ⚠️ 
+198 Diego Nicolás Zuñiga Vega       0     0%    0      0% ⚠️ 
+199 Francisca García Carmona        0     0%    0      0% ⚠️ 
+200 Venecia Kenebith Rasse Soto     0     0%    0      0% ⚠️ 
+201 Roberto Quintero Acosta         0     0%    0      0% ⚠️ 
+202 Dominique Tamara Díaz Vidal     0     0%    0      0% ⚠️ 
+203 Juan Perez                      0     0%    0      0% ⚠️ 
+204 Javiera Luz Baeza Campos        0     0%    0      0% ⚠️ 
+205 Home Ready                      0     0%    0      0% ⚠️ 
+206 Rodrigo Campusano               0     0%    0      0% ⚠️ 
+207 Daysi Surmay                    0     0%    0      0% ⚠️ 
+208 Bianca Aracena                  0     0%    0      0% ⚠️ 
+209 Adriana Paola Hernández Castellón    0     0%    0      0% ⚠️ 
+210 Claudia Pamela Poblete Moreno    0     0%    0      0% ⚠️ 
+211 Esperanza Abril Pino Contreras    0     0%    0      0% ⚠️ 
+212 Jeslimar Jose Coa Bracho        0     0%    0      0% ⚠️ 
+213 Josma Jose Silva Payares        0     0%    0      0% ⚠️ 
+214 María Laura Pernia Leal         0     0%    0      0% ⚠️ 
+215 Marlyn Marian Labarca Urdaneta    0     0%    0      0% ⚠️ 
+216 Maryory Del Pilar Labarca Urdaneta    0     0%    0      0% ⚠️ 
+217 Yanira Angélica Rosales Guzman    0     0%    0      0% ⚠️ 
+218 Verónica Isabel González González    0     0%    0      0% ⚠️ 
+219 Victor Hugo Ravelo Parra        0     0%    0      0% ⚠️ 
+220 Manuel Alejandro Alvarez Montalez    0     0%    0      0% ⚠️ 
+221 Richard Morales Díaz            0     0%    0      0% ⚠️ 
+222 Pablo César Tobar Espinoza      0     0%    0      0% ⚠️ 
+223 Ana Cecilia Luengo Hernández    0     0%    0      0% ⚠️ 
+
+=== CORREDORES EN RIESGO (< 80% meta) ===
+  ⚠️  Leandro Osorio Loaiza: 0 res (0%)
+  ⚠️  Sebastian Pirela: 0 res (0%)
+  ⚠️  Yhoselyn Jose Velásquez Hernández: 0 res (0%)
+  ⚠️  Edmary Dauvinett Bolivar Hernández: 0 res (0%)
+  ⚠️  Postulaciones Assetplan: 0 res (0%)
+  ⚠️  Nataly Espinoza: 0 res (0%)
+  ⚠️  Demand Demand: 0 res (0%)
+  ⚠️  Fernando Di Guiseppe: 0 res (0%)
+  ⚠️  Moises Vladimir Oblitas Alcalde: 0 res (0%)
+  ⚠️  Cindy Katherine Donayre Reyes: 0 res (0%)
+  ⚠️  Janet Burga: 0 res (0%)
+  ⚠️  Victoria Gosende: 0 res (0%)
+  ⚠️  Sarahi Garcia: 0 res (0%)
+  ⚠️  Isamar Davila: 0 res (0%)
+  ⚠️  Eva Brizuela: 0 res (0%)
+  ⚠️  Adrian Alvarez: 0 res (0%)
+  ⚠️  Vanessa Garcia: 0 res (0%)
+  ⚠️  Cecilia Bustios: 0 res (0%)
+  ⚠️  Carolina Hoyos: 0 res (0%)
+  ⚠️  Alejandra Paredes: 0 res (0%)
+  ⚠️  Jacquelyn Lucich Lucich Fernandez: 0 res (0%)
+  ⚠️  Katiuska Jazmin Puma Palomino: 0 res (0%)
+  ⚠️  Aura Bot: 0 res (0%)
+  ⚠️  Daniela Sulbaran: 0 res (0%)
+  ⚠️  Danielis Chacin: 0 res (0%)
+  ⚠️  María José  Torrealba Cortez: 0 res (0%)
+  ⚠️  Aura Meli: 0 res (0%)
+  ⚠️  Gloria Cecilia Salamanca Bruner: 0 res (0%)
+  ⚠️  Aura Bot 2.0: 0 res (0%)
+  ⚠️  Corredor Reservas Adicionales: 0 res (0%)
+  ⚠️  Francisca Vidal Gajardo: 0 res (0%)
+  ⚠️  Catalina Salvo Rojas: 0 res (0%)
+  ⚠️  Luisangela Morales De García: 0 res (0%)
+  ⚠️  Susana Fabiola Sánchez Hernández: 0 res (0%)
+  ⚠️  Michelle Alvarado: 0 res (0%)
+  ⚠️  Ignacio Bustos: 0 res (0%)
+  ⚠️  Ana Romero: 0 res (0%)
+  ⚠️  Xiomara Yepez: 0 res (0%)
+  ⚠️  Leonardo Pablo Venegas Jara: 0 res (0%)
+  ⚠️  Kala Urzúa Ajraz: 0 res (0%)
+  ⚠️  Neribel Gonzalez: 0 res (0%)
+  ⚠️  Maria Quinonez: 0 res (0%)
+  ⚠️  Xiomara Manrique: 0 res (0%)
+  ⚠️  Ninoska Dusan Miranda Ortega: 0 res (0%)
+  ⚠️  Arriendos Kodu: 0 res (0%)
+  ⚠️  Maritza Josefina Cartagena Galindez: 0 res (0%)
+  ⚠️  Yetsabel Colina: 0 res (0%)
+  ⚠️  Máximo Humberto Pérez González: 0 res (0%)
+  ⚠️  Francisca García Carmona: 0 res (0%)
+  ⚠️  Ivonne Francisca González Campos: 0 res (0%)
+  ⚠️  Magaly Isabel Riquelme Sandoval: 0 res (0%)
+  ⚠️  Diego Nicolás Zuñiga Vega: 0 res (0%)
+  ⚠️  Roberto Quintero Acosta: 0 res (0%)
+  ⚠️  Venecia Kenebith Rasse Soto: 0 res (0%)
+  ⚠️  Dominique Tamara Díaz Vidal: 0 res (0%)
+  ⚠️  Esperanza Abril Pino Contreras: 0 res (0%)
+  ⚠️  Claudia Pamela Poblete Moreno: 0 res (0%)
+  ⚠️  Adriana Paola Hernández Castellón: 0 res (0%)
+  ⚠️  Bianca Aracena: 0 res (0%)
+  ⚠️  Daysi Surmay: 0 res (0%)
+  ⚠️  Rodrigo Campusano: 0 res (0%)
+  ⚠️  Home Ready: 0 res (0%)
+  ⚠️  Javiera Luz Baeza Campos: 0 res (0%)
+  ⚠️  Juan Perez: 0 res (0%)
+  ⚠️  Victor Hugo Ravelo Parra: 0 res (0%)
+  ⚠️  Manuel Alejandro Alvarez Montalez: 0 res (0%)
+  ⚠️  Richard Morales Díaz: 0 res (0%)
+  ⚠️  Pablo César Tobar Espinoza: 0 res (0%)
+  ⚠️  Ana Cecilia Luengo Hernández: 0 res (0%)
+  ⚠️  Maryory Del Pilar Labarca Urdaneta: 0 res (0%)
+  ⚠️  Yanira Angélica Rosales Guzman: 0 res (0%)
+  ⚠️  Verónica Isabel González González: 0 res (0%)
+  ⚠️  Marlyn Marian Labarca Urdaneta: 0 res (0%)
+  ⚠️  Jeslimar Jose Coa Bracho: 0 res (0%)
+  ⚠️  Josma Jose Silva Payares: 0 res (0%)
+  ⚠️  María Laura Pernia Leal: 0 res (0%)
+  ⚠️  Claudia Valdes: 1 res (14%)
+  ⚠️  Claudia Valenzuela: 1 res (14%)
+  ⚠️  Angie Roxana: 1 res (14%)
+  ⚠️  Henry Ford: 2 res (27%)
+  ⚠️  Cesar Salazar: 3 res (40%)
+  ⚠️  Yoanetzy Rodriguez: 3 res (40%)
+  ⚠️  Auribel Landaeta: 4 res (54%)
+  ⚠️  Kristhy Guzman: 4 res (54%)
+  ⚠️  Anyalila Franquiz: 4 res (54%)
+
+=== SEGUIMIENTO ESPECÍFICO ===
+  Adriana Ollarves: 854 res (11500% meta) | 845 contratos | 1538 prospectos
+  Alexander Pereira: 183 res (2464% meta) | 183 contratos | 496 prospectos
+  Henmilys Medina: 77 res (1037% meta) | 76 contratos | 112 prospectos
+
+=== PROYECCIÓN DE VARIABLE ===
+Corredor                         %    Variable Estimada
+-------------------------------------------------------
+  Rosangela Cirelli          13843.2%  $     800,000
+  Adriana Ollarves           11500.1%  $     800,000
+  Johanna Hernandez          10315.1%  $     800,000
+  Isadora Zepeda             9911.1%  $     800,000
+  Henry Rodriguez            9237.8%  $     800,000
+  Dutglas Delmoral           8833.8%  $     800,000
+  Mayerling Soto             8685.7%  $     800,000
+  Henry Colina (Rumirent)    8295.2%  $     800,000
+  Yerimar Portillo           7594.9%  $     800,000
+  Gustavo Gonzalez           7339.1%  $     800,000
+  Jennyfer Portillo          6463.8%  $     800,000
+  Yinglis Hernandez          6436.8%  $     800,000
+  Erika Cepeda               6194.4%  $     800,000
+  Yonathan Pino              6019.4%  $     800,000
+  Felix Ferrer               6005.9%  $     800,000
+  Manuel Martinez            5925.1%  $     800,000
+  Christian Subiabre         5628.9%  $     800,000
+  Maritza Faundez            5561.5%  $     800,000
+  Yexica Gomez               5305.7%  $     800,000
+  Luis Pernalete             4942.1%  $     800,000
+  Douglas Rojo               4874.8%  $     800,000
+  Elkis Daza                 4524.6%  $     800,000
+  Carla Palma                4376.5%  $     800,000
+  Daniela Paola Magrini      4363.0%  $     800,000
+  Joenny Moncada             4363.0%  $     800,000
+  Dania Chirinos             4214.9%  $     800,000
+  Daiana Quintero            3905.2%  $     800,000
+  Daniel Alfredo Devita León 3864.8%  $     800,000
+  Dennys Morales             3824.4%  $     800,000
+  Corredor Switch            3810.9%  $     800,000
+  Marlyn Parra               3797.5%  $     800,000
+  Yanelaine Reyes            3797.5%  $     800,000
+  Carlos Zambrano            3757.1%  $     800,000
+  Daina Tapia                3649.3%  $     800,000
+  Nelly Ocando               3635.9%  $     800,000
+  Ingrid Muñoz               3608.9%  $     800,000
+  Paul Perdomo               3460.8%  $     800,000
+  Enihet Curpa               3433.9%  $     800,000
+  Santiago Fuentes           3258.8%  $     800,000
+  Giovanny Gutierrez         3124.2%  $     800,000
+  Maryse Arria               3029.9%  $     800,000
+  Victoria Díaz              2895.2%  $     800,000
+  Lesbia Utrilla             2881.8%  $     800,000
+  Marco Martinez             2854.8%  $     800,000
+  Manuel Duran               2801.0%  $     800,000
+  Mario Lepore               2720.2%  $     800,000
+  Esthefani Gonzalez         2706.7%  $     800,000
+  Alejandra Romo             2599.0%  $     800,000
+  Yessica Asuaje             2491.2%  $     800,000
+  Alexander Pereira          2464.3%  $     800,000
+  Patricia Gonzalez          2275.8%  $     800,000
+  Eugenio Arrevilla          2235.4%  $     800,000
+  Angela Palomo              2181.5%  $     800,000
+  Annhelys Cardiet           2168.1%  $     800,000
+  Valeska Chavez             2154.6%  $     800,000
+  Nailet Rojo                2127.7%  $     800,000
+  Romelean Lopez             2100.7%  $     800,000
+  Carlos Gonzalez            2087.3%  $     800,000
+  Sarah Volcanes             1979.5%  $     800,000
+  Jeanette Mendoza           1939.1%  $     800,000
+  Sofia Bravo                1939.1%  $     800,000
+  Camila Fuenzalida          1871.8%  $     800,000
+  Ivon Urra                  1804.5%  $     800,000
+  Hector Cardiet             1764.1%  $     800,000
+  Plaza & Nieto (Gloria Nieto) 1737.1%  $     800,000
+  Carolina Rosales           1737.1%  $     800,000
+  María Elena Katny          1683.3%  $     800,000
+  Luisana Albarez            1683.3%  $     800,000
+  Alejandro Rodriguez        1589.0%  $     800,000
+  Melida Castañeda           1494.7%  $     800,000
+  Emeric Bergstrom Ibarra    1212.0%  $     800,000
+  Yolimar Aguilar            1198.5%  $     800,000
+  Ana Flores                 1104.2%  $     800,000
+  Henmilys Medina            1036.9%  $     800,000
+  Andreina Carolina López Pedrique 1023.4%  $     800,000
+  Rosanyelys Cordova         956.1%  $     800,000
+  Yanioscar Margarita Nuñez Sarramera 929.2%  $     800,000
+  Valeria Carolina Navarro Mondaca 915.7%  $     800,000
+  Yenny Alejandra Díaz Valdés 902.2%  $     800,000
+  Karla Garcia               875.3%  $     800,000
+  Yealvanny Perez            821.4%  $     800,000
+  Wendy Navarro              808.0%  $     800,000
+  Luimar Marilin Sucre Jiménez 794.5%  $     800,000
+  Francisco Gonzalez         767.6%  $     800,000
+  Confianza Inmobiliaria (Raul Mena) 767.6%  $     800,000
+  Marklim Javier González Arria 686.8%  $     800,000
+  Aillien Rojas              673.3%  $     800,000
+  Juan Uribe                 659.8%  $     800,000
+  Vivao (Nicole Jones)       646.4%  $     800,000
+  Julio César Marcano Giuliani 606.0%  $     800,000
+  Yelitza Andrea Perdomo Ocampo 579.0%  $     800,000
+  Rosa Gana                  565.6%  $     800,000
+  Daniela Maritza Portillo Trompiz 565.6%  $     800,000
+  Legacy Business            538.6%  $     800,000
+  Enmanuel Guerrero          525.2%  $     800,000
+  Ejecutivo Assetplan        511.7%  $     800,000
+  Alejandra Beatriz García Miranda 471.3%  $     800,000
+  Michelle Pino              457.9%  $     800,000
+  Veronica Saumell           457.9%  $     800,000
+  Ana María Pernia Vivas     457.9%  $     800,000
+  Ignacio Vejar Zuñiga       430.9%  $     800,000
+  Jean Patricio Roa          377.1%  $     800,000
+  Marian Escarate            363.6%  $     800,000
+  Yeissi Muñoz               363.6%  $     800,000
+  Patricia Latorre           323.2%  $     800,000
+  Joselin Quintero           269.3%  $     800,000
+  David Berrueta             255.9%  $     800,000
+  Natalia Alvarado           255.9%  $     800,000
+  Paola Malave               255.9%  $     800,000
+  Karen Lesmes               242.4%  $     800,000
+  Yenkly Karelys León Pereira 242.4%  $     800,000
+  Madeleine Margot Céspedes León 242.4%  $     800,000
+  María Andreina Pérez Guerrero 242.4%  $     800,000
+  Francisca Camila Cabero Gornall 215.5%  $     800,000
+  Hugo Sebastián González Velásquez 215.5%  $     800,000
+  Gerardo Cabrera            202.0%  $     800,000
+  Ernesto Moscoso            175.1%  $     800,000
+  Ok Rent (Andrea Ferrer)    175.1%  $     800,000
+  Diego Antonio Varas Lira   175.1%  $     800,000
+  Sahmar Jaimes Fuentes      175.1%  $     800,000
+  Inversion Total            161.6%  $     800,000
+  Paul Andrés González Cerda 148.1%  $     800,000
+  Elisa Torres               148.1%  $     800,000
+  Virginia Del Valle Guerra Marin 134.7%  $     800,000
+  Jessica Miranda            121.2%  $     800,000
+  Alberto Del Campo          121.2%  $     800,000
+  Geraldine Trujillo         121.2%  $     800,000
+  Yessica Avila              121.2%  $     800,000
+  Claudia Muñoz              121.2%  $     800,000
+  Gabriela Margoth Díaz Gómez 121.2%  $     800,000
+  Ruth Mary Mata Martinez    121.2%  $     800,000
+  Kelly Alexandra Vásquez Narvaez 107.7%  $     708,000
+  Corredor Switch 1 Switch    94.3%  $     286,000
+  Dominic Berna               94.3%  $     286,000
+  Cristian Uribe              94.3%  $     286,000
+  Desiree Hernández Nieto     94.3%  $     286,000
+  Lorena Son Rangel           94.3%  $     286,000
+  Angelica Robles             80.8%  $      16,000
+  Kristhy Guzman              53.9%  $           0
+  Anyalila Franquiz           53.9%  $           0
+  Auribel Landaeta            53.9%  $           0
+  Cesar Salazar               40.4%  $           0
+  Yoanetzy Rodriguez          40.4%  $           0
+  Henry Ford                  26.9%  $           0
+  Claudia Valdes              13.5%  $           0
+  Claudia Valenzuela          13.5%  $           0
+  Angie Roxana                13.5%  $           0
+  Demand Demand                0.0%  $           0
+  Postulaciones Assetplan      0.0%  $           0
+  Nataly Espinoza              0.0%  $           0
+  Leandro Osorio Loaiza        0.0%  $           0
+  Yhoselyn Jose Velásquez Hernández   0.0%  $           0
+  Edmary Dauvinett Bolivar Hernández   0.0%  $           0
+  Sebastian Pirela             0.0%  $           0
+  Adrian Alvarez               0.0%  $           0
+  Eva Brizuela                 0.0%  $           0
+  Isamar Davila                0.0%  $           0
+  Sarahi Garcia                0.0%  $           0
+  Victoria Gosende             0.0%  $           0
+  Janet Burga                  0.0%  $           0
+  Cindy Katherine Donayre Reyes   0.0%  $           0
+  Moises Vladimir Oblitas Alcalde   0.0%  $           0
+  Fernando Di Guiseppe         0.0%  $           0
+  Cecilia Bustios              0.0%  $           0
+  Carolina Hoyos               0.0%  $           0
+  Alejandra Paredes            0.0%  $           0
+  Vanessa Garcia               0.0%  $           0
+  Katiuska Jazmin Puma Palomino   0.0%  $           0
+  Jacquelyn Lucich Lucich Fernandez   0.0%  $           0
+  Aura Bot                     0.0%  $           0
+  Catalina Salvo Rojas         0.0%  $           0
+  Francisca Vidal Gajardo      0.0%  $           0
+  Corredor Reservas Adicionales   0.0%  $           0
+  Aura Bot 2.0                 0.0%  $           0
+  Gloria Cecilia Salamanca Bruner   0.0%  $           0
+  Aura Meli                    0.0%  $           0
+  María José  Torrealba Cortez   0.0%  $           0
+  Danielis Chacin              0.0%  $           0
+  Daniela Sulbaran             0.0%  $           0
+  Maria Quinonez               0.0%  $           0
+  Xiomara Manrique             0.0%  $           0
+  Ninoska Dusan Miranda Ortega   0.0%  $           0
+  Arriendos Kodu               0.0%  $           0
+  Maritza Josefina Cartagena Galindez   0.0%  $           0
+  Yetsabel Colina              0.0%  $           0
+  Máximo Humberto Pérez González   0.0%  $           0
+  Luisangela Morales De García   0.0%  $           0
+  Susana Fabiola Sánchez Hernández   0.0%  $           0
+  Michelle Alvarado            0.0%  $           0
+  Ignacio Bustos               0.0%  $           0
+  Ana Romero                   0.0%  $           0
+  Xiomara Yepez                0.0%  $           0
+  Leonardo Pablo Venegas Jara   0.0%  $           0
+  Kala Urzúa Ajraz             0.0%  $           0
+  Neribel Gonzalez             0.0%  $           0
+  Ivonne Francisca González Campos   0.0%  $           0
+  Magaly Isabel Riquelme Sandoval   0.0%  $           0
+  Diego Nicolás Zuñiga Vega    0.0%  $           0
+  Francisca García Carmona     0.0%  $           0
+  Venecia Kenebith Rasse Soto   0.0%  $           0
+  Roberto Quintero Acosta      0.0%  $           0
+  Dominique Tamara Díaz Vidal   0.0%  $           0
+  Juan Perez                   0.0%  $           0
+  Javiera Luz Baeza Campos     0.0%  $           0
+  Home Ready                   0.0%  $           0
+  Rodrigo Campusano            0.0%  $           0
+  Daysi Surmay                 0.0%  $           0
+  Bianca Aracena               0.0%  $           0
+  Adriana Paola Hernández Castellón   0.0%  $           0
+  Claudia Pamela Poblete Moreno   0.0%  $           0
+  Esperanza Abril Pino Contreras   0.0%  $           0
+  Jeslimar Jose Coa Bracho     0.0%  $           0
+  Josma Jose Silva Payares     0.0%  $           0
+  María Laura Pernia Leal      0.0%  $           0
+  Marlyn Marian Labarca Urdaneta   0.0%  $           0
+  Maryory Del Pilar Labarca Urdaneta   0.0%  $           0
+  Yanira Angélica Rosales Guzman   0.0%  $           0
+  Verónica Isabel González González   0.0%  $           0
+  Victor Hugo Ravelo Parra     0.0%  $           0
+  Manuel Alejandro Alvarez Montalez   0.0%  $           0
+  Richard Morales Díaz         0.0%  $           0
+  Pablo César Tobar Espinoza   0.0%  $           0
+  Ana Cecilia Luengo Hernández   0.0%  $           0

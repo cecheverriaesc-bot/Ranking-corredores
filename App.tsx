@@ -3,7 +3,7 @@ import React, { useState, useMemo, useEffect, lazy, Suspense, Component, ReactNo
 import {
     Search, TrendingUp, Users, Calendar, Medal, Crown, Droplet,
     GraduationCap, Flower2, Star, Target, Clock, Brain, Zap, Flame,
-    Trophy, CheckCircle2, Edit3, LogOut, RefreshCw, MessageSquare, Shield, AlertTriangle
+    Trophy, CheckCircle2, Edit3, LogOut, RefreshCw, MessageSquare, Shield, AlertTriangle, ArrowUpRight
 } from 'lucide-react';
 import { ComposedChart, AreaChart, Area, Line, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { MONTHLY_DATA, TEAMS, HISTORY_2025, NAMES_WITH_AGENDA, LAST_DB_UPDATE } from './constants';
@@ -602,10 +602,7 @@ const App: React.FC = () => {
             <ErrorBoundary>
                 <div className="min-h-screen bg-[#101622] text-slate-200 font-sans pb-20 selection:bg-blue-500/30 selection:text-white">
 
-                    {/* DEBUG BANNER - REMOVER DESPUÉS */}
-                    <div className="bg-yellow-600 text-white p-2 text-center text-xs font-bold">
-                        DEBUG: userEmail={userEmail} | render={debugRender}
-                    </div>
+
 
                     {/* Header */}
                     <header className="relative pt-10 pb-20 px-6 overflow-hidden">
@@ -624,7 +621,7 @@ const App: React.FC = () => {
                                                 <h2 className="text-blue-400 font-bold uppercase text-xs tracking-widest">
                                                     Ranking {selectedMonth === 'total-year' ? 'Total Año' : selectedMonth === '2026-01' ? 'Enero' : selectedMonth === '2026-02' ? 'Febrero' : selectedMonth === '2026-03' ? 'Marzo' : selectedMonth === '2026-04' ? 'Abril' : selectedMonth === '2026-05' ? 'Mayo' : selectedMonth === '2026-06' ? 'Junio' : selectedMonth === '2026-07' ? 'Julio' : selectedMonth === '2026-08' ? 'Agosto' : selectedMonth === '2026-09' ? 'Septiembre' : selectedMonth === '2026-10' ? 'Octubre' : selectedMonth === '2026-11' ? 'Noviembre' : selectedMonth === '2026-12' ? 'Diciembre' : '2026'} 2026
                                                 </h2>
-                                                <MonthSelector selected={selectedMonth} onChange={setSelectedMonth} />
+                                                <MonthSelector selected={selectedMonth} onChange={setSelectedMonth} monthlyData={MONTHLY_DATA} />
                                             </div>
                                         </div>
                                     </div>
@@ -768,10 +765,7 @@ const App: React.FC = () => {
                                                 setVerifiedLabAccess(true);
                                                 setShowSecretPrompt(false);
                                                 setSecretCodeInput('');
-
-                                                if (userEmail === 'carlos.echeverria@assetplan.cl') {
-                                                    setView('strategic_lab');
-                                                }
+                                                setView('laboratory');
                                             }
                                         }}
                                         autoFocus
@@ -1162,6 +1156,51 @@ const App: React.FC = () => {
                                         </div>
                                     );
                                 })}
+                                {/* --- TOTAL EQUIPO card --- */}
+                                {(() => {
+                                    const totalRes = Object.values(stats.squadStats).reduce((s, d) => s + (d.cur || 0), 0);
+                                    const totalCon = Object.values(stats.squadStats).reduce((s, d) => s + (d.contracts || 0), 0);
+                                    const totalAct = Object.values(stats.squadStats).reduce((s, d) => s + (d.activeMembers || 0), 0);
+                                    const totalMem = Object.values(stats.squadStats).reduce((s, d) => s + (d.totalMembers || 0), 0);
+                                    const metaRes = currentMonthData.reservation_goal || 0;
+                                    const pct = metaRes > 0 ? Math.round((totalRes / metaRes) * 100) : 0;
+                                    return (
+                                        <div className="md:col-span-2 lg:col-span-4 bg-gradient-to-br from-[#1e293b] to-[#162032] rounded-2xl p-6 border border-blue-500/30 shadow-lg shadow-blue-500/5">
+                                            <div className="flex flex-wrap justify-between items-center gap-6">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="p-3 rounded-xl bg-blue-500/10 border border-blue-500/30">
+                                                        <Users size={20} className="text-blue-400" />
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Total Equipo</p>
+                                                        <p className="text-xs text-slate-400">{totalAct} activos / {totalMem} corredores</p>
+                                                    </div>
+                                                </div>
+                                                <div className="flex gap-8 items-center">
+                                                    <div className="text-center">
+                                                        <p className="text-3xl font-black text-white">{totalRes.toLocaleString('es-CL')}</p>
+                                                        <p className="text-[10px] text-slate-500 font-bold uppercase">Reservas</p>
+                                                    </div>
+                                                    <div className="w-px h-10 bg-[#324467]" />
+                                                    <div className="text-center">
+                                                        <p className="text-3xl font-black text-emerald-400">{totalCon.toLocaleString('es-CL')}</p>
+                                                        <p className="text-[10px] text-slate-500 font-bold uppercase">Contratos</p>
+                                                    </div>
+                                                    <div className="w-px h-10 bg-[#324467]" />
+                                                    <div className="text-center">
+                                                        <p className={`text-3xl font-black ${pct >= 100 ? 'text-emerald-400' : pct >= 70 ? 'text-blue-400' : 'text-orange-400'}`}>{pct}%</p>
+                                                        <p className="text-[10px] text-slate-500 font-bold uppercase">Avance meta</p>
+                                                    </div>
+                                                    <div className="w-px h-10 bg-[#324467]" />
+                                                    <div className="text-center">
+                                                        <p className="text-3xl font-black text-slate-300">{metaRes.toLocaleString('es-CL')}</p>
+                                                        <p className="text-[10px] text-slate-500 font-bold uppercase">Meta Mes</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    );
+                                })()}
                             </div>
                         </div>
 

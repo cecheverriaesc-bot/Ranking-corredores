@@ -1,0 +1,99 @@
+=== COLUMNAS bi_DimReservas ===
+  reserva_id                          int
+  monto                               varchar(255)
+  fecha                               datetime
+  property_id                         int
+  property_day                        int
+  tipo_reserva                        varchar(255)
+  reserva                             int
+  reserva_sin_contrato_no_caida       int
+
+=== COLUMNAS bi_DimCorredores ===
+  corredor_id                         int
+  nombre                              varchar(255)
+  apellido                            varchar(255)
+  coordinador_id                      varchar(255)
+  postulacion_asistida                int
+  tipo_corredor                       varchar(255)
+  pais_id                             varchar(255)
+  activo                              int
+  nombre_corredor                     varchar(255)
+  coordinador                         varchar(255)
+  prospectos_sin_gestion              int
+  cant_prospectos                     int
+  reserva                             int
+  contrato_arriendos                  int
+  demora_ingresado                    varchar(255)
+  demora_aprobado                     varchar(255)
+  demora_observado                    varchar(255)
+  agendas_corredor                    int
+  lead_convertido_prospecto           varchar(255)
+  step_2_pool_corredores_visita_cancelado int
+  step_2_pool_corredores_visita_confirmado int
+  step_2_pool_corredores_visita_pendiente int
+  step_2_pool_corredores_visita_visitado int
+  cant_leads                          int
+  descartados_inactividad             int
+  descartados_no_contactado           int
+  activo_tomando                      varchar(255)
+  z_score_step_2_pool_corredores_visita_cancelado varchar(255)
+  z_score_step_2_pool_corredores_visita_confirmado varchar(255)
+  z_score_step_2_pool_corredores_visita_pendiente varchar(255)
+  z_score_step_2_pool_corredores_visita_visitado varchar(255)
+  z_score_cant_leads                  varchar(255)
+  z_score_reserva                     varchar(255)
+  z_score_contrato_arriendos          varchar(255)
+  z_score_descartados_inactividad     varchar(255)
+  z_score_descartados_no_contactado   varchar(255)
+  z_score_demora_ingresado            varchar(255)
+  z_score_demora_aprobado             varchar(255)
+  z_score_demora_observado            varchar(255)
+  z_score_cant_prospectos             varchar(255)
+
+=== COLUMNAS corredores (assetplan_rentas) ===
+  id                                  int unsigned
+  nombre                              varchar(200)
+  apellido                            varchar(200)
+  rut                                 varchar(200)
+  dni_original                        varchar(255)
+  telefono                            varchar(200)
+  monto_reserva                       decimal(10,2)
+  user_id                             int
+  inmobiliaria_id                     int
+  celular                             varchar(255)
+  grupos_permitidos                   text
+  url_foto                            varchar(255)
+  correo                              varchar(255)
+  twitter                             varchar(255)
+  facebook                            varchar(255)
+  instagram                           varchar(255)
+  activo                              tinyint
+  grupos_no_permitidos                text
+  pais_id                             int
+  externo                             tinyint(1)
+  id_zoom                             varchar(255)
+  url_zoom                            varchar(255)
+  ultima_actualizacion_zoom           datetime
+  disponible_zoom                     tinyint
+  permitir_nuevos_leads               tinyint(1)
+  codigo_referido                     varchar(255)
+  allow_meli_leads                    tinyint
+  gestiona_leads                      tinyint unsigned
+  postulacion_asistida                tinyint unsigned
+  coordinador_id                      int unsigned
+  limit_to_take_leads                 int
+  limit_to_take_leads_daily           int
+  limit_to_manage_leads               int
+  permite_agenda                      int unsigned
+  hash                                varchar(255)
+  banco_id                            int unsigned
+  tipo_cuenta                         enum('Corriente','Ahorro','Vista')
+  num_cuenta                          bigint unsigned
+  comision_interna_estructura_id      bigint unsigned
+  tipo_corredor                       int
+  contrato_servicio                   varchar(255)
+  comentarios                         text
+  imagen_frontal_rut                  varchar(255)
+  imagen_posterior_rut                varchar(255)
+  ficha_ingreso                       varchar(255)
+  autorizacion_sii                    varchar(255)

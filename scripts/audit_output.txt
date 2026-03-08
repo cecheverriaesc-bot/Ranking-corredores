@@ -1,0 +1,103 @@
+﻿============================================================
+AUDITOR├ìA COMPLETA - MONTHLY_DATA
+============================================================
+
+============================================================
+  MES: 2026-01
+============================================================
+  Meta Contratos       : 1928
+  Meta Reservas (smart): 2029
+  Goal (variable)      : 1928
+
+  Freelance (ranking)  : 174 corredores
+  Institucional (otros): 19 corredores
+  TOTAL corredores     : 193
+
+  Reservas netas TOTAL : 1465
+  Ca├¡das TOTAL         : 52
+  Contratos TOTAL      : 1280
+  Leads TOTAL          : 14450
+  % meta reservas      : 72.2% ÔÜá´©Å
+
+  D├¡as con stats diarios: 75
+  D├¡as metas diarias   : 31
+  Total 2025 YTD       : 1402
+  Corredores historia  : 86
+
+  ÔÜá´©Å  Con 0 reservas (56): Michelle Pino, Francisca Camila Cabero Gornall, Manuel Duran, Mario Lepore, Douglas Rojo...
+  ÔÜá´©Å  Con 0 leads (38): Rodrigo Campusano, Michelle Pino, David Berrueta, Jessica Miranda, Dominic Berna...
+
+  Top 5 Reservas:
+    1. Rosangela Cirelli              val=  62  meta=  48   129.2%  leads=  283
+    2. Isadora Zepeda                 val=  45  meta=  40   112.5%  leads=  106
+    3. Johanna Hernandez              val=  45  meta=  41   109.8%  leads=  220
+    4. Henry Rodriguez                val=  36  meta=  29   124.1%  leads=  384
+    5. Dennys Morales                 val=  30  meta=  21   142.9%  leads=  319
+
+============================================================
+  MES: 2026-02
+============================================================
+  Meta Contratos       : 2066
+  Meta Reservas (smart): 2174
+  Goal (variable)      : 2066
+
+  Freelance (ranking)  : 174 corredores
+  Institucional (otros): 19 corredores
+  TOTAL corredores     : 193
+
+  Reservas netas TOTAL : 1420
+  Ca├¡das TOTAL         : 27
+  Contratos TOTAL      : 1333
+  Leads TOTAL          : 12817
+  % meta reservas      : 65.3% ÔÜá´©Å
+
+  D├¡as con stats diarios: 83
+  D├¡as metas diarias   : 28
+  Total 2025 YTD       : 1457
+  Corredores historia  : 89
+
+  ÔÜá´©Å  Con 0 reservas (52): Michelle Pino, Karen Lesmes, Manuel Duran, Juan Uribe, Mario Lepore...
+  ÔÜá´©Å  Con 0 leads (36): David Berrueta, Jessica Miranda, Dominic Berna, Cristian Uribe, Catalina Salvo Rojas...
+
+  Top 5 Reservas:
+    1. Rosangela Cirelli              val=  45  meta=  51    88.2%  leads=  267
+    2. Johanna Hernandez              val=  38  meta=  44    86.4%  leads=  186
+    3. Isadora Zepeda                 val=  37  meta=  43    86.0%  leads=   98
+    4. Adriana Ollarves               val=  37  meta=  38    97.4%  leads=  255
+    5. Henry Rodriguez                val=  36  meta=  31   116.1%  leads=  256
+
+============================================================
+  MES: 2026-03
+============================================================
+  Meta Contratos       : 1762
+  Meta Reservas (smart): 1854
+  Goal (variable)      : 1762
+
+  Freelance (ranking)  : 174 corredores
+  Institucional (otros): 19 corredores
+  TOTAL corredores     : 193
+
+  Reservas netas TOTAL : 352
+  Ca├¡das TOTAL         : 1
+  Contratos TOTAL      : 325
+  Leads TOTAL          : 2922
+  % meta reservas      : 19.0% ÔÜá´©Å
+
+  D├¡as con stats diarios: 25
+  D├¡as metas diarias   : 30
+  Total 2025 YTD       : 426
+  Corredores historia  : 90
+
+  ÔÜá´©Å  Con 0 reservas (78): Karla Garcia, Francisco Gonzalez, Jennyfer Portillo, Michelle Pino, Karen Lesmes...
+  ÔÜá´©Å  Con 0 leads (45): Francisco Gonzalez, Michelle Pino, Mario Lepore, David Berrueta, Jessica Miranda...
+
+  Top 5 Reservas:
+    1. Johanna Hernandez              val=  17  meta=  37    45.9%  leads=   54
+    2. Rosangela Cirelli              val=  11  meta=  44    25.0%  leads=   53
+    3. Maritza Faundez                val=  10  meta=  19    52.6%  leads=   57
+    4. Rosanyelys Cordova             val=  10  meta=  10   100.0%  leads=   40
+    5. Paola Malave                   val=  10  meta=  17    58.8%  leads=   22
+
+
+LAST_UPDATE   : 08/03/2026 14:23 (Script)
+LAST_DB_UPDATE: 07/03/2026 23:30

@@ -78,9 +78,6 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
 const App: React.FC = () => {
     // --- Authentication State ---
     const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [debugRender, setDebugRender] = useState(0);
-
-    console.log('App render #', debugRender, 'isAuthenticated:', isAuthenticated);
     const [userEmail, setUserEmail] = useState<string | null>(null);
 
     // --- State Management ---
@@ -109,7 +106,7 @@ const App: React.FC = () => {
         if (selectedMonth === 'total-year') {
             // Aggregate all months data
             const months = Object.keys(MONTHLY_DATA ?? {}).sort();
-            if (months.length === 0) return (MONTHLY_DATA && MONTHLY_DATA['2026-02']) || { goal: 0, ranking: [], others: [], daily_stats: [], daily_goals: {}, total_2025_ytd: 0, contract_goal: 0, reservation_goal: 0, history: {} };
+            if (months.length === 0) return (MONTHLY_DATA && MONTHLY_DATA['2026-02']) || { goal: 0, contract_goal: 0, ranking: [], others: [], daily_stats: [], daily_goals: {}, total_2025_ytd: 0, history: {} };
 
             // Combine all ranking data from all months
             const aggregatedRanking: Record<string, CorredorData> = {};
@@ -216,7 +213,7 @@ const App: React.FC = () => {
             runningReal += dailyTotal;
             runningGoal += day.goal;
 
-            return { ...day, accReal: runningReal, accGoal: runningGoal };
+            return { ...day, dailyTotal, accReal: runningReal, accGoal: runningGoal };
         });
     }, [currentMonthData]);
 
@@ -484,11 +481,8 @@ const App: React.FC = () => {
     // ============================================
 
     const handleLogin = (email: string, token: string, user: any) => {
-        console.log('handleLogin llamado con:', email, token, user);
         setUserEmail(email);
         setIsAuthenticated(true);
-        setDebugRender(prev => prev + 1);
-        console.log('handleLogin completado, isAuthenticated debería ser true');
     };
 
     const handleLogout = () => {
@@ -502,10 +496,8 @@ const App: React.FC = () => {
 
     // Verificar autenticación al cargar
     useEffect(() => {
-        console.log('useEffect verifyAuth corriendo, isAuthenticated actual:', isAuthenticated);
         const verifyAuth = async () => {
             const token = localStorage.getItem('auth_token');
-            console.log('Token encontrado:', token ? 'sí' : 'no');
             if (token) {
                 try {
                     const response = await fetch('/api/auth/verify', {
@@ -1300,6 +1292,9 @@ const App: React.FC = () => {
                                                     dot={false}
                                                     strokeDasharray="4 4"
                                                 />
+
+                                                 {/* Hidden total for tooltip */}
+                                                <Bar dataKey="dailyTotal" name="Total Equipo" hide={true} />
 
                                                 {/* Stacked Bars for Squads */}
                                                 {Object.entries(TEAMS ?? {}).map(([email, config]) => {

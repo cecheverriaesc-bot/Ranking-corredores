@@ -8,6 +8,7 @@ export interface CorredorData {
   coord: string;
   contracts: number;
   personalMeta?: number; // Added for individual goal tracking
+  email?: string; // Optional email for identification
   hidden?: boolean;
 }
 

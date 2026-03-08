@@ -1,4 +1,4 @@
-﻿import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
     Shield, Target, Zap, Users, Map, Brain, AlertTriangle,
     ArrowRight, ChevronLeft, TrendingUp, Activity, Search, MessageSquare, Award,
@@ -274,7 +274,7 @@ const StrategicLab: React.FC<SquadLaboratoryProps> = ({
     const brokers = intelligenceData?.brokers || [];
     const coverage = intelligenceData ? [] : []; // Placeholder para coverage
     const efficiencyAlerts = intelligenceData ? {
-        leadsSinGestion: intelligenceData.brokers.filter(b => (b.breakdown_engagement?.no_descarta_leads || 0) < 5).length,
+        leadsSinGestion: (intelligenceData.brokers || []).filter(b => (b.breakdown_engagement?.no_descarta_leads || 0) < 5).length,
         unidadesSinVisitas: 0,
         vencimientoProximos: 0
     } : { leadsSinGestion: 0, unidadesSinVisitas: 0, vencimientoProximos: 0 };

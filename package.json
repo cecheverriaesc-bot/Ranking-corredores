@@ -7,6 +7,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:force": "echo 'Forcing build v3.2' && vite build",
     "preview": "vite preview",
     "vercel-build": "npm run build",
     "test": "jest",
